@@ -11,6 +11,7 @@
 		8A6DB49A287B987E00B926C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB499287B987E00B926C0 /* ContentView.swift */; };
 		8A6DB49C287B988000B926C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB49B287B988000B926C0 /* Assets.xcassets */; };
 		8A6DB49F287B988000B926C0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */; };
+		8A6DB4C8287BAD7900B926C0 /* ZKSync2 in Frameworks */ = {isa = PBXBuildFile; productRef = 8A6DB4C7287BAD7900B926C0 /* ZKSync2 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		8A6DB49B287B988000B926C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8A6DB4C2287BA4C700B926C0 /* zksync2-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "zksync2-swift"; path = ../..; sourceTree = "<group>"; };
+		8A6DB4C3287BACF500B926C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +29,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8A6DB4C8287BAD7900B926C0 /* ZKSync2 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -39,6 +42,7 @@
 				8A6DB4C1287BA4C700B926C0 /* Packages */,
 				8A6DB496287B987E00B926C0 /* ZKSync2Example */,
 				8A6DB495287B987E00B926C0 /* Products */,
+				8A6DB4C4287BACFC00B926C0 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -53,6 +57,7 @@
 		8A6DB496287B987E00B926C0 /* ZKSync2Example */ = {
 			isa = PBXGroup;
 			children = (
+				8A6DB4C3287BACF500B926C0 /* Info.plist */,
 				8A6DB497287B987E00B926C0 /* ZKSync2ExampleApp.swift */,
 				8A6DB499287B987E00B926C0 /* ContentView.swift */,
 				8A6DB49B287B988000B926C0 /* Assets.xcassets */,
@@ -77,6 +82,13 @@
 			name = Packages;
 			sourceTree = "<group>";
 		};
+		8A6DB4C4287BACFC00B926C0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -93,6 +105,9 @@
 			dependencies = (
 			);
 			name = ZKSync2Example;
+			packageProductDependencies = (
+				8A6DB4C7287BAD7900B926C0 /* ZKSync2 */,
+			);
 			productName = ZKSync2Example;
 			productReference = 8A6DB494287B987E00B926C0 /* ZKSync2Example.app */;
 			productType = "com.apple.product-type.application";
@@ -280,6 +295,7 @@
 				DEVELOPMENT_TEAM = B2TXDJTSQ4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ZKSync2Example/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -309,6 +325,7 @@
 				DEVELOPMENT_TEAM = B2TXDJTSQ4;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ZKSync2Example/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -349,6 +366,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		8A6DB4C7287BAD7900B926C0 /* ZKSync2 */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ZKSync2;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8A6DB48C287B987E00B926C0 /* Project object */;
 }

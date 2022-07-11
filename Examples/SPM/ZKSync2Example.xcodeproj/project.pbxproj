@@ -19,6 +19,7 @@
 		8A6DB499287B987E00B926C0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8A6DB49B287B988000B926C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		8A6DB4C2287BA4C700B926C0 /* zksync2-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "zksync2-swift"; path = ../..; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +36,7 @@
 		8A6DB48B287B987E00B926C0 = {
 			isa = PBXGroup;
 			children = (
+				8A6DB4C1287BA4C700B926C0 /* Packages */,
 				8A6DB496287B987E00B926C0 /* ZKSync2Example */,
 				8A6DB495287B987E00B926C0 /* Products */,
 			);
@@ -65,6 +67,14 @@
 				8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		8A6DB4C1287BA4C700B926C0 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				8A6DB4C2287BA4C700B926C0 /* zksync2-swift */,
+			);
+			name = Packages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

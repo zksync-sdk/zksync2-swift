@@ -1,5 +1,5 @@
 //
-//  Response.swift
+//  JRPCResponse.swift
 //  ZKSync2
 //
 //  Created by Maxim Makhun on 7/17/22.

@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  ZKSync2Example
 //
-//  Created by Maksim Makhun on 7/10/22.
+//  Created by Maxim Makhun on 7/10/22.
 //
 
 import SwiftUI

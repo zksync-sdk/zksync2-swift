@@ -17,13 +17,18 @@ let package = Package(
         .package(
             url: "https://github.com/skywinder/web3swift.git",
             from: "2.6.5"
+        ),
+        .package(
+            url: "https://github.com/Alamofire/Alamofire.git",
+            from: "5.4.3"
         )
     ],
     targets: [
         .target(
             name: "ZKSync2",
             dependencies: [
-                .product(name: "web3swift", package: "Web3swift")
+                .product(name: "web3swift", package: "Web3swift"),
+                "Alamofire"
             ]),
         .testTarget(
             name: "ZKSync2Tests",

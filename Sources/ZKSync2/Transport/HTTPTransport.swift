@@ -10,27 +10,25 @@ import Alamofire
 
 import Foundation
 
-public typealias TransportResult<T> = Result<T, Error>
-
 protocol Transport {
     
     func send<Parameters: Encodable, Response: Decodable>(method: String,
                                                           params: Parameters?,
-                                                          completion: @escaping (TransportResult<Response>) -> Void)
+                                                          completion: @escaping (Result<Response>) -> Void)
     
     func send<Parameters: Encodable, Response: Decodable>(method: String,
                                                           params: Parameters?,
                                                           queue: DispatchQueue,
-                                                          completion: @escaping (TransportResult<Response>) -> Void)
+                                                          completion: @escaping (Result<Response>) -> Void)
 }
 
 class HTTPTransport: Transport {
     
-    private let networkURL: URL
+    private let url: URL
     private var session: Session
     
-    init(networkURL: URL) {
-        self.networkURL = networkURL
+    init(_ url: URL) {
+        self.url = url
         let configuration = URLSessionConfiguration.default
         var headers = configuration.httpAdditionalHeaders ?? [:]
         headers["Content-Type"] = "application/json"
@@ -41,24 +39,23 @@ class HTTPTransport: Transport {
     
     func send<P, R>(method: String,
                     params: P?,
-                    completion: @escaping (TransportResult<R>) -> Void) where P: Encodable, R: Decodable {
-        self.send(method: method,
-                  params: params,
-                  queue: .main,
-                  completion: completion)
+                    completion: @escaping (Result<R>) -> Void) where P: Encodable, R: Decodable {
+        send(method: method,
+             params: params,
+             queue: .main,
+             completion: completion)
     }
     
     func send<P, R>(method: String,
                     params: P?,
                     queue: DispatchQueue,
-                    completion: @escaping (TransportResult<R>) -> Void) where P: Encodable, R: Decodable {
+                    completion: @escaping (Result<R>) -> Void) where P: Encodable, R: Decodable {
         
-        self.session.request(self.networkURL,
-                             method: .post,
-                             parameters: JRPC.Request(method: method, params: params),
-                             encoder: JSONParameterEncoder.default)
+        session.request(url,
+                        method: .post,
+                        parameters: JRPC.Request(method: method, params: params),
+                        encoder: JSONParameterEncoder.default)
         .validate()
-        // swiftlint:disable:next line_length
         .responseDecodable(queue: queue, decoder: JRPCDecoder()) { [weak self] (response: DataResponse<R, AFError>) in
             guard let self = self else { return }
             completion(response.result.mapError({ self.processAFError($0) }))

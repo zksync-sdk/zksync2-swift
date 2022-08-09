@@ -1,8 +1,8 @@
 //
-//  File.swift
-//  
+//  ZkSyncNetwork.swift
+//  ZKSync2
 //
-//  Created by Maksim Makhun on 7/28/22.
+//  Created by Maxim Makhun on 7/28/22.
 //
 
 import Foundation

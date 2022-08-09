@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import BigInt
 
 typealias Result<T> = Swift.Result<T, Error>
 
@@ -29,20 +30,23 @@ protocol ZKSync {
                                 completion: @escaping (Result<Transactions>) -> Void)
     
 //    Request<?, ZksTokens> zksGetConfirmedTokens(Integer from, Short limit);
+//    func tokens(completion: @escaping (ZKSyncResult<Tokens>) -> Void)
     func getConfirmedTokens(_ from: Int, /* Integer in Java */
                             limit: Int, /* Short in Java */
-                            completion: @escaping (Result<Tokens>) -> Void)
+                            completion: @escaping (Result<[Token]>) -> Void)
     
 //    Request<?, ZksIsTokenLiquid> zksIsTokenLiquid(String tokenAddress);
     func isTokenLiquid(_ tokenAddress: String,
-                       completion: @escaping (Result<IsTokenLiquid>) -> Void)
+                       completion: @escaping (Result<Bool>) -> Void)
     
 //    Request<?, ZksTokenPrice> zksGetTokenPrice(String tokenAddress);
+//    func tokenPrice(token: Token,
+//                    completion: @escaping (ZKSyncResult<Decimal>) -> Void)
     func getTokenPrice(_ tokenAddress: String,
-                       completion: @escaping (Result<TokenPrice>) -> Void)
+                       completion: @escaping (Result<Decimal>) -> Void)
     
 //    Request<?, ZksL1ChainId> zksL1ChainId();
-    func L1ChainId(completion: @escaping (Result<L1ChainId>) -> Void)
+    func L1ChainId(completion: @escaping (Result<BigUInt>) -> Void)
     
 //    Request<?, EthGetBalance> ethGetBalance(String address, DefaultBlockParameter defaultBlockParameter, String tokenAddress);
     func ethGetBalance(_ address: String,
@@ -69,3 +73,37 @@ protocol ZKSync {
     func allAccountBalances(_ address: String,
                             completion: @escaping (Result<AccountBalances>) -> Void)
 }
+
+
+
+
+
+
+
+
+// ??
+//func contractAddress(queue: DispatchQueue,
+//                     completion: @escaping (ZKSyncResult<ContractAddress>) -> Void)
+
+//func submitTx(_ tx: ZkSyncTransaction,
+//              ethereumSignature: EthSignature?,
+//              fastProcessing: Bool,
+//              completion: @escaping (ZKSyncResult<String>) -> Void)
+//
+//func submitTxBatch(txs: [TransactionSignaturePair],
+//                   ethereumSignature: EthSignature?,
+//                   completion: @escaping (ZKSyncResult<[String]>) -> Void)
+//
+//func transactionDetails(txHash: String,
+//                        completion: @escaping (ZKSyncResult<TransactionDetails>) -> Void)
+//
+//func ethOpInfo(priority: Int,
+//               completion: @escaping (ZKSyncResult<EthOpInfo>) -> Void)
+//
+//func confirmationsForEthOpAmount(completion: @escaping (ZKSyncResult<UInt64>) -> Void)
+//
+//func ethTxForWithdrawal(withdrawalHash: String,
+//                        completion: @escaping (ZKSyncResult<String>) -> Void)
+//
+//func toggle2FA(toggle2FA: Toggle2FA,
+//               completion: @escaping (ZKSyncResult<Toggle2FAInfo>) -> Void)

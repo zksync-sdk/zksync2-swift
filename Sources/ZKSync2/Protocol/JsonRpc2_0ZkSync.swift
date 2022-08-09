@@ -7,6 +7,7 @@
 
 import Foundation
 import web3swift
+import BigInt
 
 class JsonRpc2_0ZkSync: ZKSync {
     
@@ -18,14 +19,14 @@ class JsonRpc2_0ZkSync: ZKSync {
     
     func estimateFee(_ transaction: Transaction,
                      completion: @escaping (Result<Fee>) -> Void) {
-        transport.send(method: "zks_estimateFee",
-                       params: [transaction],
-                       completion: completion)
+//        transport.send(method: "zks_estimateFee",
+//                       params: [transaction],
+//                       completion: completion)
     }
     
     func mainContract(completion: @escaping (Result<MainContract>) -> Void) {
         transport.send(method: "zks_getMainContract",
-                       params: [],
+                       params: [String](),
                        completion: completion)
     }
     
@@ -41,36 +42,40 @@ class JsonRpc2_0ZkSync: ZKSync {
                                 limit: Int,
                                 completion: @escaping (Result<Transactions>) -> Void) {
         transport.send(method: "zks_getAccountTransactions",
-                       params: [address, before, limit],
+                       params: [before, limit],
                        completion: completion)
     }
     
     func getConfirmedTokens(_ from: Int,
                             limit: Int,
-                            completion: @escaping (Result<Tokens>) -> Void) {
+                            completion: @escaping (Result<[Token]>) -> Void) {
         transport.send(method: "zks_getConfirmedTokens",
                        params: [from, limit],
                        completion: completion)
     }
     
     func isTokenLiquid(_ tokenAddress: String,
-                       completion: @escaping (Result<IsTokenLiquid>) -> Void) {
+                       completion: @escaping (Result<Bool>) -> Void) {
         transport.send(method: "zks_isTokenLiquid",
                        params: [tokenAddress],
                        completion: completion)
     }
     
     func getTokenPrice(_ tokenAddress: String,
-                       completion: @escaping (Result<TokenPrice>) -> Void) {
+                       completion: @escaping (Result<Decimal>) -> Void) {
         transport.send(method: "zks_getTokenPrice",
                        params: [tokenAddress],
-                       completion: completion)
+                       completion: { result in
+            completion(result.map({ Decimal(string: $0)! }))
+        })
     }
     
-    func L1ChainId(completion: @escaping (Result<L1ChainId>) -> Void) {
+    func L1ChainId(completion: @escaping (Result<BigUInt>) -> Void) {
         transport.send(method: "zks_L1ChainId",
-                       params: [],
-                       completion: completion)
+                       params: [String](),
+                       completion: { (result: Result<String>) in
+            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
+        })
     }
     
     func ethGetBalance(_ address: String,

@@ -50,7 +50,6 @@ class HTTPTransport: Transport {
                     params: P?,
                     queue: DispatchQueue,
                     completion: @escaping (Result<R>) -> Void) where P: Encodable, R: Decodable {
-        
         session.request(url,
                         method: .post,
                         parameters: JRPC.Request(method: method, params: params),
@@ -58,17 +57,18 @@ class HTTPTransport: Transport {
         .validate()
         .responseDecodable(queue: queue, decoder: JRPCDecoder()) { [weak self] (response: DataResponse<R, AFError>) in
             guard let self = self else { return }
-            completion(response.result.mapError({ self.processAFError($0) }))
             
             // Can be used for debugging purpose.
-            // switch response.result {
-            // case .success(let result):
-            //     completion(.success(result))
-            // case .failure(let afError):
-            //     let error = self.processAFError(afError)
-            //     completion(.failure(error))
-            //     break
-            // }
+            switch response.result {
+            case .success(let result):
+                completion(.success(result))
+            case .failure(let error):
+                let error = self.processAFError(error)
+                completion(.failure(error))
+                break
+            }
+            
+            // completion(response.result.mapError({ self.processAFError($0) }))
         }
     }
     

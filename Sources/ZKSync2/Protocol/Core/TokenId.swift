@@ -8,7 +8,7 @@
 import Foundation
 import BigInt
 
-public protocol TokenId {
+protocol TokenId {
     
     var symbol: String { get }
     

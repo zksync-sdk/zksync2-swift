@@ -10,100 +10,119 @@ import BigInt
 
 typealias Result<T> = Swift.Result<T, Error>
 
+//public interface ZkSync extends Web3j {
+//    static ZkSync build(Web3jService web3jService) {
+//        return new JsonRpc2_0ZkSync(web3jService);
+//    }
+//
+//    /**
+//     * Estimate fee for the given transaction at the moment of the latest committed
+//     * block.
+//     *
+//     * @param transaction Transaction data for estimation
+//     * @return Prepared estimate fee request
+//     */
+//    Request<?, ZksEstimateFee> zksEstimateFee(Transaction transaction);
+//
+//    /**
+//     * Get address of main contract for current network chain.
+//     *
+//     * @return Prepared main contract request
+//     */
+//    Request<?, ZksMainContract> zksMainContract();
+//
+//    /**
+//     * Get hash of the withdrawal transaction in the L1 Ethereum chain.
+//     *
+//     * @param transactionHash Hash of the withdrawal transaction in L2 in hex format
+//     * @return Prepared get withdraw transaction hash request
+//     */
+//    Request<?, EthSendRawTransaction> zksGetL1WithdrawalTx(String transactionHash);
+//
+//    /**
+//     * Get list of the tokens supported by ZkSync.
+//     *
+//     * @param from  Offset of tokens
+//     * @param limit Limit of amount of tokens to return
+//     * @return Prepared get confirmed tokens request
+//     */
+//    Request<?, ZksTokens> zksGetConfirmedTokens(Integer from, Short limit);
+//
+//    /**
+//     * Check if token is liquid.
+//     *
+//     * @param tokenAddress Address of the token in hex format
+//     * @return Prepared is token liquid request
+//     */
+//    Request<?, ZksIsTokenLiquid> zksIsTokenLiquid(String tokenAddress);
+//
+//    /**
+//     * Get price of the token in USD.
+//     *
+//     * @param tokenAddress Address of the token in hex format
+//     * @return Prepared get token price request
+//     */
+//    Request<?, ZksTokenPrice> zksGetTokenPrice(String tokenAddress);
+//
+//    /**
+//     * Get chain identifier of the L1 chain.
+//     *
+//     * @return Prepared l1 chainid request
+//     */
+//    Request<?, ZksL1ChainId> zksL1ChainId();
+//
+//    Request<?, ZksContractDebugInfo> zksGetContractDebugInfo(String contractAddress);
+//
+//    Request<?, ZksTransactionTrace> zksGetTransactionTrace(String transactionHash);
+//
+//    Request<?, ZksAccountBalances> zksGetAllAccountBalances(String address);
+//
+//    Request<?, ZksBridgeAddresses> zksGetBridgeContracts();
+//
+//    Request<?, ZksMessageProof> zksGetL2ToL1MsgProof(Integer block, String sender, String message, @Nullable Long l2LogPosition);
+//
+//    Request<?, EthEstimateGas> ethEstimateGas(Transaction transaction);
+//}
+
 protocol ZKSync {
     
-//    Request<?, ZksEstimateFee> zksEstimateFee(Transaction transaction);
-    func estimateFee(_ transaction: Transaction,
-                     completion: @escaping (Result<Fee>) -> Void)
+    func zksEstimateFee(_ transaction: Transaction,
+                        completion: @escaping (Result<Fee>) -> Void)
     
-//    Request<?, ZksMainContract> zksMainContract();
-    func mainContract(completion: @escaping (Result<MainContract>) -> Void)
+    func zksMainContract(completion: @escaping (Result<MainContract>) -> Void)
     
-//    Request<?, EthSendRawTransaction> zksGetL1WithdrawalTx(String transactionHash);
-    func getL1WithdrawalTx(_ transactionHash: String,
-                           completion: @escaping (Result<EthSendRawTransaction>) -> Void)
-
-//    Request<?, ZksTransactions> zksGetAccountTransactions(String address, Integer before, Short limit);
-    func getAccountTransactions(_ address: String,
-                                before: Int, /* Integer in Java */
-                                limit: Int, /* Short in Java */
-                                completion: @escaping (Result<Transactions>) -> Void)
+    func zksGetL1WithdrawalTx(_ transactionHash: String,
+                              completion: @escaping (Result<EthSendRawTransaction>) -> Void)
     
-//    Request<?, ZksTokens> zksGetConfirmedTokens(Integer from, Short limit);
-//    func tokens(completion: @escaping (ZKSyncResult<Tokens>) -> Void)
-    func getConfirmedTokens(_ from: Int, /* Integer in Java */
-                            limit: Int, /* Short in Java */
-                            completion: @escaping (Result<[Token]>) -> Void)
+    func zksGetConfirmedTokens(_ from: Int, /* Integer in Java */
+                               limit: Int, /* Short in Java */
+                               completion: @escaping (Result<[Token]>) -> Void)
     
-//    Request<?, ZksIsTokenLiquid> zksIsTokenLiquid(String tokenAddress);
-    func isTokenLiquid(_ tokenAddress: String,
-                       completion: @escaping (Result<Bool>) -> Void)
+    func zksIsTokenLiquid(_ tokenAddress: String,
+                          completion: @escaping (Result<Bool>) -> Void)
     
-//    Request<?, ZksTokenPrice> zksGetTokenPrice(String tokenAddress);
-//    func tokenPrice(token: Token,
-//                    completion: @escaping (ZKSyncResult<Decimal>) -> Void)
-    func getTokenPrice(_ tokenAddress: String,
-                       completion: @escaping (Result<Decimal>) -> Void)
+    func zksGetTokenPrice(_ tokenAddress: String,
+                          completion: @escaping (Result<Decimal>) -> Void)
     
-//    Request<?, ZksL1ChainId> zksL1ChainId();
-    func L1ChainId(completion: @escaping (Result<BigUInt>) -> Void)
+    func zksL1ChainId(completion: @escaping (Result<BigUInt>) -> Void)
     
-//    Request<?, EthGetBalance> ethGetBalance(String address, DefaultBlockParameter defaultBlockParameter, String tokenAddress);
-    func ethGetBalance(_ address: String,
-                       // TODO: Add `DefaultBlockParameter`.
-                       // defaultBlockParameter: DefaultBlockParameter,
-                       tokenAddress: String,
-                       completion: @escaping (Result<EthGetBalance>) -> Void)
+    func zksGetContractDebugInfo(_ contractAddress: String,
+                                 completion: @escaping (Result<ContractDebugInfo>) -> Void)
     
-//    Request<?, ZksSetContractDebugInfoResult> zksSetContractDebugInfo(String contractAddress, ContractSourceDebugInfo contractDebugInfo);
-    func setContractDebugInfo(_ contractAddress: String,
-                              // TODO: Add `ContractSourceDebugInfo`.
-                              // contractDebugInfo: ContractSourceDebugInfo,
-                              completion: @escaping (Result<SetContractDebugInfoResult>) -> Void)
+    func zksGetTransactionTrace(_ transactionHash: String,
+                                completion: @escaping (Result<TransactionTrace>) -> Void)
     
-//    Request<?, ZksContractDebugInfo> zksGetContractDebugInfo(String contractAddress);
-    func contractDebugInfo(_ contractAddress: String,
-                           completion: @escaping (Result<ContractDebugInfo>) -> Void)
+    func zksGetAllAccountBalances(_ address: String,
+                                  completion: @escaping (Result<Dictionary<String, String>>) -> Void)
     
-//    Request<?, ZksTransactionTrace> zksGetTransactionTrace(String transactionHash);
-    func transactionTrace(_ transactionHash: String,
-                          completion: @escaping (Result<TransactionTrace>) -> Void)
+    func zksGetBridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void)
     
-//    Request<?, ZksAccountBalances> zksGetAllAccountBalances(String address);
-    func allAccountBalances(_ address: String,
-                            completion: @escaping (Result<AccountBalances>) -> Void)
+    func zksGetL2ToL1MsgProof(_ block: Int,
+                              sender: String,
+                              message: String,
+                              l2LogPosition: Int64,
+                              completion: @escaping (Result<MessageProof>) -> Void)
+    
+    func ethEstimateGas(_ transaction: Transaction,
+                        completion: @escaping (Result<EthEstimateGas>) -> Void)
 }
-
-
-
-
-
-
-
-
-// ??
-//func contractAddress(queue: DispatchQueue,
-//                     completion: @escaping (ZKSyncResult<ContractAddress>) -> Void)
-
-//func submitTx(_ tx: ZkSyncTransaction,
-//              ethereumSignature: EthSignature?,
-//              fastProcessing: Bool,
-//              completion: @escaping (ZKSyncResult<String>) -> Void)
-//
-//func submitTxBatch(txs: [TransactionSignaturePair],
-//                   ethereumSignature: EthSignature?,
-//                   completion: @escaping (ZKSyncResult<[String]>) -> Void)
-//
-//func transactionDetails(txHash: String,
-//                        completion: @escaping (ZKSyncResult<TransactionDetails>) -> Void)
-//
-//func ethOpInfo(priority: Int,
-//               completion: @escaping (ZKSyncResult<EthOpInfo>) -> Void)
-//
-//func confirmationsForEthOpAmount(completion: @escaping (ZKSyncResult<UInt64>) -> Void)
-//
-//func ethTxForWithdrawal(withdrawalHash: String,
-//                        completion: @escaping (ZKSyncResult<String>) -> Void)
-//
-//func toggle2FA(toggle2FA: Toggle2FA,
-//               completion: @escaping (ZKSyncResult<Toggle2FAInfo>) -> Void)

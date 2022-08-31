@@ -7,9 +7,9 @@
 
 import Foundation
 
-public class Execute: Transaction {
+class Execute: Transaction {
     
-    public var type: String {
+    override var type: String {
         "Execute"
     }
 }

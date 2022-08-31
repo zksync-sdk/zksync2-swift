@@ -8,18 +8,19 @@
 import Foundation
 import BigInt
 
-public struct Token: TokenId, Decodable {
+struct Token: TokenId, Decodable {
     
     static let DefaultAddress = "0x0000000000000000000000000000000000000000"
     
     static var ETH: Token {
-        return Token(address: Token.DefaultAddress,
+        return Token(l1Address: Token.DefaultAddress,
+                     l2Address: Token.DefaultAddress,
                      symbol: "ETH",
                      decimals: 18)
     }
     
-//    let id: UInt32
-    let address: String
+    let l1Address: String
+    let l2Address: String
     let symbol: String
     let decimals: Int
     
@@ -29,6 +30,6 @@ public struct Token: TokenId, Decodable {
     }
     
     var isETH: Bool {
-        return (address == Token.DefaultAddress && symbol == "ETH")
+        return l2Address == Token.DefaultAddress && symbol == "ETH"
     }
 }

@@ -7,9 +7,9 @@
 
 import Foundation
 
-public class DeployContract: Transaction {
+class DeployContract: Transaction {
     
-    public var type: String {
+    override var type: String {
         "DeployContract"
     }
 }

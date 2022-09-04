@@ -48,4 +48,6 @@ protocol ZKSync {
     
     func ethEstimateGas(_ transaction: Transaction,
                         completion: @escaping (Result<EthEstimateGas>) -> Void)
+    
+    func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void)
 }

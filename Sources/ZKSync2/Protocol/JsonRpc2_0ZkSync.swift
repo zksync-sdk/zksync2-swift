@@ -105,4 +105,10 @@ class JsonRpc2_0ZkSync: ZKSync {
                        params: [String](), // TODO: Add transaction support.
                        completion: completion)
     }
+    
+    func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void) {
+        transport.send(method: "zks_getTestnetPaymaster",
+                       params: [String](),
+                       completion: completion)
+    }
 }

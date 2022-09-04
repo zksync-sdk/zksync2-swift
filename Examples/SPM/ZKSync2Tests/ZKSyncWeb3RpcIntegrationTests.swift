@@ -834,22 +834,6 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     
-    // FIXME: Clarify whether this method is needed.
-    func testIsTokenLiquid() {
-        let expectation = expectation(description: "Expectation.")
-        zkSync.zksIsTokenLiquid(Token.ETH.l2Address) { result in
-            switch result {
-            case .success(let isTokenLiquid):
-                XCTAssertTrue(isTokenLiquid)
-            case .failure(let error):
-                XCTFail("Failed with error: \(error)")
-            }
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 5.0)
-    }
-    
     func testGetTokenPrice() {
         let expectedTokenPrice: Decimal = 3500.0
         let expectation = expectation(description: "Expectation.")

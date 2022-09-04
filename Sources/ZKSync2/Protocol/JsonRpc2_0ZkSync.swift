@@ -9,88 +9,6 @@ import Foundation
 import web3swift
 import BigInt
 
-//public class JsonRpc2_0ZkSync extends JsonRpc2_0Web3j implements ZkSync {
-//
-//    public static final int DEFAULT_BLOCK_COMMIT_TIME = 800;
-//
-//    public JsonRpc2_0ZkSync(Web3jService web3jService) {
-//        super(web3jService);
-//    }
-//
-//    @Override
-//    public Request<?, ZksEstimateFee> zksEstimateFee(Transaction transaction) {
-//        return new Request<>(
-//                "zks_estimateFee", Collections.singletonList(transaction), web3jService, ZksEstimateFee.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksMainContract> zksMainContract() {
-//        return new Request<>("zks_getMainContract", Collections.emptyList(), web3jService, ZksMainContract.class);
-//    }
-//
-//    @Override
-//    public Request<?, EthSendRawTransaction> zksGetL1WithdrawalTx(String transactionHash) {
-//        return new Request<>(
-//                "zks_getL1WithdrawalTx", Collections.singletonList(transactionHash), web3jService, EthSendRawTransaction.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksTokens> zksGetConfirmedTokens(Integer from, Short limit) {
-//        return new Request<>(
-//                "zks_getConfirmedTokens", Arrays.asList(from, limit), web3jService, ZksTokens.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksIsTokenLiquid> zksIsTokenLiquid(String tokenAddress) {
-//        return new Request<>(
-//                "zks_isTokenLiquid", Collections.singletonList(tokenAddress), web3jService, ZksIsTokenLiquid.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksTokenPrice> zksGetTokenPrice(String tokenAddress) {
-//        return new Request<>(
-//                "zks_getTokenPrice", Collections.singletonList(tokenAddress), web3jService, ZksTokenPrice.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksL1ChainId> zksL1ChainId() {
-//        return new Request<>("zks_L1ChainId", Collections.emptyList(), web3jService, ZksL1ChainId.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksContractDebugInfo> zksGetContractDebugInfo(String contractAddress) {
-//        return new Request<>(
-//                "zks_getContractDebugInfo", Collections.singletonList(contractAddress), web3jService, ZksContractDebugInfo.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksTransactionTrace> zksGetTransactionTrace(String transactionHash) {
-//        return new Request<>(
-//                "zks_getTransactionTrace", Collections.singletonList(transactionHash), web3jService, ZksTransactionTrace.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksAccountBalances> zksGetAllAccountBalances(String address) {
-//        return new Request<>("zks_getAllAccountBalances", Collections.singletonList(address), web3jService, ZksAccountBalances.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksBridgeAddresses> zksGetBridgeContracts() {
-//        return new Request<>("zks_getBridgeContracts", Collections.emptyList(), web3jService, ZksBridgeAddresses.class);
-//    }
-//
-//    @Override
-//    public Request<?, ZksMessageProof> zksGetL2ToL1MsgProof(Integer block, String sender, String message, @Nullable Long l2LogPosition) {
-//        return new Request<>("zks_getL2ToL1MsgProof", Arrays.asList(block, sender, message), web3jService, ZksMessageProof.class);
-//    }
-//
-//    @Override
-//    public Request<?, EthEstimateGas> ethEstimateGas(Transaction transaction) {
-//        return new Request<>(
-//                "eth_estimateGas", Collections.singletonList(transaction), web3jService, EthEstimateGas.class);
-//    }
-//}
-
 class JsonRpc2_0ZkSync: ZKSync {
     
     let transport: Transport
@@ -124,13 +42,6 @@ class JsonRpc2_0ZkSync: ZKSync {
                                completion: @escaping (Result<[Token]>) -> Void) {
         transport.send(method: "zks_getConfirmedTokens",
                        params: [from, limit],
-                       completion: completion)
-    }
-    
-    func zksIsTokenLiquid(_ tokenAddress: String,
-                          completion: @escaping (Result<Bool>) -> Void) {
-        transport.send(method: "zks_isTokenLiquid",
-                       params: [tokenAddress],
                        completion: completion)
     }
     

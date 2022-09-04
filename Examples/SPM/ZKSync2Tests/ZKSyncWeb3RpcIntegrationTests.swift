@@ -217,4 +217,23 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5.0)
     }
+    
+    func testGetL2ToL1MsgProof() {
+        let expectation = expectation(description: "Expectation.")
+        zkSync.zksGetL2ToL1MsgProof(0,
+                                    sender: "",
+                                    message: "",
+                                    l2LogPosition: nil,
+                                    completion: { result in
+            switch result {
+            case .success(let address):
+                print(address)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
 }

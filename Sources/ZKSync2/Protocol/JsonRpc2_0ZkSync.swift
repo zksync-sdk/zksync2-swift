@@ -92,7 +92,7 @@ class JsonRpc2_0ZkSync: ZKSync {
     func zksGetL2ToL1MsgProof(_ block: Int,
                               sender: String,
                               message: String,
-                              l2LogPosition: Int64, // FIXME: Should l2LogPosition be used?
+                              l2LogPosition: Int64?, // FIXME: Should l2LogPosition be used?
                               completion: @escaping (Result<MessageProof>) -> Void) {
         transport.send(method: "zks_getL2ToL1MsgProof",
                        params: [String(block), sender, message],

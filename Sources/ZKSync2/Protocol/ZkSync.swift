@@ -43,7 +43,7 @@ protocol ZKSync {
     func zksGetL2ToL1MsgProof(_ block: Int,
                               sender: String,
                               message: String,
-                              l2LogPosition: Int64,
+                              l2LogPosition: Int64?,
                               completion: @escaping (Result<MessageProof>) -> Void)
     
     func ethEstimateGas(_ transaction: Transaction,

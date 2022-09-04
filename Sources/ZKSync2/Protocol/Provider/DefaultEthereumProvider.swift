@@ -67,7 +67,8 @@ class DefaultEthereumProvider: EthereumProvider {
     
     func approveDeposits(with token: Token,
                          limit: BigUInt?) throws -> Promise<TransactionSendingResult> {
-        guard let tokenAddress = EthereumAddress(token.l1Address) else {
+        guard let tokenAddress = EthereumAddress(token.l1Address),
+              let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
             throw EthereumProviderError.invalidToken
         }
         
@@ -75,18 +76,14 @@ class DefaultEthereumProvider: EthereumProvider {
                                   provider: web3.provider,
                                   address: tokenAddress)
         
-        guard let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
-            throw EthereumProviderError.invalidToken
-        }
-        
         let maxApproveAmount = BigUInt.two.power(256) - 1
         let amount = limit?.description ?? maxApproveAmount.description
         
         do {
-            let tx = try tokenContract.approve(from: spenderAddress,
-                                               spender: spenderAddress,
-                                               amount: amount)
-            return tx.sendPromise()
+            let transaction = try tokenContract.approve(from: spenderAddress,
+                                                        spender: spenderAddress,
+                                                        amount: amount)
+            return transaction.sendPromise()
         } catch {
             return .init(error: error)
         }
@@ -95,148 +92,90 @@ class DefaultEthereumProvider: EthereumProvider {
     func transfer(with token: Token,
                   amount: BigUInt,
                   to address: String) throws -> Promise<TransactionSendingResult> {
-        //        guard let toAddress = EthereumAddress(address) else {
-        //            throw EthereumProviderError.invalidAddress
-        //        }
-        //
-        //        let writeTransaction: WriteTransaction
-        //
-        //        if token.isETH {
-        //            guard let intermediateTransaction = web3.eth.sendETH(to: toAddress,
-        //                                                                 amount: amount.description,
-        //                                                                 units: .wei) else {
-        //                throw EthereumProviderError.internalError
-        //            }
-        //
-        //            writeTransaction = intermediateTransaction
-        //        } else {
-        //            guard let tokenAddress = EthereumAddress(token.address) else {
-        //                throw EthereumProviderError.invalidToken
-        //            }
-        //
-        //            let tokenContract = ERC20(web3: web3,
-        //                                      provider: web3.provider,
-        //                                      address: tokenAddress)
-        //
-        //            //            tokenContract.transfer(from: <#T##EthereumAddress#>, to: <#T##EthereumAddress#>, amount: <#T##String#>)
-        //
-        //            //            guard let intermediateTransaction = web3.eth.sendERC20tokensWithKnownDecimals(tokenAddress: erc20ContractAddress,
-        //            //                                                                                          from: ethereumAddress,
-        //            //                                                                                          to: toAddress,
-        //            //                                                                                          amount: amount) else {
-        //            //                throw EthereumProviderError.internalError
-        //            //            }
-        //
-        //            //            writeTransaction = intermediateTransaction
-        //        }
+        let transaction: WriteTransaction
+        do {
+            if token.isETH {
+                transaction = try transferEth(amount: amount,
+                                              to: address)
+            } else {
+                transaction = try transferERC20(token: token,
+                                                amount: amount,
+                                                to: address)
+            }
+            
+            return transaction.sendPromise()
+        } catch {
+            return .init(error: error)
+        }
+    }
+    
+    func transferEth(amount: BigUInt,
+                     to address: String) throws -> WriteTransaction {
+        guard let fromAddress = EthereumAddress(l1ERC20BridgeAddress),
+              let toAddress = EthereumAddress(address) else {
+            throw EthereumProviderError.invalidAddress
+        }
         
-        throw EthereumProviderError.internalError
+        guard let transaction = web3.eth.sendETH(from: fromAddress,
+                                                 to: toAddress,
+                                                 amount: amount.description,
+                                                 units: .wei) else {
+            throw EthereumProviderError.internalError
+        }
+        
+        return transaction
+    }
+    
+    func transferERC20(token: Token,
+                       amount: BigUInt,
+                       to address: String) throws -> WriteTransaction {
+        guard let fromAddress = EthereumAddress(l1ERC20BridgeAddress),
+              let toAddress = EthereumAddress(address),
+              let erc20ContractAddress = EthereumAddress(token.l1Address) else {
+            throw EthereumProviderError.invalidToken
+        }
+        
+        guard let transaction = web3.eth.sendERC20tokensWithKnownDecimals(tokenAddress: erc20ContractAddress,
+                                                                          from: fromAddress,
+                                                                          to: toAddress,
+                                                                          amount: amount) else {
+            throw EthereumProviderError.internalError
+        }
+        
+        return transaction
     }
     
     func deposit(with token: Token,
                  amount: BigUInt,
                  to userAddress: String) throws -> Promise<TransactionSendingResult> {
+        guard let userAddress = EthereumAddress(userAddress) else {
+            return .init(error: EthereumProviderError.invalidAddress)
+        }
         
-        //        {
-        //            "inputs": [
-        //                {
-        //                    "internalType": "uint256",
-        //                    "name": "_gasPrice",
-        //                    "type": "uint256"
-        //                },
-        //                {
-        //                    "internalType": "enum Operations.QueueType",
-        //                    "name": "_queueType",
-        //                    "type": "uint8"
-        //                },
-        //                {
-        //                    "internalType": "enum Operations.OpTree",
-        //                    "name": "_opTree",
-        //                    "type": "uint8"
-        //                }
-        //            ],
-        //            "name": "depositBaseCost",
-        //            "outputs": [
-        //                {
-        //                    "internalType": "uint256",
-        //                    "name": "",
-        //                    "type": "uint256"
-        //                }
-        //            ],
-        //            "stateMutability": "view",
-        //            "type": "function"
-        //        }
-        
-        // gasPrice()
-        
-        
-        
-        //        guard let userAddress = EthereumAddress(userAddress) else {
-        //            return .init(error: EthereumProviderError.invalidAddress)
-        //        }
-        //
-        //        if token.isETH {
-        //            return zkSync.depositETH(address: userAddress, value: amount)
-        //        } else {
-        //            guard let tokenAddress = EthereumAddress(token.address) else {
-        //                return .init(error: EthereumProviderError.invalidTokenAddress)
-        //            }
-        //            return zkSync.depositERC20(tokenAddress: tokenAddress, amount: amount, userAddress: userAddress)
-        //        }
-        
-        throw EthereumProviderError.internalError
+        if token.isETH {
+            guard let transaction = l1ERC20Bridge.write("deposit",
+                                                        parameters: [userAddress, EthereumAddress.default!.address, amount] as [AnyObject],
+                                                        // TODO: Verify whether `TransactionOptions` are needed.
+                                                        transactionOptions: nil) else {
+                return Promise(error: EthereumProviderError.invalidParameter)
+            }
+            
+            return transaction.sendPromise()
+        } else {
+            guard let transaction = l1ERC20Bridge.write("deposit",
+                                                        parameters: [userAddress, token.l1Address, amount] as [AnyObject],
+                                                        // TODO: Verify whether `TransactionOptions` are needed.
+                                                        transactionOptions: nil) else {
+                return Promise(error: EthereumProviderError.invalidParameter)
+            }
+            
+            return transaction.sendPromise()
+        }
     }
     
     func withdraw(with token: Token,
                   amount: BigUInt,
                   from userAddress: String) throws -> Promise<TransactionSendingResult> {
-        //        {
-        //            "inputs": [
-        //                {
-        //                    "internalType": "address",
-        //                    "name": "_token",
-        //                    "type": "address"
-        //                },
-        //                {
-        //                    "internalType": "uint256",
-        //                    "name": "_amount",
-        //                    "type": "uint256"
-        //                },
-        //                {
-        //                    "internalType": "address",
-        //                    "name": "_to",
-        //                    "type": "address"
-        //                },
-        //                {
-        //                    "internalType": "enum Operations.QueueType",
-        //                    "name": "_queueType",
-        //                    "type": "uint8"
-        //                },
-        //                {
-        //                    "internalType": "enum Operations.OpTree",
-        //                    "name": "_opTree",
-        //                    "type": "uint8"
-        //                }
-        //            ],
-        //            "name": "requestWithdraw",
-        //            "outputs": [],
-        //            "stateMutability": "payable",
-        //            "type": "function"
-        //        }
-        
-        //        guard let tokenAddress = EthereumAddress(token.address),
-        //              let userAddress = EthereumAddress(userAddress) else {
-        //            throw EthereumProviderError.invalidToken
-        //        }
-        //
-        //        guard let intermediateTransaction = contract.write("requestWithdraw",
-        //                                                           parameters: [tokenAddress, amount, userAddress] as [AnyObject],
-        //                                                           transactionOptions: nil /* ? */) else {
-        //            return Promise(error: EthereumProviderError.invalidParameter)
-        //        }
-        //
-        //        return intermediateTransaction.sendPromise()
-        
         throw EthereumProviderError.internalError
     }
     

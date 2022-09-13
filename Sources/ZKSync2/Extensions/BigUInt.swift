@@ -18,8 +18,8 @@ extension BigUInt {
 extension String {
     
     func stripHexPrefix() -> String {
-        if self.hasPrefix("0x") {
-            let indexStart = self.index(self.startIndex, offsetBy: 2)
+        if hasPrefix("0x") {
+            let indexStart = index(startIndex, offsetBy: 2)
             return String(self[indexStart...])
         }
         

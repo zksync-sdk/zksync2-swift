@@ -7,6 +7,13 @@
 
 import Foundation
 
+enum DefaultBlockParameterName: String {
+    
+    case earliest = "earliest"
+    case latest = "latest"
+    case pending = "pending"
+}
+
 enum ZkBlockParameterName: String {
     
     case committed = "commited"

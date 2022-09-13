@@ -111,4 +111,12 @@ class JsonRpc2_0ZkSync: ZKSync {
                        params: [String](),
                        completion: completion)
     }
+    
+    func chainId(_ completion: @escaping (Result<BigUInt>) -> Void) {
+        transport.send(method: "eth_chainId",
+                       params: [String](),
+                       completion: { (result: Result<String>) in
+            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
+        })
+    }
 }

@@ -50,4 +50,6 @@ protocol ZKSync {
                         completion: @escaping (Result<EthEstimateGas>) -> Void)
     
     func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void)
+    
+    func chainId(_ completion: @escaping (Result<BigUInt>) -> Void)
 }

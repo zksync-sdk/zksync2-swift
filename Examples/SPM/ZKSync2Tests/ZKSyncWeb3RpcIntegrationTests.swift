@@ -6,6 +6,9 @@
 //
 
 import XCTest
+import web3swift
+import BigInt
+import PromiseKit
 @testable import ZKSync2
 
 class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
@@ -26,7 +29,23 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetBalanceOfTokenL1() {
-        
+        do {
+            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)
+            let address = EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")
+            let block: DefaultBlockParameterName = .latest
+            
+            let expectation = expectation(description: "Expectation.")
+            _ = firstly {
+                web3.eth.getBalancePromise(address: address!, onBlock: block.rawValue)
+            }.done { result in
+                XCTAssertEqual(BigUInt(stringLiteral: "3999899999858895000000000"), result)
+                expectation.fulfill()
+            }
+            
+            wait(for: [expectation], timeout: 10.0)
+        } catch {
+            XCTFail("Failed with error: \(error)")
+        }
     }
     
     func testDeposit() {

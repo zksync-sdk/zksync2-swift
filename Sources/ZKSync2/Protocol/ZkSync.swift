@@ -20,11 +20,8 @@ protocol ZKSync {
     
     func zksMainContract(completion: @escaping (Result<MainContract>) -> Void)
     
-    func zksGetL1WithdrawalTx(_ transactionHash: String,
-                              completion: @escaping (Result<EthSendRawTransaction>) -> Void)
-    
-    func zksGetConfirmedTokens(_ from: Int, /* Integer in Java */
-                               limit: Int, /* Short in Java */
+    func zksGetConfirmedTokens(_ from: Int,
+                               limit: Int,
                                completion: @escaping (Result<[Token]>) -> Void)
     
     func zksGetTokenPrice(_ tokenAddress: String,

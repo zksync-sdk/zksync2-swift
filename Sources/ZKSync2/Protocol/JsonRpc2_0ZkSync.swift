@@ -33,13 +33,6 @@ class JsonRpc2_0ZkSync: ZKSync {
                        completion: completion)
     }
     
-    func zksGetL1WithdrawalTx(_ transactionHash: String,
-                              completion: @escaping (Result<EthSendRawTransaction>) -> Void) {
-        transport.send(method: "zks_getL1WithdrawalTx",
-                       params: [transactionHash],
-                       completion: completion)
-    }
-    
     func zksGetConfirmedTokens(_ from: Int,
                                limit: Int,
                                completion: @escaping (Result<[Token]>) -> Void) {

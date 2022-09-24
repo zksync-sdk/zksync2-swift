@@ -13,11 +13,60 @@ import PromiseKit
 
 class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
+//    private static Credentials credentials;
+
+//    private static ZkSyncTransactionReceiptProcessor processor;
+//
+//    private static ZkTransactionFeeProvider feeProvider;
+
+//    private static final String L1_NODE = "http://206.189.96.247:8545";
+//    private static final String L2_NODE = "http://206.189.96.247:3050";
+    static let l1NodeUrl = URL(string: "http://206.189.96.247:8545")!
+    static let l2NodeUrl = URL(string: "http://206.189.96.247:3050")!
+    
+//    private static final Token ETH = Token.createETH();
+    let ethToken: Token = Token.ETH
+    
+//    private static ZkSync zksync;
     var zkSync: ZKSync!
+
+    //    private static EthSigner signer;
+    var signer: EthSigner!
+    
+    //    private static String contractAddress;
+    var contractAddress: String!
+    
+    //    private static BigInteger chainId;
+    var chainId: BigUInt!
     
     override func setUpWithError() throws {
-        let url = URL(string: "http://206.189.96.247:3050")!
-        zkSync = JsonRpc2_0ZkSync(transport: HTTPTransport(url))
+//        credentials = Credentials.create(ECKeyPair.create(BigInteger.ONE));
+//
+//        signer = new PrivateKeyEthSigner(credentials, chainId.longValue());
+//
+//        processor = new ZkSyncTransactionReceiptProcessor(zksync, 200, 100);
+//
+//        feeProvider = new DefaultTransactionFeeProvider(zksync, ETH);
+
+//        contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067";
+        contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067"
+        
+        // zksync = ZkSync.build(new HttpService(L2_NODE));
+        let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)
+        zkSync = JsonRpc2_0ZkSync(web3,
+                                  transport: HTTPTransport(ZKSyncWeb3RpcIntegrationTests.l2NodeUrl))
+        
+        //        chainId = zksync.ethChainId().sendAsync().join().getChainId();
+        zkSync.chainId { result in
+            switch result {
+            case .success(let resultChainId):
+                self.chainId = resultChainId
+            case .failure(let error):
+                print("Error occured: \(error.localizedDescription)")
+            }
+        }
+        
+//        signer = PrivateKeyEthSigner("")
     }
     
     override func tearDownWithError() throws {
@@ -25,7 +74,37 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
 
     func sendTestMoney() {
+//        Web3j web3j = Web3j.build(new HttpService(L1_NODE));
+//
+//        String account = web3j.ethAccounts().sendAsync().join().getAccounts().get(0);
+//
+//        EthSendTransaction sent = web3j.ethSendTransaction(
+//                        Transaction.createEtherTransaction(account, null, Convert.toWei("1", Unit.GWEI).toBigInteger(), BigInteger.valueOf(21_000L),
+//                                credentials.getAddress(), Convert.toWei("1000000", Unit.ETHER).toBigInteger()))
+//                .sendAsync().join();
+//
+//        assertResponse(sent);
         
+        do {
+            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)
+            let account = try web3.eth.getAccounts()[0]
+            
+    //        public init(type: TransactionType? = nil, to: EthereumAddress, nonce: BigUInt = 0,
+    //                    chainID: BigUInt? = nil, value: BigUInt? = nil, data: Data,
+    //                    v: BigUInt = 1, r: BigUInt = 0, s: BigUInt = 0, parameters: EthereumParameters? = nil) {
+            
+//            let transaction = EthereumTransaction(to: account,
+//                                                  chainID: <#T##BigUInt?#>,
+//                                                  value: <#T##BigUInt?#>,
+//                                                  data: <#T##Data#>,
+//                                                  parameters: <#T##EthereumParameters?#>)
+//
+//            let transactionOptions: TransactionOptions = TransactionOptions()
+
+//            try web3.eth.sendTransaction(transaction, transactionOptions: transactionOptions)
+        } catch {
+            
+        }
     }
     
     func testGetBalanceOfTokenL1() {
@@ -48,8 +127,37 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         }
     }
     
+//    @Test
+//    public void testDeposit() throws IOException {
+//        Web3j web3j = Web3j.build(new HttpService(L1_NODE));
+//        BigInteger chainId = web3j.ethChainId().send().getChainId();
+//        TransactionManager manager = new RawTransactionManager(web3j, credentials, chainId.longValue());
+//        ContractGasProvider gasProvider = new StaticGasProvider(Convert.toWei("1", Unit.GWEI).toBigInteger(), BigInteger.valueOf(555_000L));
+//        TransactionReceipt receipt = EthereumProvider
+//                .load(zksync, web3j, manager, gasProvider).join()
+//                .deposit(ETH, Convert.toWei("100", Unit.ETHER).toBigInteger(), credentials.getAddress()).join();
+//
+//        System.out.println("!!! " + receipt);
+//    }
     func testDeposit() {
-        
+//        do {
+//            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)
+//            let chainIdExpectation = expectation(description: "Expectation.")
+//            var chainId: BigUInt!
+//            zkSync.chainId { result in
+//                switch result {
+//                case .success(let resultChainId):
+//                    chainId = resultChainId
+//                    chainIdExpectation.fulfill()
+//                case .failure(let error):
+//                    print("Error occured: \(error.localizedDescription)")
+//                }
+//            }
+//            wait(for: [chainIdExpectation], timeout: 10.0)
+//
+//        } catch {
+//            XCTFail("Failed with error: \(error)")
+//        }
     }
     
     func testGetBalanceOfNative() {
@@ -65,11 +173,27 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetTransactionReceipt() {
+        let expectation = expectation(description: "Expectation.")
+        _ = firstly {
+            zkSync.web3.eth.getTransactionReceiptPromise("0xc47004cd0ab1d9d7866cfb6d699b73ea5872938f14541661b0f0132e5b8365d1")
+        }.done { transactionReceipt in
+            print("Transaction receipt: \(transactionReceipt)")
+            expectation.fulfill()
+        }
         
+        wait(for: [expectation], timeout: 10.0)
     }
 
     func testGetTransaction() {
+        let expectation = expectation(description: "Expectation.")
+        _ = firstly {
+            zkSync.web3.eth.getTransactionDetailsPromise("0xf6b0c2b7f815befda19e895efc26805585ae2002cd7d7f9e782d2c346a108ab6")
+        }.done { transactionDetails in
+            print("Transaction details: \(transactionDetails)")
+            expectation.fulfill()
+        }
         
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testTransferNativeToSelf() {
@@ -245,8 +369,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
                                     l2LogPosition: nil,
                                     completion: { result in
             switch result {
-            case .success(let address):
-                print(address)
+            case .success(let messageProof):
+                print(messageProof)
             case .failure(let error):
                 XCTFail("Failed with error: \(error)")
             }

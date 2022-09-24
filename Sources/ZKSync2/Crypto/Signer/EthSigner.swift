@@ -18,27 +18,19 @@ protocol EthSigner {
     var domain: Eip712Domain { get }
     
     func signTypedData<S: Structurable>(_ domain: Eip712Domain,
-                                        typedData: S,
-                                        completion: @escaping (Swift.Result<String, Error>) -> Void)
+                                        typedData: S) -> String
     
     func verifyTypedData<S: Structurable>(_ domain: Eip712Domain,
                                           typedData: S,
-                                          signature: String,
-                                          completion: @escaping (Swift.Result<Bool, Error>) -> Void)
+                                          signature: String) -> Bool
     
-    func signMessage(_ message: Data,
-                     completion: @escaping (Swift.Result<String, Error>) -> Void)
+    func signMessage(_ message: Data) -> String
     
-    func signMessage(_ message: Data,
-                     addPrefix: Bool,
-                     completion: @escaping (Swift.Result<String, Error>) -> Void)
+    func signMessage(_ message: Data, addPrefix: Bool) -> String
+    
+    func verifySignature(_ signature: String, message: Data) -> Bool
     
     func verifySignature(_ signature: String,
                          message: Data,
-                         completion: @escaping (Swift.Result<Bool, Error>) -> Void)
-    
-    func verifySignature(_ signature: String,
-                         message: Data,
-                         prefixed: Bool,
-                         completion: @escaping (Swift.Result<Bool, Error>) -> Void)
+                         prefixed: Bool) -> Bool
 }

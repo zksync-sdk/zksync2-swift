@@ -6,120 +6,127 @@
 //
 
 import Foundation
-
-//@AllArgsConstructor
-//public class PrivateKeyEthSigner implements EthSigner {
-//
-//    private Credentials credentials;
-//    private Long chainId;
-//
-//    public static PrivateKeyEthSigner fromMnemonic(String mnemonic, long chainId) {
-//        Credentials credentials = generateCredentialsFromMnemonic(mnemonic, 0);
-//        return new PrivateKeyEthSigner(credentials, chainId);
-//    }
-//
-//    public static PrivateKeyEthSigner fromMnemonic(String mnemonic, int accountIndex, long chainId) {
-//        Credentials credentials = generateCredentialsFromMnemonic(mnemonic, accountIndex);
-//        return new PrivateKeyEthSigner(credentials, chainId);
-//    }
-//
-//    @Override
-//    public String getAddress() {
-//        return credentials.getAddress();
-//    }
-//
-//    @Override
-//    public CompletableFuture<Eip712Domain> getDomain() {
-//        Eip712Domain domain = Eip712Domain.defaultDomain(chainId);
-//        return CompletableFuture.completedFuture(domain);
-//    }
-//
-//    @Override
-//    public <S extends Structurable> CompletableFuture<String> signTypedData(Eip712Domain domain, S typedData) {
-//        return this.signMessage(Eip712Encoder.typedDataToSignedBytes(domain, typedData), false);
-//    }
-//
-//    @Override
-//    public <S extends Structurable> CompletableFuture<Boolean> verifyTypedData(Eip712Domain domain, S typedData,
-//            String signature) {
-//        return this.verifySignature(signature, Eip712Encoder.typedDataToSignedBytes(domain, typedData), false);
-//    }
-//
-//    @Override
-//    public CompletableFuture<String> signMessage(byte[] message) {
-//        return this.signMessage(message, true);
-//    }
-//
-//    @Override
-//    public CompletableFuture<String> signMessage(byte[] message, boolean addPrefix) {
-//        Sign.SignatureData sig = addPrefix ? Sign.signPrefixedMessage(message, credentials.getEcKeyPair())
-//                : Sign.signMessage(message, credentials.getEcKeyPair(), false);
-//
-//        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-//
-//        try {
-//            output.write(sig.getR());
-//            output.write(sig.getS());
-//            output.write(sig.getV()[0] - 27);
-//        } catch (IOException e) {
-//            throw new IllegalStateException("Error when creating ETH signature", e);
-//        }
-//
-//        final String signature = Numeric.toHexString(output.toByteArray());
-//
-//        return CompletableFuture.completedFuture(signature);
-//    }
-//
-//    @Override
-//    public CompletableFuture<Boolean> verifySignature(String signature, byte[] message) {
-//        return this.verifySignature(signature, message, true);
-//    }
-//
-//    @Override
-//    public CompletableFuture<Boolean> verifySignature(String signature, byte[] message, boolean prefixed) {
-//        byte[] messageHash = prefixed ? EthSigner.getEthereumMessageHash(message) : message;
-//
-//        String address = ecrecover(Numeric.hexStringToByteArray(signature), messageHash);
-//
-//        return CompletableFuture.completedFuture(address.equalsIgnoreCase(this.getAddress()));
-//    }
-//
-//    private static String ecrecover(byte[] signature, byte[] hash) {
-//        ECDSASignature sig = new ECDSASignature(
-//                Numeric.toBigInt(Arrays.copyOfRange(signature, 0, 32)),
-//                Numeric.toBigInt(Arrays.copyOfRange(signature, 32, 64)));
-//
-//        byte v = signature[64];
-//
-//        int recId;
-//        if (v >= 3) {
-//            recId = v - 27;
-//        } else {
-//            recId = v;
-//        }
-//
-//        BigInteger recovered = Sign.recoverFromSignature(recId, sig, hash);
-//        return "0x" + Keys.getAddress(recovered);
-//    }
-//
-//    private static Credentials generateCredentialsFromMnemonic(String mnemonic, int accountIndex) {
-//        // m/44'/60'/0'/0 derivation path
-//        int[] derivationPath = { 44 | Bip32ECKeyPair.HARDENED_BIT, 60 | Bip32ECKeyPair.HARDENED_BIT,
-//                0 | Bip32ECKeyPair.HARDENED_BIT, 0, accountIndex };
-//
-//        // Generate a BIP32 master keypair from the mnemonic phrase
-//        Bip32ECKeyPair masterKeypair = Bip32ECKeyPair.generateKeyPair(
-//                MnemonicUtils.generateSeed(mnemonic, ""));
-//
-//        // Derive the keypair using the derivation path
-//        Bip32ECKeyPair derivedKeyPair = Bip32ECKeyPair.deriveKeyPair(masterKeypair, derivationPath);
-//
-//        // Load the wallet for the derived keypair
-//        return Credentials.create(derivedKeyPair);
-//    }
-//}
+import web3swift
 
 // ZKSync2 (Java): PrivateKeyEthSigner.java
 class PrivateKeyEthSigner: EthSigner {
     
+    var address: String {
+        return ethereumAddress.address.lowercased()
+    }
+    
+    var domain: Eip712Domain = .init(.unknown)
+    
+    let keystore: EthereumKeystoreV3
+    
+    var ethereumAddress: EthereumAddress {
+        return keystore.addresses!.first!
+    }
+    
+    init(_ privateKey: String) {
+        let privatKeyData = Data(hex: privateKey)
+        guard let keystore = try? EthereumKeystoreV3(privateKey: privatKeyData) else {
+            preconditionFailure("Keystore is not valid.")
+        }
+        
+        self.keystore = keystore
+    }
+    
+    // TODO: Implement.
+    func signTypedData<S>(_ domain: Eip712Domain,
+                          typedData: S) -> String where S : Structurable {
+        return ""
+    }
+    
+    // TODO: Implement.
+    func verifyTypedData<S>(_ domain: Eip712Domain,
+                            typedData: S,
+                            signature: String) -> Bool where S : Structurable {
+        return false
+    }
+    
+    func signMessage(_ message: Data) -> String {
+        return signMessage(message, addPrefix: true)
+    }
+    
+    // TODO: Implement signing with no prefix.
+    func signMessage(_ message: Data, addPrefix: Bool) -> String {
+        let messageToSign: Data
+        let needToHash: Bool
+        if addPrefix {
+            let prefix = "\u{19}Ethereum Signed Message:\n" + String(message.count)
+            let data = prefix.data(using: .ascii)! + message
+            
+            messageToSign = data
+            needToHash = true
+        } else {
+            messageToSign = message
+            needToHash = false
+        }
+        
+        guard let signatureData = try? signMessage(messageToSign,
+                                                   keystore: keystore,
+                                                   account: ethereumAddress,
+                                                   needToHash: needToHash) else {
+            preconditionFailure("Failed to sign.")
+        }
+        
+        return signatureData.toHexString().addHexPrefix()
+    }
+    
+    func verifySignature(_ signature: String,
+                         message: Data) -> Bool {
+        return verifySignature(signature,
+                               message: message,
+                               prefixed: true)
+    }
+    
+    // TODO: Implement verification with no prefix.
+    func verifySignature(_ signature: String,
+                         message: Data,
+                         prefixed: Bool) -> Bool {
+        let messageHash: Data
+        if prefixed {
+            guard let personalMessageHash = Web3.Utils.hashPersonalMessage(message) else {
+                fatalError("Unable to hash message.")
+            }
+            
+            messageHash = personalMessageHash
+        } else {
+            messageHash = message
+        }
+        
+        guard let signatureData = Data.fromHex(signature) else {
+            fatalError("Invalid signature.")
+        }
+        
+        let address = Web3.Utils.hashECRecover(hash: messageHash, signature: signatureData)
+        
+#if DEBUG
+        print("EthereumAddress: \(ethereumAddress)")
+        print("Address: \(String(describing: address))")
+#endif
+        
+        return ethereumAddress == address
+    }
+    
+    func signMessage(_ message: Data,
+                     keystore: EthereumKeystoreV3,
+                     account: EthereumAddress,
+                     password: String = "web3swift",
+                     needToHash: Bool = true,
+                     useExtraEntropy: Bool = false) throws -> Data? {
+        var privateKey = try keystore.UNSAFE_getPrivateKeyData(password: password, account: account)
+        defer { Data.zero(&privateKey) }
+        
+#if DEBUG
+        print("Message hash: \(message.sha3(.keccak256).toHexString().addHexPrefix())")
+#endif
+        
+        let (compressedSignature, _) = SECP256K1.signForRecovery(hash: needToHash ? message.sha3(.keccak256) : message,
+                                                                 privateKey: privateKey,
+                                                                 useExtraEntropy: useExtraEntropy)
+        
+        return compressedSignature
+    }
 }

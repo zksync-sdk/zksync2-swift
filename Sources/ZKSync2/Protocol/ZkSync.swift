@@ -7,10 +7,13 @@
 
 import Foundation
 import BigInt
+import web3swift
 
 typealias Result<T> = Swift.Result<T, Error>
 
 protocol ZKSync {
+    
+    var web3: web3 { get set }
     
     func zksEstimateFee(_ transaction: Transaction,
                         completion: @escaping (Result<Fee>) -> Void)

@@ -62,6 +62,7 @@ class Eip712EncoderTests: XCTestCase {
         let domainVersionHash = EIP712Encoder.encodeValue(domain.version).toHexString().addHexPrefix()
         XCTAssertEqual(domainVersionHash, "0xc89efdaa54c0f20c7adf612882df0950f5a951637e0307cdcb4c672f298b8bc6")
         
+        // FIXME: chainId hash is calculated incorrectly.
         let domainChainIdHash = EIP712Encoder.encodeValue(domain.chainId).toHexString().addHexPrefix()
         XCTAssertEqual(domainChainIdHash, "0x0000000000000000000000000000000000000000000000000000000000000001")
         

@@ -32,17 +32,18 @@ class PrivateKeyEthSigner: EthSigner {
         self.keystore = keystore
     }
     
-    // TODO: Implement.
     func signTypedData<S>(_ domain: EIP712Domain,
                           typedData: S) -> String where S : Structurable {
-        return ""
+        return signMessage(EIP712Encoder.typedDataToSignedBytes(domain, typedData: typedData),
+                           addPrefix: false)
     }
     
-    // TODO: Implement.
     func verifyTypedData<S>(_ domain: EIP712Domain,
                             typedData: S,
                             signature: String) -> Bool where S : Structurable {
-        return false
+        return verifySignature(signature,
+                               message: EIP712Encoder.typedDataToSignedBytes(domain, typedData: typedData),
+                               prefixed: false)
     }
     
     func signMessage(_ message: Data) -> String {

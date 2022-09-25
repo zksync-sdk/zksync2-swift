@@ -14,16 +14,6 @@
 		8A6DB49F287B988000B926C0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		8A9C67E62891114F00C28B2B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8A6DB48C287B987E00B926C0 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 8A6DB493287B987E00B926C0;
-			remoteInfo = ZKSync2Example;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		8A6DB494287B987E00B926C0 /* ZkSync2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZkSync2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8A6DB497287B987E00B926C0 /* ZkSync2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSync2ExampleApp.swift; sourceTree = "<group>"; };
@@ -32,7 +22,6 @@
 		8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8A6DB4C2287BA4C700B926C0 /* zksync2-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "zksync2-swift"; path = ../..; sourceTree = "<group>"; };
 		8A6DB4C3287BACF500B926C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8A9C67E22891114F00C28B2B /* ZkSync2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZkSync2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,13 +30,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A69AE8128E02095003C8A2D /* ZkSync2 in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8A9C67DF2891114F00C28B2B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -68,7 +50,6 @@
 			isa = PBXGroup;
 			children = (
 				8A6DB494287B987E00B926C0 /* ZkSync2Example.app */,
-				8A9C67E22891114F00C28B2B /* ZkSync2Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -131,24 +112,6 @@
 			productReference = 8A6DB494287B987E00B926C0 /* ZkSync2Example.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8A9C67E12891114F00C28B2B /* ZkSync2Tests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8A9C67EA2891114F00C28B2B /* Build configuration list for PBXNativeTarget "ZkSync2Tests" */;
-			buildPhases = (
-				8A9C67DE2891114F00C28B2B /* Sources */,
-				8A9C67DF2891114F00C28B2B /* Frameworks */,
-				8A9C67E02891114F00C28B2B /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				8A9C67E72891114F00C28B2B /* PBXTargetDependency */,
-			);
-			name = ZkSync2Tests;
-			productName = ZKSync2Tests;
-			productReference = 8A9C67E22891114F00C28B2B /* ZkSync2Tests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -162,13 +125,9 @@
 					8A6DB493287B987E00B926C0 = {
 						CreatedOnToolsVersion = 13.4.1;
 					};
-					8A9C67E12891114F00C28B2B = {
-						CreatedOnToolsVersion = 13.4.1;
-						TestTargetID = 8A6DB493287B987E00B926C0;
-					};
 				};
 			};
-			buildConfigurationList = 8A6DB48F287B987E00B926C0 /* Build configuration list for PBXProject "ZKSync2Example" */;
+			buildConfigurationList = 8A6DB48F287B987E00B926C0 /* Build configuration list for PBXProject "ZkSync2Example" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -182,7 +141,6 @@
 			projectRoot = "";
 			targets = (
 				8A6DB493287B987E00B926C0 /* ZkSync2Example */,
-				8A9C67E12891114F00C28B2B /* ZkSync2Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -194,13 +152,6 @@
 			files = (
 				8A6DB49F287B988000B926C0 /* Preview Assets.xcassets in Resources */,
 				8A6DB49C287B988000B926C0 /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		8A9C67E02891114F00C28B2B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,22 +167,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8A9C67DE2891114F00C28B2B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		8A9C67E72891114F00C28B2B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 8A6DB493287B987E00B926C0 /* ZkSync2Example */;
-			targetProxy = 8A9C67E62891114F00C28B2B /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		8A6DB4A0287B988000B926C0 /* Debug */ = {
@@ -370,7 +306,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.matter-labs.ZKSync2Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.matter-labs.ZkSync2Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -400,7 +336,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.matter-labs.ZKSync2Example";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.matter-labs.ZkSync2Example";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -408,46 +344,10 @@
 			};
 			name = Release;
 		};
-		8A9C67E82891114F00C28B2B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B2TXDJTSQ4;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.matter-labs.ZKSync2Tests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZKSync2Example.app/ZKSync2Example";
-			};
-			name = Debug;
-		};
-		8A9C67E92891114F00C28B2B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B2TXDJTSQ4;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.matter-labs.ZKSync2Tests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ZKSync2Example.app/ZKSync2Example";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8A6DB48F287B987E00B926C0 /* Build configuration list for PBXProject "ZKSync2Example" */ = {
+		8A6DB48F287B987E00B926C0 /* Build configuration list for PBXProject "ZkSync2Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8A6DB4A0287B988000B926C0 /* Debug */,
@@ -461,15 +361,6 @@
 			buildConfigurations = (
 				8A6DB4A3287B988000B926C0 /* Debug */,
 				8A6DB4A4287B988000B926C0 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8A9C67EA2891114F00C28B2B /* Build configuration list for PBXNativeTarget "ZkSync2Tests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8A9C67E82891114F00C28B2B /* Debug */,
-				8A9C67E92891114F00C28B2B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8A6DB4B2287B98D600B926C0 /* ZKSync2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B1287B98D600B926C0 /* ZKSync2ExampleApp.swift */; };
+		8A6DB4B2287B98D600B926C0 /* ZkSync2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B1287B98D600B926C0 /* ZKSync2ExampleApp.swift */; };
 		8A6DB4B4287B98D600B926C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B3287B98D600B926C0 /* ContentView.swift */; };
 		8A6DB4B6287B98D700B926C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B5287B98D700B926C0 /* Assets.xcassets */; };
 		8A6DB4B9287B98D700B926C0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B8287B98D700B926C0 /* Preview Assets.xcassets */; };

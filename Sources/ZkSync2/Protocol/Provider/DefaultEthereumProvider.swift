@@ -37,8 +37,8 @@ class DefaultEthereumProvider: EthereumProvider {
     
     var l1ERC20BridgeAddress: String {
         // FIXME: `web3contract.contract` was modified.
-        return l1ERC20Bridge.contract.address!.address
-//        return ""
+//        return l1ERC20Bridge.contract.address!.address
+        return ""
     }
     
     lazy var l1EthBridge: web3.web3contract = {
@@ -49,8 +49,8 @@ class DefaultEthereumProvider: EthereumProvider {
     
     var l1EthBridgeAddress: String {
         // FIXME: `web3contract.contract` was modified.
-        return l1EthBridge.contract.address!.address
-//        return ""
+//        return l1EthBridge.contract.address!.address
+        return ""
     }
     
     lazy var contract: web3.web3contract = {

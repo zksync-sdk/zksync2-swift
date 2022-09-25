@@ -58,7 +58,7 @@ class HTTPTransport: Transport {
         .responseDecodable(queue: queue, decoder: JRPCDecoder()) { [weak self] (response: DataResponse<R, AFError>) in
             guard let self = self else { return }
             
-            // Can be used for debugging purpose.
+#if DEBUG
             switch response.result {
             case .success(let result):
                 completion(.success(result))
@@ -67,8 +67,9 @@ class HTTPTransport: Transport {
                 completion(.failure(error))
                 break
             }
-            
-            // completion(response.result.mapError({ self.processAFError($0) }))
+#else
+            completion(response.result.mapError({ self.processAFError($0) }))
+#endif
         }
     }
     

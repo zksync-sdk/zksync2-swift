@@ -15,12 +15,12 @@ protocol EthSigner {
     var address: String { get }
     
     // TODO: Consider using `EIP712Domain`.
-    var domain: Eip712Domain { get }
+    var domain: EIP712Domain { get }
     
-    func signTypedData<S: Structurable>(_ domain: Eip712Domain,
+    func signTypedData<S: Structurable>(_ domain: EIP712Domain,
                                         typedData: S) -> String
     
-    func verifyTypedData<S: Structurable>(_ domain: Eip712Domain,
+    func verifyTypedData<S: Structurable>(_ domain: EIP712Domain,
                                           typedData: S,
                                           signature: String) -> Bool
     

@@ -14,15 +14,3 @@ extension BigUInt {
         return BigUInt(2)
     }
 }
-
-extension String {
-    
-    func stripHexPrefix() -> String {
-        if hasPrefix("0x") {
-            let indexStart = index(startIndex, offsetBy: 2)
-            return String(self[indexStart...])
-        }
-        
-        return self
-    }
-}

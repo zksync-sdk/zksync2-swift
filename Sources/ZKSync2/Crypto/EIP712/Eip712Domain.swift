@@ -9,90 +9,60 @@ import Foundation
 import BigInt
 import web3swift
 
-//@Data
-//@AllArgsConstructor
-//public class Eip712Domain implements Structurable {
-//
-//    public static final String NAME = "zkSync";
-//    public static final String VERSION = "2";
-//
-//    public static Eip712Domain defaultDomain(ZkSyncNetwork chainId) {
-//        return new Eip712Domain(new Utf8String(NAME), new Utf8String(VERSION), new Uint256(chainId.getChainId()), Address.DEFAULT);
-//    }
-//
-//    public static Eip712Domain defaultDomain(Long chainId) {
-//        return new Eip712Domain(new Utf8String(NAME), new Utf8String(VERSION), new Uint256(chainId), Address.DEFAULT);
-//    }
-//
-//    public Eip712Domain(String name, String version, ZkSyncNetwork chainId, String address) {
-//        this(new Utf8String(name), new Utf8String(version), new Uint256(chainId.getChainId()), new Address(address));
-//    }
-//
-//    public Eip712Domain(String name, String version, Long chainId, String address) {
-//        this(new Utf8String(name), new Utf8String(version), new Uint256(chainId), new Address(address));
-//    }
-//
-//    private Utf8String name;
-//
-//    private Utf8String version;
-//
-//    private Uint256 chainId;
-//
-//    private Address verifyingContract;
-//
-//    @Override
-//    public String getType() {
-//        return "EIP712Domain";
-//    }
-//
-//    @Override
-//    public List<Pair<String, Type<?>>> eip712types() {
-//        return new ArrayList<Pair<String, Type<?>>>() {{
-//            add(Pair.of("name", name));
-//            add(Pair.of("version", version));
-//            add(Pair.of("chainId", chainId));
-//            add(Pair.of("verifyingContract", verifyingContract));
-//        }};
-//    }
-//}
-
 // ZKSync2 (Java): Eip712Domain.java
-class Eip712Domain {
+class EIP712Domain: Structurable {
     
-    // public static final String NAME = "zkSync";
     static let name = "zkSync"
     
-    // public static final String VERSION = "2";
     static let version = "2"
     
-    // private Utf8String name;
     let name: String
     
-    // private Utf8String version;
     let version: String
     
-    // private Uint256 chainId;
-    let chainId: Int
+    let chainId: EIP712.UInt256
     
-    // private Address verifyingContract;
-    let verifyingContract: EthereumAddress
+    var verifyingContract: EIP712.Address? = nil
     
-    //    public static Eip712Domain defaultDomain(ZkSyncNetwork chainId) {
-    //        return new Eip712Domain(new Utf8String(NAME), new Utf8String(VERSION), new Uint256(chainId.getChainId()), Address.DEFAULT);
-    //    }
     init(_ chainId: ZkSyncNetwork) {
-        self.name = Eip712Domain.name
-        self.version = Eip712Domain.version
-        self.chainId = chainId.rawValue
-        self.verifyingContract = EthereumAddress.default!
+        self.name = EIP712Domain.name
+        self.version = EIP712Domain.version
+        self.chainId = EIP712.UInt256(chainId.rawValue)
     }
     
-    //    public static Eip712Domain defaultDomain(Long chainId) {
-    //        return new Eip712Domain(new Utf8String(NAME), new Utf8String(VERSION), new Uint256(chainId), Address.DEFAULT);
-    //    }
-}
-
-extension EthereumAddress {
+    init(_ chainId: EIP712.UInt256) {
+        self.name = EIP712Domain.name
+        self.version = EIP712Domain.version
+        self.chainId = chainId
+    }
     
-    static let `default` = EthereumAddress("")
+    init(_ name: String, version: String, chainId: EIP712.UInt256) {
+        self.name = name
+        self.version = version
+        self.chainId = chainId
+    }
+    
+    init(_ name: String, version: String, chainId: ZkSyncNetwork, address: String) {
+        self.name = name
+        self.version = version
+        self.chainId = EIP712.UInt256(chainId.rawValue)
+        
+        guard let ethereumAddress = EthereumAddress(address) else {
+            fatalError("Invalid address.")
+        }
+        
+        self.verifyingContract = ethereumAddress
+    }
+    
+    init(_ name: String, version: String, chainId: EIP712.UInt256, address: String) {
+        self.name = name
+        self.version = version
+        self.chainId = chainId
+        
+        guard let ethereumAddress = EthereumAddress(address) else {
+            fatalError("Invalid address.")
+        }
+        
+        self.verifyingContract = ethereumAddress
+    }
 }

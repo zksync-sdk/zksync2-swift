@@ -15,23 +15,8 @@ struct Person: Structurable {
     
     var wallet: EthereumAddress
     
-    var type: String {
-        "Person"
-    }
-    
     init(name: String, wallet: String) {
         self.name = name
         self.wallet = EthereumAddress(wallet)!
-    }
-
-    func eip712types() -> KeyValuePairs<String, Any?> {
-        return [
-            "name": name,
-            "wallet": wallet
-        ]
-    }
-    
-    func intoEip712Struct() -> Eip712Struct {
-        return Eip712Struct()
     }
 }

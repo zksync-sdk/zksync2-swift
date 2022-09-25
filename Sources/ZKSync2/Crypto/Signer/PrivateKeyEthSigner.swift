@@ -15,7 +15,7 @@ class PrivateKeyEthSigner: EthSigner {
         return ethereumAddress.address.lowercased()
     }
     
-    var domain: Eip712Domain = .init(.unknown)
+    var domain: EIP712Domain = .init(.unknown)
     
     let keystore: EthereumKeystoreV3
     
@@ -33,13 +33,13 @@ class PrivateKeyEthSigner: EthSigner {
     }
     
     // TODO: Implement.
-    func signTypedData<S>(_ domain: Eip712Domain,
+    func signTypedData<S>(_ domain: EIP712Domain,
                           typedData: S) -> String where S : Structurable {
         return ""
     }
     
     // TODO: Implement.
-    func verifyTypedData<S>(_ domain: Eip712Domain,
+    func verifyTypedData<S>(_ domain: EIP712Domain,
                             typedData: S,
                             signature: String) -> Bool where S : Structurable {
         return false

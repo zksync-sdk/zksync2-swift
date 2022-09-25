@@ -6,33 +6,28 @@
 //
 
 import Foundation
+import web3swift
 @testable import ZKSync2
 
 struct Mail: Structurable {
-    
-    var type: String {
-        "Mail"
-    }
     
     var from: Person
     var to: Person
     var contents: String
     
+    init() {
+        self.from = Person(name: "Cow",
+                           wallet: "0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826")
+        
+        self.to = Person(name: "Bob",
+                         wallet: "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB")
+        
+        self.contents = "Hello, Bob!"
+    }
+    
     init(from: Person, to: Person, contents: String) {
         self.from = from
         self.to = to
         self.contents = contents
-    }
-    
-    func eip712types() -> KeyValuePairs<String, Any?> {
-        return [
-            "from": from,
-            "to": to,
-            "contents": contents
-        ]
-    }
-    
-    func intoEip712Struct() -> Eip712Struct {
-        return Eip712Struct()
     }
 }

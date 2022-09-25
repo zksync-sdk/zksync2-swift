@@ -1,6 +1,6 @@
 //
 //  ContentView.swift
-//  ZKSync2Example
+//  ZkSync2Example
 //
 //  Created by Maxim Makhun on 7/10/22.
 //

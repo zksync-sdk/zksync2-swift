@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8A6DB498287B987E00B926C0 /* ZKSync2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB497287B987E00B926C0 /* ZKSync2ExampleApp.swift */; };
+		8A69AE8128E02095003C8A2D /* ZkSync2 in Frameworks */ = {isa = PBXBuildFile; productRef = 8A69AE8028E02095003C8A2D /* ZkSync2 */; };
+		8A6DB498287B987E00B926C0 /* ZkSync2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB497287B987E00B926C0 /* ZkSync2ExampleApp.swift */; };
 		8A6DB49A287B987E00B926C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB499287B987E00B926C0 /* ContentView.swift */; };
 		8A6DB49C287B988000B926C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB49B287B988000B926C0 /* Assets.xcassets */; };
 		8A6DB49F287B988000B926C0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */; };
-		8A6DB4C8287BAD7900B926C0 /* ZKSync2 in Frameworks */ = {isa = PBXBuildFile; productRef = 8A6DB4C7287BAD7900B926C0 /* ZKSync2 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,14 +25,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8A6DB494287B987E00B926C0 /* ZKSync2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZKSync2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A6DB497287B987E00B926C0 /* ZKSync2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZKSync2ExampleApp.swift; sourceTree = "<group>"; };
+		8A6DB494287B987E00B926C0 /* ZkSync2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZkSync2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A6DB497287B987E00B926C0 /* ZkSync2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSync2ExampleApp.swift; sourceTree = "<group>"; };
 		8A6DB499287B987E00B926C0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8A6DB49B287B988000B926C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8A6DB49E287B988000B926C0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		8A6DB4C2287BA4C700B926C0 /* zksync2-swift */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = "zksync2-swift"; path = ../..; sourceTree = "<group>"; };
 		8A6DB4C3287BACF500B926C0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8A9C67E22891114F00C28B2B /* ZKSync2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZKSync2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8A9C67E22891114F00C28B2B /* ZkSync2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZkSync2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A6DB4C8287BAD7900B926C0 /* ZKSync2 in Frameworks */,
+				8A69AE8128E02095003C8A2D /* ZkSync2 in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,8 +67,8 @@
 		8A6DB495287B987E00B926C0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8A6DB494287B987E00B926C0 /* ZKSync2Example.app */,
-				8A9C67E22891114F00C28B2B /* ZKSync2Tests.xctest */,
+				8A6DB494287B987E00B926C0 /* ZkSync2Example.app */,
+				8A9C67E22891114F00C28B2B /* ZkSync2Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -77,7 +77,7 @@
 			isa = PBXGroup;
 			children = (
 				8A6DB4C3287BACF500B926C0 /* Info.plist */,
-				8A6DB497287B987E00B926C0 /* ZKSync2ExampleApp.swift */,
+				8A6DB497287B987E00B926C0 /* ZkSync2ExampleApp.swift */,
 				8A6DB499287B987E00B926C0 /* ContentView.swift */,
 				8A6DB49B287B988000B926C0 /* Assets.xcassets */,
 				8A6DB49D287B988000B926C0 /* Preview Content */,
@@ -111,9 +111,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8A6DB493287B987E00B926C0 /* ZKSync2Example */ = {
+		8A6DB493287B987E00B926C0 /* ZkSync2Example */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8A6DB4A2287B988000B926C0 /* Build configuration list for PBXNativeTarget "ZKSync2Example" */;
+			buildConfigurationList = 8A6DB4A2287B988000B926C0 /* Build configuration list for PBXNativeTarget "ZkSync2Example" */;
 			buildPhases = (
 				8A6DB490287B987E00B926C0 /* Sources */,
 				8A6DB491287B987E00B926C0 /* Frameworks */,
@@ -123,17 +123,17 @@
 			);
 			dependencies = (
 			);
-			name = ZKSync2Example;
+			name = ZkSync2Example;
 			packageProductDependencies = (
-				8A6DB4C7287BAD7900B926C0 /* ZKSync2 */,
+				8A69AE8028E02095003C8A2D /* ZkSync2 */,
 			);
 			productName = ZKSync2Example;
-			productReference = 8A6DB494287B987E00B926C0 /* ZKSync2Example.app */;
+			productReference = 8A6DB494287B987E00B926C0 /* ZkSync2Example.app */;
 			productType = "com.apple.product-type.application";
 		};
-		8A9C67E12891114F00C28B2B /* ZKSync2Tests */ = {
+		8A9C67E12891114F00C28B2B /* ZkSync2Tests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8A9C67EA2891114F00C28B2B /* Build configuration list for PBXNativeTarget "ZKSync2Tests" */;
+			buildConfigurationList = 8A9C67EA2891114F00C28B2B /* Build configuration list for PBXNativeTarget "ZkSync2Tests" */;
 			buildPhases = (
 				8A9C67DE2891114F00C28B2B /* Sources */,
 				8A9C67DF2891114F00C28B2B /* Frameworks */,
@@ -144,9 +144,9 @@
 			dependencies = (
 				8A9C67E72891114F00C28B2B /* PBXTargetDependency */,
 			);
-			name = ZKSync2Tests;
+			name = ZkSync2Tests;
 			productName = ZKSync2Tests;
-			productReference = 8A9C67E22891114F00C28B2B /* ZKSync2Tests.xctest */;
+			productReference = 8A9C67E22891114F00C28B2B /* ZkSync2Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -181,8 +181,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8A6DB493287B987E00B926C0 /* ZKSync2Example */,
-				8A9C67E12891114F00C28B2B /* ZKSync2Tests */,
+				8A6DB493287B987E00B926C0 /* ZkSync2Example */,
+				8A9C67E12891114F00C28B2B /* ZkSync2Tests */,
 			);
 		};
 /* End PBXProject section */
@@ -212,7 +212,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A6DB49A287B987E00B926C0 /* ContentView.swift in Sources */,
-				8A6DB498287B987E00B926C0 /* ZKSync2ExampleApp.swift in Sources */,
+				8A6DB498287B987E00B926C0 /* ZkSync2ExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,7 +228,7 @@
 /* Begin PBXTargetDependency section */
 		8A9C67E72891114F00C28B2B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 8A6DB493287B987E00B926C0 /* ZKSync2Example */;
+			target = 8A6DB493287B987E00B926C0 /* ZkSync2Example */;
 			targetProxy = 8A9C67E62891114F00C28B2B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -456,7 +456,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8A6DB4A2287B988000B926C0 /* Build configuration list for PBXNativeTarget "ZKSync2Example" */ = {
+		8A6DB4A2287B988000B926C0 /* Build configuration list for PBXNativeTarget "ZkSync2Example" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8A6DB4A3287B988000B926C0 /* Debug */,
@@ -465,7 +465,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8A9C67EA2891114F00C28B2B /* Build configuration list for PBXNativeTarget "ZKSync2Tests" */ = {
+		8A9C67EA2891114F00C28B2B /* Build configuration list for PBXNativeTarget "ZkSync2Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				8A9C67E82891114F00C28B2B /* Debug */,
@@ -477,9 +477,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		8A6DB4C7287BAD7900B926C0 /* ZKSync2 */ = {
+		8A69AE8028E02095003C8A2D /* ZkSync2 */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = ZKSync2;
+			productName = ZkSync2;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

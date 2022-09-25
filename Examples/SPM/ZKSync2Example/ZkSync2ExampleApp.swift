@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ZkSync2
 
 @main
 struct ZkSync2ExampleApp: App {

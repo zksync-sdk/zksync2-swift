@@ -4,14 +4,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "ZKSync2",
+    name: "ZkSync2",
     platforms: [
         .iOS(.v13)
     ],
     products: [
         .library(
-            name: "ZKSync2",
-            targets: ["ZKSync2"]),
+            name: "ZkSync2",
+            targets: ["ZkSync2"]),
     ],
     dependencies: [
         .package(
@@ -25,13 +25,13 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "ZKSync2",
+            name: "ZkSync2",
             dependencies: [
                 .product(name: "web3swift", package: "Web3swift"),
                 "Alamofire"
             ]),
         .testTarget(
-            name: "ZKSync2Tests",
-            dependencies: ["ZKSync2"]),
+            name: "ZkSync2Tests",
+            dependencies: ["ZkSync2"]),
     ]
 )

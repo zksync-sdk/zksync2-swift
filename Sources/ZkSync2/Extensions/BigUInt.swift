@@ -10,6 +10,10 @@ import BigInt
 
 extension BigUInt {
     
+    static var one: BigUInt {
+        return BigUInt(1)
+    }
+    
     static var two: BigUInt {
         return BigUInt(2)
     }

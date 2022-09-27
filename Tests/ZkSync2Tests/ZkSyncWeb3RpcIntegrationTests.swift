@@ -13,50 +13,25 @@ import PromiseKit
 
 class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
-//    private static Credentials credentials;
-
-//    private static ZkSyncTransactionReceiptProcessor processor;
-//
-//    private static ZkTransactionFeeProvider feeProvider;
-
-//    private static final String L1_NODE = "http://206.189.96.247:8545";
-//    private static final String L2_NODE = "http://206.189.96.247:3050";
-    static let l1NodeUrl = URL(string: "http://206.189.96.247:8545")!
-    static let l2NodeUrl = URL(string: "http://206.189.96.247:3050")!
+    static let L1NodeUrl = URL(string: "http://206.189.96.247:8545")!
+    static let L2NodeUrl = URL(string: "http://206.189.96.247:3050")!
     
-//    private static final Token ETH = Token.createETH();
+//    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/25be7ab42c414680a5f89297f8a11a4d")!
+//    static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
+    
     let ethToken: Token = Token.ETH
-    
-//    private static ZkSync zksync;
-    var zkSync: ZkSync!
 
-    //    private static EthSigner signer;
-    var signer: EthSigner!
+    var zkSync: ZkSync!
     
-    //    private static String contractAddress;
-    var contractAddress: String!
-    
-    //    private static BigInteger chainId;
     var chainId: BigUInt!
     
+    let contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067"
+    
     override func setUpWithError() throws {
-//        credentials = Credentials.create(ECKeyPair.create(BigInteger.ONE));
-//
-//        signer = new PrivateKeyEthSigner(credentials, chainId.longValue());
-//
-//        processor = new ZkSyncTransactionReceiptProcessor(zksync, 200, 100);
-//
-//        feeProvider = new DefaultTransactionFeeProvider(zksync, ETH);
-
-//        contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067";
-        contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067"
-        
-        // zksync = ZkSync.build(new HttpService(L2_NODE));
-        let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)
+        let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
         zkSync = JsonRpc2_0ZkSync(web3,
-                                  transport: HTTPTransport(ZKSyncWeb3RpcIntegrationTests.l2NodeUrl))
+                                  transport: HTTPTransport(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl))
         
-        //        chainId = zksync.ethChainId().sendAsync().join().getChainId();
         zkSync.chainId { result in
             switch result {
             case .success(let resultChainId):
@@ -65,28 +40,15 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
                 print("Error occured: \(error.localizedDescription)")
             }
         }
-        
-//        signer = PrivateKeyEthSigner("")
     }
     
     override func tearDownWithError() throws {
         
     }
 
-    func sendTestMoney() {
-//        Web3j web3j = Web3j.build(new HttpService(L1_NODE));
-//
-//        String account = web3j.ethAccounts().sendAsync().join().getAccounts().get(0);
-//
-//        EthSendTransaction sent = web3j.ethSendTransaction(
-//                        Transaction.createEtherTransaction(account, null, Convert.toWei("1", Unit.GWEI).toBigInteger(), BigInteger.valueOf(21_000L),
-//                                credentials.getAddress(), Convert.toWei("1000000", Unit.ETHER).toBigInteger()))
-//                .sendAsync().join();
-//
-//        assertResponse(sent);
-        
+    func testSendTestMoney() {
         do {
-            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)
+            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
             let account = try web3.eth.getAccounts()[0]
             
     //        public init(type: TransactionType? = nil, to: EthereumAddress, nonce: BigUInt = 0,
@@ -109,7 +71,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetBalanceOfTokenL1() {
         do {
-            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)
+            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
             let address = EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")
             let block: DefaultBlockParameterName = .latest
             

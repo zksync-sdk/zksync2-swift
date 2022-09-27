@@ -41,9 +41,13 @@ class ZkTransactionEncoderTests: XCTestCase {
             BigInt("1000000000000000000") as AnyObject
         ]
         
-        let calldata = elementFunction.encodeParameters(parameters)
+        guard let calldata = elementFunction.encodeParameters(parameters) else {
+            XCTFail("Encoded function should be valid.")
+            return
+        }
+        
         let expectedCalldata = "0xd9caed120000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000de0b6b3a7640000"
-        XCTAssertEqual(calldata?.toHexString().addHexPrefix(), expectedCalldata)
+        XCTAssertEqual(calldata.toHexString().addHexPrefix(), expectedCalldata)
     }
     
     func testEncodeDeploy() {

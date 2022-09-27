@@ -10,7 +10,6 @@ import BigInt
 import web3swift
 import PromiseKit
 
-class ZKSyncWallet {
 public class ZKSyncWallet {
     
     let web3: web3

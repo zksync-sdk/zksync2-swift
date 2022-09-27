@@ -25,42 +25,29 @@ extension DefaultEthereumProvider {
 // ZkSync (Swift): EthereumProvider.swift
 class DefaultEthereumProvider: EthereumProvider {
     
+    static let MaxApproveAmount = BigUInt.two.power(256).subtracting(BigUInt.one)
     static let DefaultThreshold = BigUInt.two.power(255)
     
     let web3: web3
     
-    lazy var l1ERC20Bridge: web3.web3contract = {
-        let contract = web3.contract(Web3.Utils.IL1Bridge)
-        precondition(contract != nil)
-        return contract!
-    }()
+    var l1ERC20Bridge: web3.web3contract!
     
     var l1ERC20BridgeAddress: String {
-        // FIXME: `web3contract.contract` was modified.
-//        return l1ERC20Bridge.contract.address!.address
-        return ""
+        return l1ERC20Bridge.contract.address!.address
     }
     
-    lazy var l1EthBridge: web3.web3contract = {
-        let contract = web3.contract(Web3.Utils.IL1Bridge)
-        precondition(contract != nil)
-        return contract!
-    }()
+    var l1EthBridge: web3.web3contract!
     
     var l1EthBridgeAddress: String {
-        // FIXME: `web3contract.contract` was modified.
-//        return l1EthBridge.contract.address!.address
-        return ""
+        return l1EthBridge.contract.address!.address
     }
     
-    lazy var contract: web3.web3contract = {
-        let contract = web3.contract(Web3.Utils.ZkSyncABI)
-        precondition(contract != nil)
-        return contract!
-    }()
-    
-    init(_ web3: web3) {
+    init(_ web3: web3,
+         l1ERC20Bridge: web3.web3contract,
+         l1EthBridge: web3.web3contract) {
         self.web3 = web3
+        self.l1ERC20Bridge = l1ERC20Bridge
+        self.l1EthBridge = l1EthBridge
     }
     
     func gasPrice() throws -> BigUInt {
@@ -155,19 +142,29 @@ class DefaultEthereumProvider: EthereumProvider {
         }
         
         if token.isETH {
-            guard let transaction = l1ERC20Bridge.write("deposit",
-                                                        parameters: [userAddress, /* EthereumAddress.default!.address ,*/ amount] as [AnyObject],
-                                                        // TODO: Verify whether `TransactionOptions` are needed.
-                                                        transactionOptions: nil) else {
+            let parameters = [
+                userAddress,
+                EthereumAddress.Default,
+                amount
+            ] as [AnyObject]
+            
+            guard let transaction = l1EthBridge.write("deposit",
+                                                      parameters: parameters,
+                                                      transactionOptions: transactionWriteOptions()) else {
                 return Promise(error: EthereumProviderError.invalidParameter)
             }
             
             return transaction.sendPromise()
         } else {
+            let parameters = [
+                userAddress,
+                token.l1Address,
+                amount
+            ] as [AnyObject]
+            
             guard let transaction = l1ERC20Bridge.write("deposit",
-                                                        parameters: [userAddress, token.l1Address , amount] as [AnyObject],
-                                                        // TODO: Verify whether `TransactionOptions` are needed.
-                                                        transactionOptions: nil) else {
+                                                        parameters: parameters,
+                                                        transactionOptions: transactionWriteOptions()) else {
                 return Promise(error: EthereumProviderError.invalidParameter)
             }
             
@@ -198,5 +195,41 @@ class DefaultEthereumProvider: EthereumProvider {
                                                        delegate: spenderAddress)
         
         return allowance > (threshold ?? DefaultEthereumProvider.DefaultThreshold)
+    }
+    
+    static func load(_ zkSync: ZkSync,
+                     web3: web3,
+                     completion: @escaping (_ defaultEthereumProvider: DefaultEthereumProvider) -> Void) {
+        zkSync.zksGetBridgeContracts { result in
+            switch result {
+            case .success(let bridgeAddresses):
+                let l1ERC20Bridge = web3.contract(Web3.Utils.IL1Bridge,
+                                                  at: EthereumAddress(bridgeAddresses.l1Erc20DefaultBridge))!
+                
+                let l1EthBridge = web3.contract(Web3.Utils.IL1Bridge,
+                                                at: EthereumAddress(bridgeAddresses.l1EthDefaultBridge))!
+                
+                let defaultEthereumProvider = DefaultEthereumProvider(web3,
+                                                                      l1ERC20Bridge: l1ERC20Bridge,
+                                                                      l1EthBridge: l1EthBridge)
+                
+                completion(defaultEthereumProvider)
+            case .failure(let error):
+                fatalError("Error occured while getting bridge contracts: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    private func transactionWriteOptions() -> TransactionOptions {
+        var transactionOptions = TransactionOptions.defaultOptions
+
+        return transactionOptions
+    }
+    
+    private func transactionReadOptions() -> TransactionOptions {
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.callOnBlock = .latest
+        
+        return transactionOptions
     }
 }

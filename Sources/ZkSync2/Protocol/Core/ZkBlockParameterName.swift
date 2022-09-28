@@ -16,6 +16,6 @@ enum DefaultBlockParameterName: String {
 
 enum ZkBlockParameterName: String {
     
-    case committed = "commited"
+    case committed = "committed"
     case finalized = "finalized"
 }

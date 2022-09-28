@@ -15,7 +15,7 @@ protocol ZkSync {
     
     var web3: web3 { get set }
     
-    func zksEstimateFee(_ transaction: Transaction,
+    func zksEstimateFee(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<Fee>) -> Void)
     
     func zksMainContract(completion: @escaping (Result<MainContract>) -> Void)
@@ -46,7 +46,7 @@ protocol ZkSync {
                               l2LogPosition: Int64?,
                               completion: @escaping (Result<MessageProof>) -> Void)
     
-    func ethEstimateGas(_ transaction: Transaction,
+    func ethEstimateGas(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<EthEstimateGas>) -> Void)
     
     func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void)

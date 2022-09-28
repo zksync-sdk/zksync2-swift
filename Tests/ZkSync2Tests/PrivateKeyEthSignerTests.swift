@@ -6,6 +6,7 @@
 //
 
 import XCTest
+import BigInt
 import web3swift
 @testable import ZkSync2
 
@@ -27,7 +28,8 @@ class PrivateKeyEthSignerTests: XCTestCase {
             return
         }
         
-        privateKeyEthSigner = PrivateKeyEthSigner(privateKey)
+        privateKeyEthSigner = PrivateKeyEthSigner(privateKey,
+                                                  chainId: BigUInt(1)) // Mainnet
     }
     
     override func tearDownWithError() throws {

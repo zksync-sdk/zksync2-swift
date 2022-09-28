@@ -20,10 +20,10 @@ class JsonRpc2_0ZkSync: ZkSync {
         self.transport = transport
     }
     
-    func zksEstimateFee(_ transaction: Transaction,
+    func zksEstimateFee(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<Fee>) -> Void) {
         transport.send(method: "zks_estimateFee",
-                       params: [transaction],
+                       params: [String](), // TODO: Add transaction support.
                        completion: completion)
     }
     
@@ -95,7 +95,7 @@ class JsonRpc2_0ZkSync: ZkSync {
                        completion: completion)
     }
     
-    func ethEstimateGas(_ transaction: Transaction,
+    func ethEstimateGas(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<EthEstimateGas>) -> Void) {
         transport.send(method: "eth_estimateGas",
                        params: [String](), // TODO: Add transaction support.

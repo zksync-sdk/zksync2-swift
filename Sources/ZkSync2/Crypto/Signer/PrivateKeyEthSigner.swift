@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import BigInt
 import web3swift
 
 // ZkSync2 (Java): PrivateKeyEthSigner.java
@@ -15,7 +16,7 @@ class PrivateKeyEthSigner: EthSigner {
         return ethereumAddress.address.lowercased()
     }
     
-    var domain: EIP712Domain = .init(.unknown)
+    var domain: EIP712Domain
     
     let keystore: EthereumKeystoreV3
     
@@ -23,13 +24,14 @@ class PrivateKeyEthSigner: EthSigner {
         return keystore.addresses!.first!
     }
     
-    init(_ privateKey: String) {
+    init(_ privateKey: String, chainId: BigUInt) {
         let privatKeyData = Data(hex: privateKey)
         guard let keystore = try? EthereumKeystoreV3(privateKey: privatKeyData) else {
             preconditionFailure("Keystore is not valid.")
         }
         
         self.keystore = keystore
+        domain = EIP712Domain(chainId)
     }
     
     func signTypedData<S>(_ domain: EIP712Domain,

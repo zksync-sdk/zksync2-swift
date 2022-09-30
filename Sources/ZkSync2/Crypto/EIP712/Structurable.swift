@@ -8,7 +8,6 @@
 import Foundation
 import web3swift
 
-// ZkSync2 (Java): Structurable.java
 protocol Structurable: EIP712Hashable {
     
 }

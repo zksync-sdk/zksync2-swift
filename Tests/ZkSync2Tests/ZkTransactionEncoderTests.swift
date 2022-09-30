@@ -147,7 +147,9 @@ class ZkTransactionEncoderTests: XCTestCase {
             XCTFail("Encoded transaction should be valid.")
             return
         }
-        print("Encoded transaction: \(encodedTransaction)")
+        
+        let transactionAsDictionary = transaction.encodeAsDictionary()
+        print("Encoded transaction as dictionary \(transactionAsDictionary)")
         
         let expectedEncodedTransaction = "0x71f8a1802b2b2a948c98381ffe6229ee9e53b6aab784e86863f6188580b864d9caed120000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000de0b6b3a764000082010e808082010e947e5f4552091a69125d5dfcb7b8c2659029395bdf80c080c0"
         XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)

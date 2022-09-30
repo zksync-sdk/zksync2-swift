@@ -17,15 +17,11 @@ class EIP712Encoder {
         if let stringValue = value as? String {
             return EIP712.keccak256(stringValue)
         } else if let numericValue = value as? any Numeric {
-            guard let numericValueData = numericValue.data.setLengthLeft(32) else {
-                fatalError("Unable to encode Numeric value.")
-            }
+            let numericValueData = numericValue.data.setLengthLeft(32)
             
             return numericValueData
         } else if let ethereumAddressValue = value as? EthereumAddress {
-            guard let paddedEthereumAddressValue = ethereumAddressValue.addressData.setLengthLeft(32) else {
-                fatalError("Unable to EthereumAddress value.")
-            }
+            let paddedEthereumAddressValue = ethereumAddressValue.addressData.setLengthLeft(32)
             
             return paddedEthereumAddressValue
         } else if let EIP712HashableValue = value as? EIP712Hashable {

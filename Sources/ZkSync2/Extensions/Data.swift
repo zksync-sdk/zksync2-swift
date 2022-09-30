@@ -9,12 +9,12 @@ import Foundation
 
 extension Data {
     
-    func setLengthLeft(_ toBytes: UInt64, isNegative: Bool = false) -> Data? {
+    func setLengthLeft(_ toBytes: UInt64, isNegative: Bool = false) -> Data {
         let existingLength = UInt64(self.count)
         if existingLength == toBytes {
             return Data(self)
         } else if existingLength > toBytes {
-            return nil
+            fatalError("Invalid length.")
         }
         
         var data: Data

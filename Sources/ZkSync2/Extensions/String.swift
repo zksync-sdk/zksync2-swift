@@ -7,7 +7,11 @@
 
 import Foundation
 
-extension String {
+public extension String {
+    
+    func hasHexPrefix() -> Bool {
+        return self.hasPrefix("0x")
+    }
     
     func addHexPrefix() -> String {
         if !hasPrefix("0x") {

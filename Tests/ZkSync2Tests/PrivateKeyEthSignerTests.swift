@@ -12,6 +12,8 @@ import web3swift
 
 class PrivateKeyEthSignerTests: XCTestCase {
     
+    var credentials: Credentials!
+    
     let message = Mail()
     
     let domain = EIP712Domain("Ether Mail",
@@ -29,7 +31,7 @@ class PrivateKeyEthSignerTests: XCTestCase {
         }
         
         privateKeyEthSigner = PrivateKeyEthSigner(privateKey,
-                                                  chainId: BigUInt(1)) // Mainnet
+                                                  zkSyncNetwork: ZkSyncNetwork.mainnet)
     }
     
     override func tearDownWithError() throws {

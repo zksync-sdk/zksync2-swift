@@ -8,8 +8,6 @@
 import Foundation
 import web3swift
 
-// ZkSync2 (Java): EthSigner.java
-// ZkSync (Swift): EthSigner.swift
 protocol EthSigner {
     
     var address: String { get }

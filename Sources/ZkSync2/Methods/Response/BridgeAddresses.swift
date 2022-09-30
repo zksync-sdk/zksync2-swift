@@ -7,7 +7,6 @@
 
 import Foundation
 
-// ZkSync2 (Java): ZksBridgeAddresses.java
 struct BridgeAddresses: Decodable {
     
     var l1EthDefaultBridge: String

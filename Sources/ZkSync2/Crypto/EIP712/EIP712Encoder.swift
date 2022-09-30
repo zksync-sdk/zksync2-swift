@@ -10,7 +10,6 @@ import BigInt
 import web3swift
 import CryptoSwift
 
-// ZkSync2 (Java): Eip712Encoder.java
 class EIP712Encoder {
     
     static func encodeValue(_ value: Any) -> Data {

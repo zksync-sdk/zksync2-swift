@@ -20,9 +20,6 @@ extension DefaultEthereumProvider {
     }
 }
 
-// ZkSync (Java): DefaultEthereumProvider.java
-// ZkSync2 (Java): DefaultEthereumProvider.java
-// ZkSync (Swift): EthereumProvider.swift
 class DefaultEthereumProvider: EthereumProvider {
     
     static let MaxApproveAmount = BigUInt.two.power(256).subtracting(BigUInt.one)

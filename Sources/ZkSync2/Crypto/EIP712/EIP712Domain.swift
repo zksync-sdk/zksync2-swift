@@ -9,7 +9,6 @@ import Foundation
 import BigInt
 import web3swift
 
-// ZkSync2 (Java): Eip712Domain.java
 class EIP712Domain: Structurable {
     
     static let name = "zkSync"

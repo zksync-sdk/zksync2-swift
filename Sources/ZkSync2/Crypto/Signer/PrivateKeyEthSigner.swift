@@ -9,29 +9,38 @@ import Foundation
 import BigInt
 import web3swift
 
-// ZkSync2 (Java): PrivateKeyEthSigner.java
 class PrivateKeyEthSigner: EthSigner {
     
     var address: String {
-        return ethereumAddress.address.lowercased()
+        return credentials.address
+    }
+    
+    var ethereumAddress: EthereumAddress {
+        return credentials.ethereumAddress
     }
     
     var domain: EIP712Domain
     
-    let keystore: EthereumKeystoreV3
+    let credentials: Credentials
     
-    var ethereumAddress: EthereumAddress {
-        return keystore.addresses!.first!
+    init(_ credentials: Credentials, chainId: BigUInt) {
+        self.credentials = credentials
+        domain = EIP712Domain(chainId)
+    }
+    
+    init(_ credentials: Credentials, zkSyncNetwork: ZkSyncNetwork) {
+        self.credentials = credentials
+        domain = EIP712Domain(zkSyncNetwork)
     }
     
     init(_ privateKey: String, chainId: BigUInt) {
-        let privatKeyData = Data(hex: privateKey)
-        guard let keystore = try? EthereumKeystoreV3(privateKey: privatKeyData) else {
-            preconditionFailure("Keystore is not valid.")
-        }
-        
-        self.keystore = keystore
+        credentials = Credentials(privateKey)
         domain = EIP712Domain(chainId)
+    }
+    
+    init(_ privateKey: String, zkSyncNetwork: ZkSyncNetwork) {
+        credentials = Credentials(privateKey)
+        domain = EIP712Domain(zkSyncNetwork)
     }
     
     func signTypedData<S>(_ domain: EIP712Domain,
@@ -68,7 +77,7 @@ class PrivateKeyEthSigner: EthSigner {
         }
         
         guard let signatureData = try? signMessage(messageToSign,
-                                                   keystore: keystore,
+                                                   keystore: credentials,
                                                    account: ethereumAddress,
                                                    needToHash: needToHash) else {
             preconditionFailure("Failed to sign.")

@@ -19,54 +19,94 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
 //    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/25be7ab42c414680a5f89297f8a11a4d")!
 //    static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
-    let ethToken: Token = Token.ETH
-
-    var zkSync: ZkSync!
+    let ethToken = Token.ETH
+    
+    var zkSync: JsonRpc2_0ZkSync!
+    
+    let credentials = Credentials(BigUInt.one)
     
     var chainId: BigUInt!
     
     let contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067"
     
     override func setUpWithError() throws {
-        let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
-        zkSync = JsonRpc2_0ZkSync(web3,
-                                  transport: HTTPTransport(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl))
+        let expectation = expectation(description: "Expectation.")
         
-        zkSync.chainId { result in
-            switch result {
-            case .success(let resultChainId):
-                self.chainId = resultChainId
-            case .failure(let error):
-                print("Error occured: \(error.localizedDescription)")
-            }
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl)
+            self.zkSync = JsonRpc2_0ZkSync(web3,
+                                           transport: HTTPTransport(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl))
+            
+            self.chainId = try! self.zkSync.chainId().wait()
+            XCTAssertEqual(self.chainId, BigUInt(270))
+            
+            expectation.fulfill()
         }
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     override func tearDownWithError() throws {
         
     }
-
+    
     func testSendTestMoney() {
-        do {
-            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
-            let account = try web3.eth.getAccounts()[0]
+        let expectation = expectation(description: "Expectation")
+        
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
             
-    //        public init(type: TransactionType? = nil, to: EthereumAddress, nonce: BigUInt = 0,
-    //                    chainID: BigUInt? = nil, value: BigUInt? = nil, data: Data,
-    //                    v: BigUInt = 1, r: BigUInt = 0, s: BigUInt = 0, parameters: EthereumParameters? = nil) {
+            let web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
+            let account = try! web3.eth.getAccounts().first!
             
-//            let transaction = EthereumTransaction(to: account,
-//                                                  chainID: <#T##BigUInt?#>,
-//                                                  value: <#T##BigUInt?#>,
-//                                                  data: <#T##Data#>,
-//                                                  parameters: <#T##EthereumParameters?#>)
-//
-//            let transactionOptions: TransactionOptions = TransactionOptions()
-
-//            try web3.eth.sendTransaction(transaction, transactionOptions: transactionOptions)
-        } catch {
+            let from = account
+            XCTAssertEqual(from.address.lowercased(), "0x8a91dc2d28b689474298d91899f0c1baf62cb85b")
             
+            let gasPrice = Web3.Utils.parseToBigUInt("1", units: .Gwei)!
+            XCTAssertEqual(gasPrice.toHexString().addHexPrefix(), "0x3b9aca00")
+            
+            let gasLimit = BigUInt(21_000)
+            XCTAssertEqual(gasLimit.toHexString().addHexPrefix(), "0x5208")
+            
+            let to = self.credentials.ethereumAddress
+            XCTAssertEqual(to.address.lowercased(), "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")
+            
+            let nonce = try! web3.eth.getTransactionCount(address: to)
+            XCTAssertEqual(nonce, BigUInt(0))
+            
+            let value = Web3.Utils.parseToBigUInt("1000000", units: .Gwei)!
+            
+            let chainId = try! web3.eth.getChainIdPromise().wait()
+            XCTAssertEqual(chainId, BigUInt(9))
+            
+            var ethereumTransaction = EthereumTransaction.createEtherTransaction(from: from,
+                                                                                 nonce: nonce,
+                                                                                 gasPrice: gasPrice,
+                                                                                 gasLimit: gasLimit,
+                                                                                 to: to,
+                                                                                 value: value,
+                                                                                 chainID: chainId)
+            
+            let privateKey = self.credentials.privateKey
+            XCTAssertEqual(privateKey.toHexString().addHexPrefix(), "0x0000000000000000000000000000000000000000000000000000000000000001")
+            
+            try! ethereumTransaction.sign(privateKey: privateKey)
+            
+            guard let encodedAndSignedTransaction = ethereumTransaction.encode(for: .transaction) else {
+                fatalError("Failed to encode transaction.")
+            }
+            
+            print("Encoded and signed transaction: \(encodedAndSignedTransaction.toHexString().addHexPrefix())")
+            
+            let transactionSendingResult = try! web3.eth.sendRawTransactionPromise(encodedAndSignedTransaction).wait()
+            print("Result: \(transactionSendingResult)")
+            
+            expectation.fulfill()
         }
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testGetBalanceOfTokenL1() {

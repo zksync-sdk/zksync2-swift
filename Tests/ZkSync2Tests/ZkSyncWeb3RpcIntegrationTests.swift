@@ -127,7 +127,17 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetNonce() {
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: self.credentials.ethereumAddress).wait()
+            XCTAssertEqual(nonce, 0)
+            
+            expectation.fulfill()
+        }
         
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testGetDeploymentNonce() {

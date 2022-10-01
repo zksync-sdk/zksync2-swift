@@ -263,34 +263,31 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetTokenPrice() {
-        let expectedTokenPrice: Decimal = 3500.0
-        let expectation = expectation(description: "Expectation.")
-        zkSync.zksGetTokenPrice(Token.ETH.l2Address) { result in
-            switch result {
-            case .success(let tokenPrice):
-                XCTAssertEqual(tokenPrice, expectedTokenPrice)
-            case .failure(let error):
-                XCTFail("Failed with error: \(error)")
-            }
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let tokenPrice = try! self.zkSync.zksGetTokenPrice(Token.ETH.l2Address).wait()
+            XCTAssertEqual(tokenPrice, 3500.0)
+            
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 5.0)
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testGetL1ChainId() {
-        let expectation = expectation(description: "Expectation.")
-        zkSync.zksL1ChainId { result in
-            switch result {
-            case .success(let chainId):
-                print(chainId)
-            case .failure(let error):
-                XCTFail("Failed with error: \(error)")
-            }
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let chainId = try! self.zkSync.zksL1ChainId().wait()
+            XCTAssertEqual(chainId, 9)
+            
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 5.0)
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testGetBridgeContracts() {

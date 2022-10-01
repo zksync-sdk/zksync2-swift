@@ -50,14 +50,16 @@ public class ZKSyncWallet {
                   token: Token?,
                   nonce: UInt32?,
                   completion: @escaping (Swift.Result<String, Error>) -> Void) {
-        let tokenToUse = token == nil ? Token.ETH : token
+        let tokenToUse: Token
+        if let token = token {
+            tokenToUse = token
+        } else {
+            tokenToUse = Token.ETH
+        }
+        
         let calldata: String
         let txTo: String
         let txAmount: BigUInt?
-        
-        guard let tokenToUse = tokenToUse else {
-            fatalError("Token should be valid.")
-        }
         
         if tokenToUse.isETH {
             calldata = "0x"

@@ -130,18 +130,6 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     
-//    @Test
-//    public void testDeposit() throws IOException {
-//        Web3j web3j = Web3j.build(new HttpService(L1_NODE));
-//        BigInteger chainId = web3j.ethChainId().send().getChainId();
-//        TransactionManager manager = new RawTransactionManager(web3j, credentials, chainId.longValue());
-//        ContractGasProvider gasProvider = new StaticGasProvider(Convert.toWei("1", Unit.GWEI).toBigInteger(), BigInteger.valueOf(555_000L));
-//        TransactionReceipt receipt = EthereumProvider
-//                .load(zksync, web3j, manager, gasProvider).join()
-//                .deposit(ETH, Convert.toWei("100", Unit.ETHER).toBigInteger(), credentials.getAddress()).join();
-//
-//        System.out.println("!!! " + receipt);
-//    }
     func testDeposit() {
 //        do {
 //            let web3 = try Web3.new(ZKSyncWeb3RpcIntegrationTests.l1NodeUrl)

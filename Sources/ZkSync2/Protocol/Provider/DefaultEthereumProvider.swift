@@ -139,19 +139,73 @@ class DefaultEthereumProvider: EthereumProvider {
         }
         
         if token.isETH {
-            let parameters = [
+            let depositInputs = [
+                ABI.Element.InOut(name: "_l2Receiver", type: .address),
+                ABI.Element.InOut(name: "_l1Token", type: .address),
+                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+            ]
+            
+            let depositFunction: ABI.Element = .function(ABI.Element.Function(name: "deposit",
+                                                                              inputs: depositInputs,
+                                                                              outputs: [],
+                                                                              constant: false,
+                                                                              payable: false))
+            
+            let depositParameters: [AnyObject] = [
                 userAddress,
                 EthereumAddress.Default,
                 amount
             ] as [AnyObject]
             
-            guard let transaction = l1EthBridge.write("deposit",
-                                                      parameters: parameters,
-                                                      transactionOptions: transactionWriteOptions()) else {
-                return Promise(error: EthereumProviderError.invalidParameter)
+            guard let encodedFunction = depositFunction.encodeParameters(depositParameters) else {
+                fatalError("Encoded deposit function should be valid")
             }
             
-            return transaction.sendPromise()
+            print("Encoded deposit function: \(encodedFunction.toHexString().addHexPrefix())")
+            
+            assert(encodedFunction.toHexString().addHexPrefix() == "0x8340f5490000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000056bc75e2d63100000")
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.type = .eip1559
+            
+            let chainID = BigUInt(9) // 9 or 5?
+            transactionOptions.chainID = chainID
+            let nonce = try! web3.eth.getTransactionCount(address: EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")!)
+            let noncePolicy: TransactionOptions.NoncePolicy = .manual(nonce)
+            transactionOptions.nonce = noncePolicy
+
+            let gasPrice = Web3.Utils.parseToBigUInt("1", units: .Gwei)!
+            transactionOptions.gasPrice = .manual(gasPrice)
+            
+            let gasLimit = BigUInt(555_000)
+            transactionOptions.gasLimit = .manual(gasLimit)
+
+            transactionOptions.to = userAddress
+            
+            let value = BigUInt.zero
+            transactionOptions.value = value
+            transactionOptions.from = EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")!
+            
+            let ethereumParameters = EthereumParameters(from: transactionOptions)
+            var ethereumTransaction = EthereumTransaction(type: .eip1559,
+                                                          to: userAddress,
+                                                          nonce: nonce,
+                                                          chainID: chainID,
+                                                          value: value,
+                                                          data: encodedFunction,
+                                                          parameters: ethereumParameters)
+            
+            print("Transaction hash: \(String(describing: ethereumTransaction.hash?.toHexString().addHexPrefix()))")
+            
+            let privateKey = Data.fromHex("0x0000000000000000000000000000000000000000000000000000000000000001")!
+            try! ethereumTransaction.sign(privateKey: privateKey)
+            
+            guard let encodedAndSignedTransaction = ethereumTransaction.encode(for: .transaction) else {
+                fatalError("Failed to encode transaction.")
+            }
+            
+            print("Encoded transaction: \(encodedAndSignedTransaction.toHexString().addHexPrefix())")
+            
+            return l1EthBridge.web3.eth.sendRawTransactionPromise(encodedAndSignedTransaction)
         } else {
             let parameters = [
                 userAddress,
@@ -159,9 +213,12 @@ class DefaultEthereumProvider: EthereumProvider {
                 amount
             ] as [AnyObject]
             
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.to = userAddress
+            
             guard let transaction = l1ERC20Bridge.write("deposit",
                                                         parameters: parameters,
-                                                        transactionOptions: transactionWriteOptions()) else {
+                                                        transactionOptions: transactionOptions) else {
                 return Promise(error: EthereumProviderError.invalidParameter)
             }
             
@@ -192,41 +249,5 @@ class DefaultEthereumProvider: EthereumProvider {
                                                        delegate: spenderAddress)
         
         return allowance > (threshold ?? DefaultEthereumProvider.DefaultThreshold)
-    }
-    
-    static func load(_ zkSync: ZkSync,
-                     web3: web3,
-                     completion: @escaping (_ defaultEthereumProvider: DefaultEthereumProvider) -> Void) {
-        zkSync.zksGetBridgeContracts { result in
-            switch result {
-            case .success(let bridgeAddresses):
-                let l1ERC20Bridge = web3.contract(Web3.Utils.IL1Bridge,
-                                                  at: EthereumAddress(bridgeAddresses.l1Erc20DefaultBridge))!
-                
-                let l1EthBridge = web3.contract(Web3.Utils.IL1Bridge,
-                                                at: EthereumAddress(bridgeAddresses.l1EthDefaultBridge))!
-                
-                let defaultEthereumProvider = DefaultEthereumProvider(web3,
-                                                                      l1ERC20Bridge: l1ERC20Bridge,
-                                                                      l1EthBridge: l1EthBridge)
-                
-                completion(defaultEthereumProvider)
-            case .failure(let error):
-                fatalError("Error occured while getting bridge contracts: \(error.localizedDescription)")
-            }
-        }
-    }
-    
-    private func transactionWriteOptions() -> TransactionOptions {
-        var transactionOptions = TransactionOptions.defaultOptions
-
-        return transactionOptions
-    }
-    
-    private func transactionReadOptions() -> TransactionOptions {
-        var transactionOptions = TransactionOptions.defaultOptions
-        transactionOptions.callOnBlock = .latest
-        
-        return transactionOptions
     }
 }

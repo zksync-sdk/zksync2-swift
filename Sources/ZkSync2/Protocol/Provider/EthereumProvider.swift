@@ -63,3 +63,30 @@ protocol EthereumProvider {
     /// ZkSync Bridge for Eth smart-contract address in Ethereum blockchain.
     var l1EthBridgeAddress: String { get }
 }
+
+extension EthereumProvider {
+    
+    static func load(_ zkSync: ZkSync,
+                     web3: web3) -> Promise<DefaultEthereumProvider> {
+        Promise { seal in
+            zkSync.zksGetBridgeContracts { result in
+                switch result {
+                case .success(let bridgeAddresses):
+                    let l1ERC20Bridge = web3.contract(Web3.Utils.IL1Bridge,
+                                                      at: EthereumAddress(bridgeAddresses.l1Erc20DefaultBridge))!
+                    
+                    let l1EthBridge = web3.contract(Web3.Utils.IL1Bridge,
+                                                    at: EthereumAddress(bridgeAddresses.l1EthDefaultBridge))!
+                    
+                    let defaultEthereumProvider = DefaultEthereumProvider(web3,
+                                                                          l1ERC20Bridge: l1ERC20Bridge,
+                                                                          l1EthBridge: l1EthBridge)
+                    
+                    return seal.resolve(.fulfilled(defaultEthereumProvider))
+                case .failure(let error):
+                    return seal.resolve(.rejected(error))
+                }
+            }
+        }
+    }
+}

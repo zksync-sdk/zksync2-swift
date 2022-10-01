@@ -184,17 +184,19 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetTransactionReceipt() {
-        let expectation = expectation(description: "Expectation.")
-        _ = firstly {
-            zkSync.web3.eth.getTransactionReceiptPromise("0xc47004cd0ab1d9d7866cfb6d699b73ea5872938f14541661b0f0132e5b8365d1")
-        }.done { transactionReceipt in
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let transactionReceipt = try! self.zkSync.web3.eth.getTransactionReceiptPromise("0xc47004cd0ab1d9d7866cfb6d699b73ea5872938f14541661b0f0132e5b8365d1").wait()
             print("Transaction receipt: \(transactionReceipt)")
+            
             expectation.fulfill()
         }
         
         wait(for: [expectation], timeout: 10.0)
     }
-
+    
     func testGetTransaction() {
         let expectation = expectation(description: "Expectation.")
         _ = firstly {

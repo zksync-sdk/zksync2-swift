@@ -278,15 +278,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetAllAccountBalances() {
-        let expectation = expectation(description: "Expectation.")
-        // TODO: Add credentials storage.
-        zkSync.zksGetAllAccountBalances("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf") { accountBalances in
-            switch accountBalances {
-            case .success(let result):
-                print(result)
-            case .failure(let error):
-                XCTFail("Failed with error: \(error)")
-            }
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let accountBalances = try! self.zkSync.zksGetAllAccountBalances(self.credentials.address).wait()
+            print("Account balances: \(accountBalances)")
+            
             expectation.fulfill()
         }
         

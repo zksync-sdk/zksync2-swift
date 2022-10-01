@@ -34,4 +34,13 @@ extension JsonRpc2_0ZkSync {
             }
         }
     }
+    
+    func zksGetAllAccountBalances(_ address: String) -> Promise<Dictionary<String, String>> {
+        Promise { seal in
+            zksGetAllAccountBalances(address,
+                                     completion: {
+                seal.resolve($0)
+            })
+        }
+    }
 }

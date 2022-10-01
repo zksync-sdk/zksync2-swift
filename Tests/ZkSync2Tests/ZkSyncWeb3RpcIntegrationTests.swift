@@ -152,7 +152,17 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetBalanceOfNative() {
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let balance = try! self.zkSync.web3.eth.getBalancePromise(address: self.credentials.ethereumAddress).wait()
+            XCTAssertEqual(balance, 0)
+            
+            expectation.fulfill()
+        }
         
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testGetNonce() {

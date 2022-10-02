@@ -15,9 +15,9 @@ class JsonRpc2_0ZkSync: ZkSync {
     
     let transport: Transport
     
-    init(_ web3: web3, transport: Transport) {
-        self.web3 = web3
-        self.transport = transport
+    init(_ providerURL: URL) {
+        self.web3 = try! Web3.new(providerURL)
+        self.transport = HTTPTransport(self.web3.provider.url)
     }
     
     func zksEstimateFee(_ transaction: EthereumTransaction,

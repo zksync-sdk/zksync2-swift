@@ -10,16 +10,15 @@ import BigInt
 import web3swift
 import PromiseKit
 
+// TODO: Improve completion handlers in methods.
 public class ZKSyncWallet {
-    
-    let web3: web3
     
     let zkSync: ZkSync
     
     let signer: EthSigner
     
-    init(_ web3: web3, zkSync: ZkSync, ethSigner: EthSigner) {
-        self.web3 = web3
+    // TODO: Improve API of initializers. Consider adding chainId.
+    init(_ zkSync: ZkSync, ethSigner: EthSigner) {
         self.zkSync = zkSync
         self.signer = ethSigner
     }

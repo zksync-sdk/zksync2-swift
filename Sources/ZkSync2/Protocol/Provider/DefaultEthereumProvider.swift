@@ -39,12 +39,16 @@ class DefaultEthereumProvider: EthereumProvider {
         return l1EthBridge.contract.address!.address
     }
     
+    let gasProvider: ContractGasProvider
+    
     init(_ web3: web3,
          l1ERC20Bridge: web3.web3contract,
-         l1EthBridge: web3.web3contract) {
+         l1EthBridge: web3.web3contract,
+         gasProvider: ContractGasProvider) {
         self.web3 = web3
         self.l1ERC20Bridge = l1ERC20Bridge
         self.l1EthBridge = l1EthBridge
+        self.gasProvider = gasProvider
     }
     
     func gasPrice() throws -> BigUInt {
@@ -172,13 +176,8 @@ class DefaultEthereumProvider: EthereumProvider {
             let nonce = try! web3.eth.getTransactionCount(address: EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")!)
             let noncePolicy: TransactionOptions.NoncePolicy = .manual(nonce)
             transactionOptions.nonce = noncePolicy
-
-            let gasPrice = Web3.Utils.parseToBigUInt("1", units: .Gwei)!
-            transactionOptions.gasPrice = .manual(gasPrice)
-            
-            let gasLimit = BigUInt(555_000)
-            transactionOptions.gasLimit = .manual(gasLimit)
-
+            transactionOptions.gasPrice = .manual(gasProvider.gasPrice)
+            transactionOptions.gasLimit = .manual(gasProvider.gasLimit)
             transactionOptions.to = userAddress
             
             let value = BigUInt.zero
@@ -203,7 +202,7 @@ class DefaultEthereumProvider: EthereumProvider {
                 fatalError("Failed to encode transaction.")
             }
             
-            print("Encoded transaction: \(encodedAndSignedTransaction.toHexString().addHexPrefix())")
+            print("Encoded and signed transaction: \(encodedAndSignedTransaction.toHexString().addHexPrefix())")
             
             return l1EthBridge.web3.eth.sendRawTransactionPromise(encodedAndSignedTransaction)
         } else {
@@ -249,5 +248,34 @@ class DefaultEthereumProvider: EthereumProvider {
                                                        delegate: spenderAddress)
         
         return allowance > (threshold ?? DefaultEthereumProvider.DefaultThreshold)
+    }
+}
+
+extension DefaultEthereumProvider {
+    
+    static func load(_ zkSync: ZkSync,
+                     web3: web3,
+                     gasProvider: ContractGasProvider) -> Promise<DefaultEthereumProvider> {
+        Promise { seal in
+            zkSync.zksGetBridgeContracts { result in
+                switch result {
+                case .success(let bridgeAddresses):
+                    let l1ERC20Bridge = web3.contract(Web3.Utils.IL1Bridge,
+                                                      at: EthereumAddress(bridgeAddresses.l1Erc20DefaultBridge))!
+                    
+                    let l1EthBridge = web3.contract(Web3.Utils.IL1Bridge,
+                                                    at: EthereumAddress(bridgeAddresses.l1EthDefaultBridge))!
+                    
+                    let defaultEthereumProvider = DefaultEthereumProvider(web3,
+                                                                          l1ERC20Bridge: l1ERC20Bridge,
+                                                                          l1EthBridge: l1EthBridge,
+                                                                          gasProvider: gasProvider)
+                    
+                    return seal.resolve(.fulfilled(defaultEthereumProvider))
+                case .failure(let error):
+                    return seal.resolve(.rejected(error))
+                }
+            }
+        }
     }
 }

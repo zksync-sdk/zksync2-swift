@@ -43,4 +43,12 @@ extension JsonRpc2_0ZkSync {
             })
         }
     }
+    
+    func zksGetBridgeContracts() -> Promise<BridgeAddresses> {
+        Promise { seal in
+            zksGetBridgeContracts {
+                seal.resolve($0)
+            }
+        }
+    }
 }

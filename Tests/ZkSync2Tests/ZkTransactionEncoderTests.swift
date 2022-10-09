@@ -18,6 +18,8 @@ class ZkTransactionEncoderTests: XCTestCase {
     static let GasLimit = BigUInt(42)
     static let Address = EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")!
     
+    let credentials = Credentials(BigUInt.one)
+    
     override func setUpWithError() throws {
         
     }
@@ -149,7 +151,7 @@ class ZkTransactionEncoderTests: XCTestCase {
         }
         
         let transactionAsDictionary = transaction.encodeAsDictionary()
-        print("Encoded transaction as dictionary \(transactionAsDictionary)")
+        print("Encoded transaction as dictionary \(String(describing: transactionAsDictionary))")
         
         let expectedEncodedTransaction = "0x71f8a1802b2b2a948c98381ffe6229ee9e53b6aab784e86863f6188580b864d9caed120000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000de0b6b3a764000082010e808082010e947e5f4552091a69125d5dfcb7b8c2659029395bdf80c080c0"
         XCTAssertEqual(encodedTransaction, expectedEncodedTransaction)
@@ -160,6 +162,58 @@ class ZkTransactionEncoderTests: XCTestCase {
     }
     
     func testEncodeExecute() {
+        let encodedFunction = CounterContract.encodeIncrement(BigUInt(42))
+        XCTAssertEqual(encodedFunction.toHexString().addHexPrefix(), "0x7cf5dab0000000000000000000000000000000000000000000000000000000000000002a")
         
+        let transaction = executeTransaction(encodedFunction)
+        
+        guard let encodedTransaction = transaction.encode(for: .signature) else {
+            fatalError("Failed to encode transaction.")
+        }
+        
+        print("Encoded transaction: \(encodedTransaction.toHexString().addHexPrefix())")
+        
+        XCTAssertEqual(encodedTransaction.toHexString().addHexPrefix(), "0x71f860802b2b2a94e1fab3efd74a77c23b426c302d96372140ff7d0c80a47cf5dab0000000000000000000000000000000000000000000000000000000000000002a82010e808082010e947e5f4552091a69125d5dfcb7b8c2659029395bdf80c080c0")
+    }
+    
+    func executeTransaction(_ data: Data) -> EthereumTransaction {
+        var transactionOptions = TransactionOptions.defaultOptions
+        
+        let type: TransactionType = .eip712
+        transactionOptions.type = type
+        
+        let chainID = ZkTransactionEncoderTests.ChainId
+        transactionOptions.chainID = chainID
+        let nonce = BigUInt.zero
+        transactionOptions.nonce = .manual(nonce)
+        transactionOptions.gasLimit = .manual(ZkTransactionEncoderTests.GasLimit)
+        let to = EthereumAddress("0xe1fab3efd74a77c23b426c302d96372140ff7d0c")!
+        transactionOptions.to = to
+        
+        let value = BigUInt.zero
+        transactionOptions.value = value
+        transactionOptions.maxPriorityFeePerGas = .manual(ZkTransactionEncoderTests.GasPrice)
+        transactionOptions.maxFeePerGas = .manual(ZkTransactionEncoderTests.GasPrice)
+        transactionOptions.from = credentials.ethereumAddress
+        var ethereumParameters = EthereumParameters(from: transactionOptions)
+        
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.ergsPerPubdata = BigUInt.zero
+        EIP712Meta.customSignature = Data()
+        EIP712Meta.factoryDeps = nil
+        EIP712Meta.paymasterParams = nil
+        ethereumParameters.EIP712Meta = EIP712Meta
+        
+        ethereumParameters.from = credentials.ethereumAddress
+        
+        let ethereumTransaction = EthereumTransaction(type: type,
+                                                      to: to,
+                                                      nonce: nonce,
+                                                      chainID: chainID,
+                                                      value: value,
+                                                      data: data,
+                                                      parameters: ethereumParameters)
+        
+        return ethereumTransaction
     }
 }

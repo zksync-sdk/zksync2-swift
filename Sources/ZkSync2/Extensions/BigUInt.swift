@@ -30,6 +30,10 @@ public extension BigUInt {
         serialize()
     }
     
+    var data2: Data {
+        serialize().setLengthLeft(2)
+    }
+    
     var data16: Data {
         serialize().setLengthLeft(16)
     }

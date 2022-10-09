@@ -19,4 +19,15 @@ struct Person: Structurable {
         self.name = name
         self.wallet = EthereumAddress(wallet)!
     }
+    
+    func getTypeName() -> String {
+        "Person"
+    }
+    
+    func eip712types() -> [ZkSync2.EIP712.`Type`] {
+        [
+            ("name", value: name),
+            ("wallet", value: wallet)
+        ]
+    }
 }

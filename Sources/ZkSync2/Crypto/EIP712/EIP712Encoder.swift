@@ -44,18 +44,3 @@ class EIP712Encoder {
         return Data(SHA3(variant: .keccak256).calculate(for: outputData.bytes))
     }
 }
-
-extension EIP712 {
-
-    static func keccak256(_ data: [UInt8]) -> Data {
-        Data(SHA3(variant: .keccak256).calculate(for: data))
-    }
-
-    static func keccak256(_ string: String) -> Data {
-        keccak256(Array(string.utf8))
-    }
-
-    static func keccak256(_ data: Data) -> Data {
-        keccak256(data.bytes)
-    }
-}

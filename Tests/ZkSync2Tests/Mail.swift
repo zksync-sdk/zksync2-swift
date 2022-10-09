@@ -30,4 +30,16 @@ struct Mail: Structurable {
         self.to = to
         self.contents = contents
     }
+    
+    func getTypeName() -> String {
+        "Mail"
+    }
+    
+    func eip712types() -> [ZkSync2.EIP712.`Type`] {
+        [
+            ("from", value: from),
+            ("to", value: to),
+            ("contents", value: contents)
+        ]
+    }
 }

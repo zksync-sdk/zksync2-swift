@@ -64,4 +64,22 @@ class EIP712Domain: Structurable {
         
         self.verifyingContract = ethereumAddress
     }
+    
+    func getTypeName() -> String {
+        return "EIP712Domain"
+    }
+    
+    func eip712types() -> [EIP712.`Type`] {
+        var eip712types: [EIP712.`Type`] = [
+            ("name", value: name),
+            ("version", value: version),
+            ("chainId", value: chainId)
+        ]
+        
+        if let verifyingContract = verifyingContract {
+            eip712types.append(("verifyingContract", value: verifyingContract))
+        }
+        
+        return eip712types
+    }
 }

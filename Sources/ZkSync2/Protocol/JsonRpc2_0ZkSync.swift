@@ -58,6 +58,7 @@ class JsonRpc2_0ZkSync: ZkSync {
         })
     }
     
+    // FIXME: Is this functionality needed?
     func zksGetContractDebugInfo(_ contractAddress: String,
                                  completion: @escaping (Result<ContractDebugInfo>) -> Void) {
         transport.send(method: "zks_getContractDebugInfo",

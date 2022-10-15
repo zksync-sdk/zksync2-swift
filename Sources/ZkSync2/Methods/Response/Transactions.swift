@@ -7,8 +7,7 @@
 
 import Foundation
 
-// ZkSync2 (Java): ZksTransactions.java
+// FIXME: Is this functionality needed?
 struct Transactions: Decodable {
     
-    // Contains list of transactions (TransactionReceipt).
 }

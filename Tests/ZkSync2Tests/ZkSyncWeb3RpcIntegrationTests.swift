@@ -180,7 +180,23 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testGetDeploymentNonce() {
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let nonceHolder = NonceHolder(EthereumAddress(ZkSyncAddresses.NonceHolderAddress)!,
+                                          zkSync: self.zkSync,
+                                          contractGasProvider: DefaultGasProvider(),
+                                          credentials: self.credentials)
+            
+            let data = try! nonceHolder.getDeploymentNonce(self.credentials.ethereumAddress).wait()
+            let nonce = BigUInt.init(fromHex: data.toHexString().addHexPrefix())
+            print("Nonce: \(String(describing: nonce))")
+            
+            expectation.fulfill()
+        }
         
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testGetTransactionReceipt() {

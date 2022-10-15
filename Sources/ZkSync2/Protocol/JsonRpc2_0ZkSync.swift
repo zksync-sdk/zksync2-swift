@@ -11,7 +11,7 @@ import BigInt
 
 class JsonRpc2_0ZkSync: ZkSync {
     
-    var web3: web3swift.web3
+    var web3: web3
     
     let transport: Transport
     

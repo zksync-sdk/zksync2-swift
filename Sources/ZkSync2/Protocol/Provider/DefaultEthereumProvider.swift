@@ -165,9 +165,10 @@ class DefaultEthereumProvider: EthereumProvider {
                 fatalError("Encoded deposit function should be valid")
             }
             
+#if DEBUG
             print("Encoded deposit function: \(encodedFunction.toHexString().addHexPrefix())")
+#endif
             
-            assert(encodedFunction.toHexString().addHexPrefix() == "0x8340f5490000000000000000000000007e5f4552091a69125d5dfcb7b8c2659029395bdf00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000056bc75e2d63100000")
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip1559
             

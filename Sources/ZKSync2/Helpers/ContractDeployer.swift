@@ -13,7 +13,11 @@ class ContractDeployer {
     
     static let MaxBytecodeSize = BigUInt.two.power(16)
     
-    static func encodeCreate2(_ bytecode: Data) -> Data {
+    static func computeL2CreateAddress(_ sender: EthereumAddress, nonce: BigUInt) -> EthereumAddress {
+        fatalError("Implement")
+    }
+    
+    static func encodeCreate2(_ bytecode: Data, calldata: Data = Data()) -> Data {
         let inputs = [
             ABI.Element.InOut(name: "salt", type: .bytes(length: 32)),
             ABI.Element.InOut(name: "bytecodeHash", type: .bytes(length: 32)),
@@ -30,12 +34,10 @@ class ContractDeployer {
         let elementFunction: ABI.Element = .function(function)
         
         let salt = Data(capacity: 32)
-
+        
         let bytecodeHash = ContractDeployer.hashBytecode(bytecode)
         
         assert(bytecodeHash.toHexString().addHexPrefix() == "0x00379c09b5568d43b0ac6533a2672ee836815530b412f082f0b2e69915aa50fc")
-        
-        let calldata = Data()
         
         let parameters: [AnyObject] = [
             salt as AnyObject,
@@ -47,6 +49,14 @@ class ContractDeployer {
         guard let encodedCallData = elementFunction.encodeParameters(parameters) else {
             fatalError("Failed to encode function.")
         }
+        
+#if DEBUG
+        print("salt: \(salt.toHexString().addHexPrefix())")
+        print("bytecode: \(bytecode.toHexString().addHexPrefix())")
+        print("bytecodeHash: \(bytecodeHash.toHexString().addHexPrefix())")
+        print("calldata: \(calldata.toHexString().addHexPrefix())")
+        print("encodedCallData: \(encodedCallData.toHexString().addHexPrefix())")
+#endif
         
         return encodedCallData
     }

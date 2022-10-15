@@ -65,6 +65,7 @@ class JsonRpc2_0ZkSync: ZkSync {
                        completion: completion)
     }
     
+    // FIXME: Is this functionality needed?
     func zksGetTransactionTrace(_ transactionHash: String,
                                 completion: @escaping (Result<TransactionTrace>) -> Void) {
         transport.send(method: "zks_getTransactionTrace",

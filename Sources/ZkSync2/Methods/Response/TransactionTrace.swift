@@ -7,7 +7,6 @@
 
 import Foundation
 
-// ZkSync2 (Java): ZksTransactionTrace.java
 struct TransactionTrace: Decodable {
 
 }

@@ -7,7 +7,6 @@
 
 import Foundation
 
-// ZkSync2 (Java): ZksContractDebugInfo.java
 struct ContractDebugInfo: Decodable {
     
 }

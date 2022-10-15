@@ -76,7 +76,33 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     }
     
     func testDeployWithConstructor() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let nonce = try! self.wallet.getNonce().wait()
+            XCTAssertEqual(nonce, BigUInt(0))
+            
+            let contractAddress = ContractUtils.generateContractAddress(address: self.credentials.address,
+                                                                        nonce: nonce).toHexString().addHexPrefix()
+            
+            print("Contract address: \(contractAddress)")
+            assert(contractAddress == "0xf2e246bb76df876cef8b38ae84130f4f55de395b")
+            
+            let code = try! self.wallet.zkSync.web3.eth.getCodePromise(address: EthereumAddress(contractAddress)!,
+                                                                       onBlock: DefaultBlockParameterName.pending.rawValue).wait()
+            XCTAssertEqual(code, "0x")
+            
+            let constructor = ConstructorContract.encodeConstructor(a: BigUInt(42),
+                                                                    b: BigUInt(43),
+                                                                    shouldRevert: false)
+            XCTAssertEqual(constructor.toHexString(), "000000000000000000000000000000000000000000000000000000000000002a000000000000000000000000000000000000000000000000000000000000002b0000000000000000000000000000000000000000000000000000000000000000")
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1000.0)
     }
     
     func testExecute() {

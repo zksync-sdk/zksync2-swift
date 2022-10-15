@@ -11,7 +11,7 @@ import BigInt
 
 class ConstructorContract {
     
-    static func encodeConstructor(_ a: BigUInt, b: BigUInt, shouldRevert: Bool) -> Data {
+    static func encodeConstructor(a: BigUInt, b: BigUInt, shouldRevert: Bool) -> Data {
         let inputs = [
             ABI.Element.InOut(name: "a", type: .uint(bits: 256)),
             ABI.Element.InOut(name: "b", type: .uint(bits: 256)),

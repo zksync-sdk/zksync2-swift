@@ -172,7 +172,7 @@ class DefaultEthereumProvider: EthereumProvider {
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip1559
             
-            let chainID = BigUInt(9) // 9 or 5?
+            let chainID = try! web3.eth.getChainIdPromise().wait()
             transactionOptions.chainID = chainID
             let nonce = try! web3.eth.getTransactionCount(address: EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")!)
             let noncePolicy: TransactionOptions.NoncePolicy = .manual(nonce)

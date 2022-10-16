@@ -13,11 +13,11 @@ import PromiseKit
 
 class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
-    static let L1NodeUrl = URL(string: "http://206.189.96.247:8545")!
-    static let L2NodeUrl = URL(string: "http://206.189.96.247:3050")!
+    // static let L1NodeUrl = URL(string: "http://206.189.96.247:8545")!
+    // static let L2NodeUrl = URL(string: "http://206.189.96.247:3050")!
     
-//    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/25be7ab42c414680a5f89297f8a11a4d")!
-//    static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
+    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/25be7ab42c414680a5f89297f8a11a4d")!
+    static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
     let ethToken = Token.ETH
     
@@ -25,7 +25,11 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     let credentials = Credentials(BigUInt.one)
     
+    var signer: EthSigner!
+    
     var chainId: BigUInt!
+    
+    var feeProvider: ZkTransactionFeeProvider!
     
     let contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067"
     
@@ -35,12 +39,15 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
-            let web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl)
-            self.zkSync = JsonRpc2_0ZkSync(web3,
-                                           transport: HTTPTransport(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl))
+            self.zkSync = JsonRpc2_0ZkSync(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl)
             
-            self.chainId = try! self.zkSync.chainId().wait()
-            XCTAssertEqual(self.chainId, BigUInt(270))
+            self.chainId = try! self.zkSync.web3.eth.getChainIdPromise().wait()
+            
+            self.signer = PrivateKeyEthSigner(self.credentials,
+                                              chainId: self.chainId)
+            
+            self.feeProvider = DefaultTransactionFeeProvider(zkSync: self.zkSync,
+                                                             feeToken: self.ethToken)
             
             expectation.fulfill()
         }

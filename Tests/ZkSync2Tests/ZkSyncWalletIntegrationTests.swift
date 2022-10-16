@@ -66,7 +66,37 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     }
     
     func testDeposit() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
+            
+            let amount = Web3.Utils.parseToBigUInt("9", units: .eth)!
+            
+            let gasProvider = DefaultGasProvider()
+            
+            let defaultEthereumProvider = try! DefaultEthereumProvider.load(self.wallet.zkSync,
+                                                                            web3: web3,
+                                                                            gasProvider: gasProvider).wait()
+            
+            let transactionSendingResult = try! defaultEthereumProvider.deposit(with: Token.ETH,
+                                                                                amount: amount,
+                                                                                to: self.credentials.address).wait()
+            
+            print("Transaction hash: \(transactionSendingResult.hash)")
+            
+            Thread.sleep(forTimeInterval: 1.0)
+            
+            let transactionReceipt = try! self.wallet.zkSync.web3.eth.getTransactionReceiptPromise(transactionSendingResult.hash).wait()
+            print("Transaction receipt: \(transactionReceipt)")
+            XCTAssertEqual(transactionReceipt.status, .ok)
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1000.0)
     }
     
     func testTransfer() {

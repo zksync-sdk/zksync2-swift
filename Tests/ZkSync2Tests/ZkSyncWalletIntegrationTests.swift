@@ -72,7 +72,43 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     }
     
     func testDeploy() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let nonce = try! self.wallet.getNonce().wait()
+            XCTAssertEqual(nonce, BigUInt(0))
+            
+            let contractAddress = ContractUtils.generateContractAddress(address: self.credentials.address,
+                                                                        nonce: nonce).toHexString().addHexPrefix()
+            
+            print("Contract address: \(contractAddress)")
+            assert(contractAddress == "0xf2e246bb76df876cef8b38ae84130f4f55de395b")
+            
+            let code = try! self.wallet.zkSync.web3.eth.getCodePromise(address: EthereumAddress(contractAddress)!,
+                                                                       onBlock: DefaultBlockParameterName.pending.rawValue).wait()
+            XCTAssertEqual(code, "0x")
+            
+            let counterContractBinary = Data(fromHex: CounterContract.Binary)!
+            
+            let transactionSendingResult = try! self.wallet.deploy(counterContractBinary).wait()
+            
+            Thread.sleep(forTimeInterval: 1.0)
+            
+            let transactionReceipt = try! self.wallet.zkSync.web3.eth.getTransactionReceiptPromise(transactionSendingResult.hash).wait()
+            print("Transaction receipt: \(transactionReceipt)")
+            XCTAssertEqual(transactionReceipt.status, .ok)
+            
+            let codeDeployed = try! self.wallet.zkSync.web3.eth.getCodePromise(address: EthereumAddress(contractAddress)!,
+                                                                               onBlock: DefaultBlockParameterName.pending.rawValue).wait()
+            print("Deployed code: \(codeDeployed)")
+            XCTAssertNotEqual(codeDeployed, "0x")
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1000.0)
     }
     
     func testDeployWithConstructor() {

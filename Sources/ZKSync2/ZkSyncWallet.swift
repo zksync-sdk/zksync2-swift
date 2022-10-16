@@ -380,7 +380,7 @@ public class ZKSyncWallet {
         ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
         ethereumParameters.from = transaction.parameters.from
         
-        let prepared = EthereumTransaction(type: .eip712,
+        var prepared = EthereumTransaction(type: .eip712,
                                            to: transaction.to,
                                            nonce: nonce,
                                            chainID: chainID,
@@ -395,7 +395,17 @@ public class ZKSyncWallet {
         
         print("Signature: \(signature))")
         
-        // TODO: Implement transaction sending functionality.
-        fatalError("Implement.")
+        let unmarshalledSignature: SECP256K1.UnmarshaledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+        prepared.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+        prepared.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+        prepared.envelope.v = BigUInt(unmarshalledSignature.v)
+        
+        guard let message = transaction.encode(for: .transaction) else {
+            fatalError("Failed to encode transaction.")
+        }
+        
+        print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
+        
+        return zkSync.web3.eth.sendRawTransactionPromise(transaction)
     }
 }

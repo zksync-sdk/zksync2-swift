@@ -107,12 +107,15 @@ public class ZKSyncWallet {
             nonceToUse = try! getNonce()
         }
         
-        let estimate = EthereumTransaction.createFunctionCallTransaction(from: from,
+        var estimate = EthereumTransaction.createFunctionCallTransaction(from: from,
                                                                          to: to,
                                                                          ergsPrice: BigUInt.zero,
                                                                          ergsLimit: BigUInt.zero,
                                                                          value: txAmount,
                                                                          data: calldata)
+        
+        // TODO: Verify chainID value.
+        estimate.envelope.parameters.chainID = signer.domain.chainId
         
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
@@ -205,11 +208,14 @@ public class ZKSyncWallet {
         
         semaphore.wait()
         
-        let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
+        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
                                                                          to: EthereumAddress(l2Bridge)!,
                                                                          ergsPrice: BigUInt.zero,
                                                                          ergsLimit: BigUInt.zero,
                                                                          data: calldata)
+        
+        // TODO: Verify chainID value.
+        estimate.envelope.parameters.chainID = signer.domain.chainId
         
         return estimateAndSend(estimate, nonce: nonceToUse)
     }

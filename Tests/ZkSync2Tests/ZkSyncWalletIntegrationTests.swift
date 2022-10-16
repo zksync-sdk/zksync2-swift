@@ -64,7 +64,38 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     }
     
     func testTransfer() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let amount = BigUInt(500000000000000000)
+            
+            let desiredFee = BigUInt(10560).multiplied(by: BigUInt(28572))
+            
+            let balance = try! self.wallet.zkSync.web3.eth.getBalancePromise(address: self.credentials.ethereumAddress,
+                                                                             onBlock: ZkBlockParameterName.committed.rawValue).wait()
+            print("Balance: \(balance)")
+            
+            let transactionSendingResult = try! self.wallet.transfer(self.credentials.address, amount: amount).wait()
+            
+            Thread.sleep(forTimeInterval: 1.0)
+            
+            let transactionReceipt = try! self.wallet.zkSync.web3.eth.getTransactionReceiptPromise(transactionSendingResult.hash).wait()
+            print("Transaction receipt: \(transactionReceipt)")
+            XCTAssertEqual(transactionReceipt.status, .ok)
+            
+            let balanceNow = try! self.wallet.zkSync.web3.eth.getBalancePromise(address: self.credentials.ethereumAddress,
+                                                                                onBlock: ZkBlockParameterName.committed.rawValue).wait()
+            
+            print("Balance now: \(balance)")
+            
+            XCTAssertEqual(balanceNow, balance.subtracting(amount).subtracting(desiredFee))
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1000.0)
     }
     
     func testWithdraw() {

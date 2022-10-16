@@ -285,13 +285,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
             transaction.envelope.v = BigUInt(unmarshalledSignature.v)
             
-            guard let message = transaction.encode(for: .signature) else {
+            guard let message = transaction.encode(for: .transaction) else {
                 fatalError("Failed to encode transaction.")
             }
             
             print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
             
-            let sent = self.zkSync.web3.eth.sendRawTransactionPromise(message)
+            let sent = try! self.zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
             print("Result: \(sent)")
             
             expectation.fulfill()
@@ -330,6 +330,25 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testEstimateGas_Execute() {
         
+    }
+    
+    func testEstimateGas_DeployContract() {
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let estimate = EthereumTransaction.create2ContractTransaction(from: self.credentials.ethereumAddress,
+                                                                          ergsPrice: BigUInt.zero,
+                                                                          ergsLimit: BigUInt.zero,
+                                                                          bytecode: Data.fromHex(CounterContract.Binary)!)
+            
+            let estimateGas = try! self.zkSync.web3.eth.estimateGasPromise(estimate, transactionOptions: nil).wait()
+            print("estimateGas: \(estimateGas)")
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testEstimateFee_DeployContract() {

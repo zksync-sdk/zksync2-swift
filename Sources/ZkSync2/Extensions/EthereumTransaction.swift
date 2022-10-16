@@ -85,7 +85,7 @@ extension EthereumTransaction {
                                            ergsPrice: BigUInt,
                                            ergsLimit: BigUInt,
                                            bytecode: Data,
-                                           calldata: Data) -> EthereumTransaction {
+                                           calldata: Data = Data()) -> EthereumTransaction {
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.from = from

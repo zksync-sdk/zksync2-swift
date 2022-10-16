@@ -228,7 +228,76 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testTransferNativeToSelf() {
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: self.credentials.ethereumAddress,
+                                                                             onBlock: ZkBlockParameterName.committed.rawValue).wait()
+            
+            let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
+                                                                             to: self.credentials.ethereumAddress,
+                                                                             ergsPrice: BigUInt.zero,
+                                                                             ergsLimit: BigUInt.zero,
+                                                                             data: Data(fromHex: "0x")!)
+            
+            // FIXME: estimateGas value is slightly different on zksync-java
+            let estimateGas = BigUInt(936778)
+            // let estimateGas = try! self.zkSync.web3.eth.estimateGasPromise(estimate, transactionOptions: nil).wait()
+            print("estimateGas: \(estimateGas)")
+            
+            let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
+            print("gasPrice: \(gasPrice)")
+            
+            print("Fee for transaction: \(estimateGas.multiplied(by: gasPrice))")
+            
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.type = .eip712
+            transactionOptions.from = self.credentials.ethereumAddress
+            transactionOptions.to = estimate.to
+            transactionOptions.gasLimit = .manual(estimateGas)
+            transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))
+            transactionOptions.maxFeePerGas = .manual(gasPrice)
+            
+            let value: BigUInt = Web3.Utils.parseToBigUInt("1", units: .eth)!
+            transactionOptions.value = value
+            transactionOptions.nonce = .manual(nonce)
+            transactionOptions.chainID = self.chainId
+            
+            var ethereumParameters = EthereumParameters(from: transactionOptions)
+            ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
+            
+            var transaction = EthereumTransaction(type: .eip712,
+                                                  to: estimate.to,
+                                                  nonce: nonce,
+                                                  chainID: self.chainId,
+                                                  value: value,
+                                                  data: estimate.data,
+                                                  parameters: ethereumParameters)
+            
+            let signature = self.signer.signTypedData(self.signer.domain, typedData: transaction).addHexPrefix()
+            print("signature: \(signature)")
+            
+            assert(signature == "0xd8e0210f361341cb3aeda0467d4ba68fc1d8eed75bef8858a45adff5f9d7e1464f95a07c724284d66b4a0971a1c4175fbecddf982cb9eee39f26a832848c48021c")
+            
+            let unmarshalledSignature: SECP256K1.UnmarshaledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+            transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+            transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+            transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+            
+            guard let message = transaction.encode(for: .signature) else {
+                fatalError("Failed to encode transaction.")
+            }
+            
+            print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
+            
+            let sent = self.zkSync.web3.eth.sendRawTransactionPromise(message)
+            print("Result: \(sent)")
+            
+            expectation.fulfill()
+        }
         
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testTransferNativeToSelfWeb3j_Legacy() {

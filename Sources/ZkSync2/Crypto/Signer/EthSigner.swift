@@ -12,7 +12,6 @@ protocol EthSigner {
     
     var address: String { get }
     
-    // Can be potentially replaced by `EIP712Domain` from web3swift.
     var domain: EIP712Domain { get }
     
     func signTypedData<S: Structurable>(_ domain: EIP712Domain,

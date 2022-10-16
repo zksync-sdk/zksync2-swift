@@ -78,6 +78,7 @@ class ZkTransactionEncoderTests: XCTestCase {
                                               data: calldata,
                                               parameters: ethereumParameters)
         
+        // FIXME: Transaction encoding should be used.
         guard let encodedTransaction = transaction.encode(for: .signature)?.toHexString().addHexPrefix() else {
             XCTFail("Encoded transaction should be valid.")
             return
@@ -145,7 +146,7 @@ class ZkTransactionEncoderTests: XCTestCase {
                                               data: calldata,
                                               parameters: ethereumParameters)
         
-        guard let encodedTransaction = transaction.encode(for: .signature)?.toHexString().addHexPrefix() else {
+        guard let encodedTransaction = transaction.encode(for: .transaction)?.toHexString().addHexPrefix() else {
             XCTFail("Encoded transaction should be valid.")
             return
         }
@@ -162,7 +163,7 @@ class ZkTransactionEncoderTests: XCTestCase {
         let calldata = ContractDeployer.encodeCreate2(bytecodeBytes)
         let transaction = deployTransaction(calldata, bytecodeBytes: bytecodeBytes)
         
-        guard let encodedTransaction = transaction.encode(for: .signature) else {
+        guard let encodedTransaction = transaction.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
         }
         
@@ -225,7 +226,7 @@ class ZkTransactionEncoderTests: XCTestCase {
         
         let transaction = executeTransaction(encodedFunction)
         
-        guard let encodedTransaction = transaction.encode(for: .signature) else {
+        guard let encodedTransaction = transaction.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
         }
         

@@ -49,20 +49,41 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         
     }
     
-    func testSendMoney() {
-        guard let web3 = try? Web3.new(ZkSyncWalletIntegrationTests.L1NodeUrl) else {
-            XCTFail("web3 should be valid.")
-            return
+    func testSendTestMoney() {
+        let expectation = expectation(description: "Expectation")
+        
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let web3 = try! Web3.new(ZkSyncWalletIntegrationTests.L1NodeUrl)
+            let account = try! web3.eth.getAccountsPromise().wait().first!
+            
+            let value = Web3.Utils.parseToBigUInt("1000", units: .eth)!
+            XCTAssertEqual(value.toHexString().addHexPrefix(), "0x3635c9adc5dea00000")
+            
+            let chainID = try! web3.eth.getChainIdPromise().wait()
+            
+            let sent = EthereumTransaction.createEtherTransaction(from: account,
+                                                                  nonce: nil,
+                                                                  gasPrice: BigUInt.zero,
+                                                                  gasLimit: BigUInt(21_000),
+                                                                  to: self.credentials.ethereumAddress,
+                                                                  value: value,
+                                                                  chainID: chainID)
+            
+            let transactionSendingResult = try! web3.eth.sendTransactionPromise(sent).wait()
+            print("Transaction hash: \(transactionSendingResult.hash)")
+            
+            Thread.sleep(forTimeInterval: 1.0)
+            
+            let transactionReceipt = try! self.wallet.zkSync.web3.eth.getTransactionReceiptPromise(transactionSendingResult.hash).wait()
+            print("Transaction receipt: \(transactionReceipt)")
+            XCTAssertEqual(transactionReceipt.status, .ok)
+            
+            expectation.fulfill()
         }
         
-        do {
-            let account = try web3.eth.getAccounts().first
-            XCTAssertNotNil(account)
-        } catch {
-            XCTFail()
-        }
-        
-        // web3.eth.sendTransaction(EthereumTransaction, transactionOptions: <#T##TransactionOptions#>)
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testDeposit() {

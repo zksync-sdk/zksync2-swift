@@ -18,7 +18,7 @@ protocol ZkSync {
     func zksEstimateFee(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<Fee>) -> Void)
     
-    func zksMainContract(completion: @escaping (Result<MainContract>) -> Void)
+    func zksMainContract(completion: @escaping (Result<String>) -> Void)
     
     func zksGetConfirmedTokens(_ from: Int,
                                limit: Int,

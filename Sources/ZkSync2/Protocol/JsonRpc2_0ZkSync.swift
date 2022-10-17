@@ -27,7 +27,7 @@ class JsonRpc2_0ZkSync: ZkSync {
                        completion: completion)
     }
     
-    func zksMainContract(completion: @escaping (Result<MainContract>) -> Void) {
+    func zksMainContract(completion: @escaping (Result<String>) -> Void) {
         transport.send(method: "zks_getMainContract",
                        params: [String](),
                        completion: completion)

@@ -500,4 +500,19 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5.0)
     }
+    
+    func testGetMainContract() {
+        let expectation = expectation(description: "Expectation.")
+        zkSync.zksMainContract { result in
+            switch result {
+            case .success(let mainContract):
+                print(mainContract)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
 }

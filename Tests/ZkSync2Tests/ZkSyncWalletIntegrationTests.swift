@@ -273,7 +273,29 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
             
             XCTAssertNotEqual("0x", codeDeployed)
             
-            // TODO: Finish test.
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.from = self.credentials.ethereumAddress
+            
+            let to = EthereumAddress(contractAddress)!
+            transactionOptions.to = to
+            
+            let chainID = try! self.wallet.zkSync.web3.eth.getChainIdPromise().wait()
+            
+            let data = CounterContract.get()
+            
+            let ethereumParameters = EthereumParameters(from: transactionOptions)
+            let transaction = EthereumTransaction(type: .eip1559,
+                                                  to: to,
+                                                  nonce: BigUInt.zero,
+                                                  chainID: chainID,
+                                                  value: BigUInt.zero,
+                                                  data: data,
+                                                  parameters: ethereumParameters)
+            
+            let after = try! self.wallet.zkSync.web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            print("Result: \(after)")
+            
+            XCTAssertEqual(BigUInt(42).multiplied(by: BigUInt(43)), BigUInt(fromHex: after.toHexString().addHexPrefix()))
             
             expectation.fulfill()
         }

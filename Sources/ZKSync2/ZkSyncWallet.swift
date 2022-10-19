@@ -260,31 +260,20 @@ public class ZKSyncWallet {
     }
     
     func execute(_ contractAddress: String,
-                 functionElement: ABI.Element,
-                 parameters: [AnyObject]) -> Promise<TransactionSendingResult> {
+                 encodedFunction: Data) -> Promise<TransactionSendingResult> {
         execute(contractAddress,
-                function: functionElement,
-                parameters: parameters,
+                encodedFunction: encodedFunction,
                 nonce: nil)
     }
     
     func execute(_ contractAddress: String,
-                 `function`: ABI.Element,
-                 parameters: [AnyObject],
+                 encodedFunction: Data,
                  nonce: BigUInt?) -> Promise<TransactionSendingResult> {
-        guard case .function(_) = function else {
-            fatalError("Element should have function type.")
-        }
-        
         let nonceToUse: BigUInt
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
             nonceToUse = try! getNonce()
-        }
-        
-        guard let calldata = function.encodeParameters(parameters) else {
-            fatalError("Failed to encode parameters.")
         }
         
         // TODO: Validate calldata.
@@ -293,7 +282,7 @@ public class ZKSyncWallet {
                                                                          to: EthereumAddress(contractAddress)!,
                                                                          ergsPrice: BigUInt.zero,
                                                                          ergsLimit: BigUInt.zero,
-                                                                         data: calldata)
+                                                                         data: encodedFunction)
         
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
@@ -364,13 +353,13 @@ public class ZKSyncWallet {
         let chainID = signer.domain.chainId
         let gas = try! feeProvider.getGasLimit(for: transaction).wait()
         let gasPrice = feeProvider.gasPrice
-    
+        
 #if DEBUG
         print("chainID: \(chainID)")
         print("gas: \(gas)")
         print("gasPrice: \(gasPrice)")
 #endif
-    
+        
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.chainID = chainID

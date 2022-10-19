@@ -36,4 +36,22 @@ struct CounterContract {
         
         return encodedCallData
     }
+    
+    static func get() -> Data {
+        let function = ABI.Element.Function(name: "get",
+                                            inputs: [],
+                                            outputs: [],
+                                            constant: false,
+                                            payable: false)
+        
+        let elementFunction: ABI.Element = .function(function)
+        
+        guard let encodedFunction = elementFunction.encodeParameters([]) else {
+            fatalError("Failed to encode function.")
+        }
+        
+        print("Encoded function: \(encodedFunction.toHexString().addHexPrefix())")
+        
+        return encodedFunction
+    }
 }

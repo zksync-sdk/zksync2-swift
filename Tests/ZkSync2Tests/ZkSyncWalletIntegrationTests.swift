@@ -304,6 +304,68 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     }
     
     func testExecute() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let bytecode = Data(fromHex: CounterContract.Binary)!
+            
+            var transactionSendingResult = try! self.wallet.deploy(bytecode).wait()
+            
+            Thread.sleep(forTimeInterval: 1.0)
+            
+            var transactionReceipt = try! self.wallet.zkSync.web3.eth.getTransactionReceiptPromise(transactionSendingResult.hash).wait()
+            print("Transaction receipt: \(transactionReceipt)")
+            XCTAssertEqual(transactionReceipt.status, .ok)
+            
+            let contractAddress = transactionReceipt.contractAddress!
+            
+            print("contractAddress: \(contractAddress.address)")
+            
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.from = self.credentials.ethereumAddress
+            
+            let to = contractAddress
+            transactionOptions.to = to
+            
+            let chainID = try! self.wallet.zkSync.web3.eth.getChainIdPromise().wait()
+            
+            let data = CounterContract.get()
+            
+            var ethereumParameters = EthereumParameters(from: transactionOptions)
+            var transaction = EthereumTransaction(type: .eip1559,
+                                                  to: to,
+                                                  nonce: BigUInt.zero,
+                                                  chainID: chainID,
+                                                  value: BigUInt.zero,
+                                                  data: data,
+                                                  parameters: ethereumParameters)
+            
+            let before = try! self.wallet.zkSync.web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            print("Result: \(before)")
+            
+            XCTAssertEqual(BigUInt.zero, BigUInt(fromHex: before.toHexString().addHexPrefix()))
+            
+            transactionSendingResult = try! self.wallet.execute(contractAddress.address,
+                                                                encodedFunction: CounterContract.encodeIncrement(BigUInt(10))).wait()
+            
+            print("Transaction hash: \(transactionSendingResult.hash)")
+            
+            Thread.sleep(forTimeInterval: 1.0)
+            
+            transactionReceipt = try! self.wallet.zkSync.web3.eth.getTransactionReceiptPromise(transactionSendingResult.hash).wait()
+            print("Transaction receipt: \(transactionReceipt)")
+            XCTAssertEqual(transactionReceipt.status, .ok)
+            
+            let after = try! self.wallet.zkSync.web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            print("Result: \(after)")
+            
+            XCTAssertEqual(BigUInt(10), BigUInt(after))
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1000.0)
     }
 }

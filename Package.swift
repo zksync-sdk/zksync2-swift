@@ -32,6 +32,9 @@ let package = Package(
             ]),
         .testTarget(
             name: "ZkSync2Tests",
-            dependencies: ["ZkSync2"]),
+            dependencies: ["ZkSync2"],
+            resources: [
+                .process("Resources")
+            ]),
     ]
 )

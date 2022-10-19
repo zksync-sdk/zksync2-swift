@@ -254,6 +254,27 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
                                                                     shouldRevert: false)
             XCTAssertEqual(constructor.toHexString(), "000000000000000000000000000000000000000000000000000000000000002a000000000000000000000000000000000000000000000000000000000000002b0000000000000000000000000000000000000000000000000000000000000000")
             
+            let constructorContractBinaryFileURL = Bundle.module.url(forResource: "constructorContractBinary", withExtension: "hex")!
+            let constructorContractContents = try! Data(contentsOf: constructorContractBinaryFileURL)
+            
+            let transactionSendingResult = try! self.wallet.deploy(constructorContractContents,
+                                                                   calldata: constructor).wait()
+            
+            Thread.sleep(forTimeInterval: 1.0)
+            
+            let transactionReceipt = try! self.wallet.zkSync.web3.eth.getTransactionReceiptPromise(transactionSendingResult.hash).wait()
+            print("Transaction receipt: \(transactionReceipt)")
+            XCTAssertEqual(transactionReceipt.status, .ok)
+            
+            let codeDeployed = try! self.wallet.zkSync.web3.eth.getCodePromise(address: contractAddress,
+                                                                               onBlock: DefaultBlockParameterName.pending.rawValue).wait()
+            
+            print("Code deployed: \(codeDeployed)")
+            
+            XCTAssertNotEqual("0x", codeDeployed)
+            
+            // TODO: Finish test.
+            
             expectation.fulfill()
         }
         

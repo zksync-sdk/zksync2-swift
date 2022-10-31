@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BridgeAddresses: Decodable {
+public struct BridgeAddresses: Decodable {
     
     var l1EthDefaultBridge: String
     var l2EthDefaultBridge: String

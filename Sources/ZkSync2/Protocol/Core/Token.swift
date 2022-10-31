@@ -8,11 +8,11 @@
 import Foundation
 import BigInt
 
-struct Token: TokenId, Decodable {
+public struct Token: TokenId, Decodable {
     
     static let DefaultAddress = "0x0000000000000000000000000000000000000000"
     
-    static var ETH: Token {
+    public static var ETH: Token {
         return Token(l1Address: Token.DefaultAddress,
                      l2Address: Token.DefaultAddress,
                      symbol: "ETH",

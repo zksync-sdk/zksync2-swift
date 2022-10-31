@@ -18,16 +18,16 @@ public class ZKSyncWallet {
     
     let feeProvider: ZkTransactionFeeProvider
     
+    public init(_ zkSync: ZkSync, ethSigner: EthSigner, feeToken: Token) {
+        self.zkSync = zkSync
+        self.signer = ethSigner
+        self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: feeToken)
+    }
+    
     init(_ zkSync: ZkSync, ethSigner: EthSigner, feeProvider: ZkTransactionFeeProvider) {
         self.zkSync = zkSync
         self.signer = ethSigner
         self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: Token.ETH)
-    }
-    
-    init(_ zkSync: ZkSync, ethSigner: EthSigner, feeToken: Token) {
-        self.zkSync = zkSync
-        self.signer = ethSigner
-        self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: feeToken)
     }
     
     func transfer(_ to: String,

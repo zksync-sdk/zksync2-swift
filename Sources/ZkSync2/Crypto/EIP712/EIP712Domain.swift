@@ -9,7 +9,7 @@ import Foundation
 import BigInt
 import web3swift
 
-class EIP712Domain: Structurable {
+public class EIP712Domain: Structurable {
     
     static let name = "zkSync"
     
@@ -65,11 +65,11 @@ class EIP712Domain: Structurable {
         self.verifyingContract = ethereumAddress
     }
     
-    func getTypeName() -> String {
+    public func getTypeName() -> String {
         return "EIP712Domain"
     }
     
-    func eip712types() -> [EIP712.`Type`] {
+    public func eip712types() -> [EIP712.`Type`] {
         var eip712types: [EIP712.`Type`] = [
             ("name", value: name),
             ("version", value: version),

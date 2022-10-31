@@ -11,11 +11,11 @@ import BigInt
 
 extension EthereumTransaction: Structurable {
     
-    func getTypeName() -> String {
+    public func getTypeName() -> String {
         "Transaction"
     }
     
-    func eip712types() -> [ZkSync2.EIP712.`Type`] {
+    public func eip712types() -> [ZkSync2.EIP712.`Type`] {
         let envelope = envelope as! EIP712Envelope
         
         return [

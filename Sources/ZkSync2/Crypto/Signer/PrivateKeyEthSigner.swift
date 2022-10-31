@@ -9,9 +9,9 @@ import Foundation
 import BigInt
 import web3swift
 
-class PrivateKeyEthSigner: EthSigner {
+public class PrivateKeyEthSigner: EthSigner {
     
-    var address: String {
+    public var address: String {
         return credentials.address
     }
     
@@ -19,11 +19,11 @@ class PrivateKeyEthSigner: EthSigner {
         return credentials.ethereumAddress
     }
     
-    var domain: EIP712Domain
+    public var domain: EIP712Domain
     
     let credentials: Credentials
     
-    init(_ credentials: Credentials, chainId: BigUInt) {
+    public init(_ credentials: Credentials, chainId: BigUInt) {
         self.credentials = credentials
         domain = EIP712Domain(chainId)
     }
@@ -43,13 +43,13 @@ class PrivateKeyEthSigner: EthSigner {
         domain = EIP712Domain(zkSyncNetwork)
     }
     
-    func signTypedData<S>(_ domain: EIP712Domain,
+    public func signTypedData<S>(_ domain: EIP712Domain,
                           typedData: S) -> String where S : Structurable {
         return signMessage(EIP712Encoder.typedDataToSignedBytes(domain, typedData: typedData),
                            addPrefix: false)
     }
     
-    func verifyTypedData<S>(_ domain: EIP712Domain,
+    public func verifyTypedData<S>(_ domain: EIP712Domain,
                             typedData: S,
                             signature: String) -> Bool where S : Structurable {
         return verifySignature(signature,
@@ -57,12 +57,12 @@ class PrivateKeyEthSigner: EthSigner {
                                prefixed: false)
     }
     
-    func signMessage(_ message: Data) -> String {
+    public func signMessage(_ message: Data) -> String {
         return signMessage(message, addPrefix: true)
     }
     
     // TODO: Implement signing with no prefix.
-    func signMessage(_ message: Data, addPrefix: Bool) -> String {
+    public func signMessage(_ message: Data, addPrefix: Bool) -> String {
         let messageToSign: Data
         let needToHash: Bool
         if addPrefix {
@@ -86,7 +86,7 @@ class PrivateKeyEthSigner: EthSigner {
         return signatureData.toHexString().addHexPrefix()
     }
     
-    func verifySignature(_ signature: String,
+    public func verifySignature(_ signature: String,
                          message: Data) -> Bool {
         return verifySignature(signature,
                                message: message,
@@ -94,7 +94,7 @@ class PrivateKeyEthSigner: EthSigner {
     }
     
     // TODO: Implement verification with no prefix.
-    func verifySignature(_ signature: String,
+    public func verifySignature(_ signature: String,
                          message: Data,
                          prefixed: Bool) -> Bool {
         let messageHash: Data

@@ -8,7 +8,7 @@
 import Foundation
 import web3swift
 
-protocol EthSigner {
+public protocol EthSigner {
     
     var address: String { get }
     

@@ -10,11 +10,11 @@ import web3swift
 import BigInt
 import CryptoSwift
 
-protocol Structurable: EIP712Hashable {
+public protocol Structurable: EIP712Hashable {
     
 }
 
-protocol EIP712Hashable {
+public protocol EIP712Hashable {
     
     var typehash: Data { get }
     
@@ -25,9 +25,9 @@ protocol EIP712Hashable {
     func eip712types() -> [EIP712.`Type`]
 }
 
-class EIP712 {
+public class EIP712 {
     
-    typealias `Type` = (label: String, value: Any)
+    public typealias `Type` = (label: String, value: Any)
     typealias Address = EthereumAddress
     typealias UInt256 = BigUInt
     typealias UInt = Swift.UInt
@@ -48,7 +48,7 @@ class EIP712 {
     }
 }
 
-extension EIP712Hashable {
+public extension EIP712Hashable {
     
     func dependencies() -> [EIP712Hashable] {
         let dependencies = eip712types()
@@ -108,7 +108,7 @@ extension EIP712Hashable {
         return selfPrimaryType + result.sorted().joined()
     }
     
-    var typehash: Data {
+    public var typehash: Data {
         EIP712.keccak256(encodeType())
     }
     

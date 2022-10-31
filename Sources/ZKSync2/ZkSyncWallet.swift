@@ -120,27 +120,27 @@ public class ZKSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
-    func withdraw(_ to: String,
-                  amount: BigUInt) -> Promise<TransactionSendingResult> {
+    public func withdraw(_ to: String,
+                         amount: BigUInt) -> Promise<TransactionSendingResult> {
         withdraw(to,
                  amount: amount,
                  token: nil,
                  nonce: nil)
     }
     
-    func withdraw(_ to: String,
-                  amount: BigUInt,
-                  token: Token) -> Promise<TransactionSendingResult> {
+    public func withdraw(_ to: String,
+                         amount: BigUInt,
+                         token: Token) -> Promise<TransactionSendingResult> {
         withdraw(to,
                  amount: amount,
                  token: token,
                  nonce: nil)
     }
     
-    func withdraw(_ to: String,
-                  amount: BigUInt,
-                  token: Token?,
-                  nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+    public func withdraw(_ to: String,
+                         amount: BigUInt,
+                         token: Token?,
+                         nonce: BigUInt?) -> Promise<TransactionSendingResult> {
         let tokenToUse: Token
         if let token = token {
             tokenToUse = token
@@ -259,16 +259,16 @@ public class ZKSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
-    func execute(_ contractAddress: String,
-                 encodedFunction: Data) -> Promise<TransactionSendingResult> {
+    public func execute(_ contractAddress: String,
+                        encodedFunction: Data) -> Promise<TransactionSendingResult> {
         execute(contractAddress,
                 encodedFunction: encodedFunction,
                 nonce: nil)
     }
     
-    func execute(_ contractAddress: String,
-                 encodedFunction: Data,
-                 nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+    public func execute(_ contractAddress: String,
+                        encodedFunction: Data,
+                        nonce: BigUInt?) -> Promise<TransactionSendingResult> {
         let nonceToUse: BigUInt
         if let nonce = nonce {
             nonceToUse = nonce

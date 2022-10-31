@@ -23,9 +23,48 @@ let signer: EthSigner // Initialize client
 let wallet = ZKSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
 ```
 
+## Execute contract via ZkSyncWallet
+
+```swift
+import ZkSync2
+import web3swift
+
+let wallet: ZKSyncWallet // Initialize wallet
+
+let contractAddress: String = "0x<contract_address>"
+
+func incrementFunction(_ value: BigUInt) -> Data {
+    let inputs = [
+        ABI.Element.InOut(name: "_value", type: .uint(bits: 256))
+    ]
+    
+    let function = ABI.Element.Function(name: "increment",
+                                        inputs: inputs,
+                                        outputs: [],
+                                        constant: false,
+                                        payable: false)
+    
+    let elementFunction: ABI.Element = .function(function)
+    
+    let parameters: [AnyObject] = [
+        value as AnyObject
+    ]
+    
+    guard let encodedFunction = elementFunction.encodeParameters(parameters) else {
+        fatalError("Failed to encode function.")
+    }
+    
+    return encodedFunction
+}
+
+let transactionSendingResult = try! wallet.execute(contractAddress, encodedFunction: incrementFunction(BigUInt.zero)).wait()
+```
+
 ## Withdraw funds via ZkSyncWallet
 
 ```swift
+import ZkSync2
+
 let wallet: ZKSyncWallet // Initialize wallet
 
 let amount = BigUInt(500000000000000000)

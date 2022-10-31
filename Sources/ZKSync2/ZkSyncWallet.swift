@@ -241,22 +241,22 @@ public class ZKSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
-    func deploy(_ bytecode: Data) -> Promise<TransactionSendingResult> {
+    public func deploy(_ bytecode: Data) -> Promise<TransactionSendingResult> {
         deploy(bytecode,
                calldata: nil,
                nonce: nil)
     }
     
-    func deploy(_ bytecode: Data,
-                calldata: Data?) -> Promise<TransactionSendingResult> {
+    public func deploy(_ bytecode: Data,
+                       calldata: Data?) -> Promise<TransactionSendingResult> {
         deploy(bytecode,
                calldata: calldata,
                nonce: nil)
     }
     
-    func deploy(_ bytecode: Data,
-                calldata: Data?,
-                nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+    public func deploy(_ bytecode: Data,
+                       calldata: Data?,
+                       nonce: BigUInt?) -> Promise<TransactionSendingResult> {
         let nonceToUse: BigUInt
         if let nonce = nonce {
             nonceToUse = nonce

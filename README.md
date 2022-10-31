@@ -23,6 +23,16 @@ let signer: EthSigner // Initialize client
 let wallet = ZKSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
 ```
 
+## Deploy contract via ZkSyncWallet
+
+```swift
+import ZkSync2
+
+let wallet: ZKSyncWallet // Initialize wallet
+
+let transactionSendingResult = try! wallet.deploy(Data.fromHex("0x<bytecode_of_the_contract>")!).wait()
+```
+
 ## Execute contract via ZkSyncWallet
 
 ```swift

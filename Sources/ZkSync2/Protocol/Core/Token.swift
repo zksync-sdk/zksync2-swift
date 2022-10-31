@@ -24,7 +24,7 @@ public struct Token: TokenId, Decodable {
     let symbol: String
     let decimals: Int
     
-    func intoDecimal(_ amount: BigUInt) -> Decimal {
+    public func intoDecimal(_ amount: BigUInt) -> Decimal {
         let sourceDecimal = Decimal(string: "\(amount)")!
         return sourceDecimal / pow(Decimal(10), decimals)
     }

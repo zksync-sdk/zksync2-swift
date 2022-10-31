@@ -60,6 +60,24 @@ func incrementFunction(_ value: BigUInt) -> Data {
 let transactionSendingResult = try! wallet.execute(contractAddress, encodedFunction: incrementFunction(BigUInt.zero)).wait()
 ```
 
+## Transfer funds via ZkSyncWallet
+
+```swift
+import ZkSync2
+
+let wallet: ZKSyncWallet // Initialize wallet
+
+let amount = BigUInt(500000000000000000)
+
+let transactionSendingResult = try! wallet.transfer("0x<receiver_address>", amount: amount).wait()
+
+// You can check balance
+let balance = try! wallet.getBalance().wait()
+
+// Also, you can convert amount number to decimal
+let decimalBalance = Token.ETH.intoDecimal(balance)
+```
+
 ## Withdraw funds via ZkSyncWallet
 
 ```swift

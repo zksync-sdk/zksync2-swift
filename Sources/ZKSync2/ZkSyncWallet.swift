@@ -30,27 +30,48 @@ public class ZKSyncWallet {
         self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: Token.ETH)
     }
     
-    func transfer(_ to: String,
-                  amount: BigUInt) -> Promise<TransactionSendingResult> {
+    /// Transfer coins.
+    ///
+    /// - Parameters:
+    ///   - to: Receiver address.
+    ///   - amount: Amount of funds to be transferred in minimal denomination (in Wei).
+    /// - Returns: Prepared remote call of transaction.
+    public func transfer(_ to: String,
+                         amount: BigUInt) -> Promise<TransactionSendingResult> {
         transfer(to,
                  amount: amount,
                  token: nil,
                  nonce: nil)
     }
     
-    func transfer(_ to: String,
-                  amount: BigUInt,
-                  token: Token) -> Promise<TransactionSendingResult> {
+    /// Transfer coins or tokens.
+    ///
+    /// - Parameters:
+    ///   - to: Receiver address.
+    ///   - amount: Amount of funds to be transferred in minimal denomination.
+    ///   - token: Token object supported by ZkSync.
+    /// - Returns: Prepared remote call of transaction.
+    public func transfer(_ to: String,
+                         amount: BigUInt,
+                         token: Token) -> Promise<TransactionSendingResult> {
         transfer(to,
                  amount: amount,
                  token: token,
                  nonce: nil)
     }
     
-    func transfer(_ to: String,
-                  amount: BigUInt,
-                  token: Token?,
-                  nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+    /// Transfer coins or tokens.
+    ///
+    /// - Parameters:
+    ///   - to: Receiver address.
+    ///   - amount: Amount of funds to be transferred in minimal denomination.
+    ///   - token: Token object supported by ZkSync.
+    ///   - nonce: Custom nonce value of the wallet.
+    /// - Returns: Prepared remote call of transaction.
+    public func transfer(_ to: String,
+                         amount: BigUInt,
+                         token: Token?,
+                         nonce: BigUInt?) -> Promise<TransactionSendingResult> {
         let tokenToUse: Token
         if let token = token {
             tokenToUse = token
@@ -287,26 +308,43 @@ public class ZKSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
-    func getBalance() -> Promise<BigUInt> {
+    /// Get balance of wallet in native coin (wallet address gets from `EthSigner`).
+    ///
+    /// - Returns: Prepared get balance call.
+    public func getBalance() -> Promise<BigUInt> {
         getBalance(signer.address,
                    token: Token.ETH,
                    at: .committed)
     }
     
-    func getBalance(_ token: Token) -> Promise<BigUInt> {
+    /// Get balance of wallet in `Token` (wallet address gets from `EthSigner`).
+    ///
+    /// - Parameter token: Token object supported by ZkSync.
+    /// - Returns: Prepared get balance call.
+    public func getBalance(_ token: Token) -> Promise<BigUInt> {
         getBalance(signer.address,
                    token: token,
                    at: .committed)
     }
     
-    func getBalance(_ address: String) -> Promise<BigUInt> {
+    /// Get balance of wallet in native coin.
+    ///
+    /// - Parameter address: Address of the wallet.
+    /// - Returns: Prepared get balance call.
+    public func getBalance(_ address: String) -> Promise<BigUInt> {
         getBalance(address,
                    token: Token.ETH,
                    at: .committed)
     }
     
-    func getBalance(_ address: String,
-                    token: Token) -> Promise<BigUInt> {
+    /// Get balance of wallet in `Token`.
+    ///
+    /// - Parameters:
+    ///   - address: Address of the wallet.
+    ///   - token: Token object supported by ZkSync.
+    /// - Returns: Prepared get balance call.
+    public func getBalance(_ address: String,
+                           token: Token) -> Promise<BigUInt> {
         getBalance(address,
                    token: token,
                    at: .committed)

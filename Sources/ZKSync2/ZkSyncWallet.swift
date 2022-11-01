@@ -10,7 +10,7 @@ import BigInt
 import web3swift
 import PromiseKit
 
-public class ZKSyncWallet {
+public class ZkSyncWallet {
     
     let zkSync: ZkSync
     

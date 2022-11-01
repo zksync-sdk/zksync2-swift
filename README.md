@@ -12,7 +12,7 @@ let credentials = Credentials("0x<private_key>")
 let signer: EthSigner = PrivateKeyEthSigner(credentials, chainId: chainId)
 ```
 
-## ZKSyncWallet
+## ZkSyncWallet
 
 ```swift
 import ZkSync2
@@ -20,7 +20,7 @@ import ZkSync2
 let zkSync: ZkSync // Initialize client
 let signer: EthSigner // Initialize client
 
-let wallet = ZKSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
+let wallet = ZkSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
 ```
 
 ## Deploy contract via ZkSyncWallet
@@ -28,7 +28,7 @@ let wallet = ZKSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
 ```swift
 import ZkSync2
 
-let wallet: ZKSyncWallet // Initialize wallet
+let wallet: ZkSyncWallet // Initialize wallet
 
 let transactionSendingResult = try! wallet.deploy(Data.fromHex("0x<bytecode_of_the_contract>")!).wait()
 ```
@@ -39,7 +39,7 @@ let transactionSendingResult = try! wallet.deploy(Data.fromHex("0x<bytecode_of_t
 import ZkSync2
 import web3swift
 
-let wallet: ZKSyncWallet // Initialize wallet
+let wallet: ZkSyncWallet // Initialize wallet
 
 let contractAddress: String = "0x<contract_address>"
 
@@ -75,7 +75,7 @@ let transactionSendingResult = try! wallet.execute(contractAddress, encodedFunct
 ```swift
 import ZkSync2
 
-let wallet: ZKSyncWallet // Initialize wallet
+let wallet: ZkSyncWallet // Initialize wallet
 
 let amount = BigUInt(500000000000000000)
 
@@ -93,7 +93,7 @@ let decimalBalance = Token.ETH.intoDecimal(balance)
 ```swift
 import ZkSync2
 
-let wallet: ZKSyncWallet // Initialize wallet
+let wallet: ZkSyncWallet // Initialize wallet
 
 let amount = BigUInt(500000000000000000)
 

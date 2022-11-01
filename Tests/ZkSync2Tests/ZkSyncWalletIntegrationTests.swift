@@ -21,7 +21,7 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     
     let credentials = Credentials(BigUInt.one)
     
-    var wallet: ZKSyncWallet!
+    var wallet: ZkSyncWallet!
     
     override func setUpWithError() throws {
         let expectation = expectation(description: "Expectation.")
@@ -35,7 +35,7 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
             let signer = PrivateKeyEthSigner(self.credentials,
                                              chainId: chainId)
             
-            self.wallet = ZKSyncWallet(zkSync,
+            self.wallet = ZkSyncWallet(zkSync,
                                        ethSigner: signer,
                                        feeToken: Token.ETH)
             

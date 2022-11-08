@@ -141,6 +141,12 @@ public class ZkSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
+    /// Withdraw native coins to L1 chain.
+    ///
+    /// - Parameters:
+    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
+    ///   - amount: Amount of the funds to be withdrawn.
+    /// - Returns: Prepared remote call of transaction.
     public func withdraw(_ to: String,
                          amount: BigUInt) -> Promise<TransactionSendingResult> {
         withdraw(to,
@@ -149,6 +155,13 @@ public class ZkSyncWallet {
                  nonce: nil)
     }
     
+    /// Withdraw native coins or tokens to L1 chain.
+    ///
+    /// - Parameters:
+    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
+    ///   - amount: Amount of the funds to be withdrawn.
+    ///   - token: Token object supported by ZkSync.
+    /// - Returns: Prepared remote call of transaction.
     public func withdraw(_ to: String,
                          amount: BigUInt,
                          token: Token) -> Promise<TransactionSendingResult> {
@@ -158,6 +171,14 @@ public class ZkSyncWallet {
                  nonce: nil)
     }
     
+    /// Withdraw native coins to L1 chain.
+    ///
+    /// - Parameters:
+    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
+    ///   - amount: Amount of the funds to be withdrawn.
+    ///   - token: Token object supported by ZkSync.
+    ///   - nonce: Custom nonce value of the wallet.
+    /// - Returns: Prepared remote call of transaction.
     public func withdraw(_ to: String,
                          amount: BigUInt,
                          token: Token?,
@@ -241,12 +262,22 @@ public class ZkSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
+    /// Deploy new smart-contract into chain (this method uses create2, see [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014)).
+    ///
+    /// - Parameter bytecode: Compiled bytecode of the contract.
+    /// - Returns: Prepared remote call of transaction.
     public func deploy(_ bytecode: Data) -> Promise<TransactionSendingResult> {
         deploy(bytecode,
                calldata: nil,
                nonce: nil)
     }
     
+    /// Deploy new smart-contract into chain (this method uses create2, see [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014)).
+    ///
+    /// - Parameters:
+    ///   - bytecode: Compiled bytecode of the contract.
+    ///   - calldata: Encoded constructor parameter of contract.
+    /// - Returns: Prepared remote call of transaction.
     public func deploy(_ bytecode: Data,
                        calldata: Data?) -> Promise<TransactionSendingResult> {
         deploy(bytecode,
@@ -254,6 +285,13 @@ public class ZkSyncWallet {
                nonce: nil)
     }
     
+    /// Deploy new smart-contract into chain (this method uses create2, see [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014)).
+    ///
+    /// - Parameters:
+    ///   - bytecode: Compiled bytecode of the contract.
+    ///   - calldata: Encoded constructor parameter of contract.
+    ///   - nonce: Custom nonce value of the wallet.
+    /// - Returns: Prepared remote call of transaction.
     public func deploy(_ bytecode: Data,
                        calldata: Data?,
                        nonce: BigUInt?) -> Promise<TransactionSendingResult> {
@@ -280,6 +318,12 @@ public class ZkSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
+    /// Execute function of deployed contract.
+    ///
+    /// - Parameters:
+    ///   - contractAddress: Address of deployed contract.
+    ///   - encodedFunction: Prepared function call with or without parameters.
+    /// - Returns: Prepared remote call of transaction.
     public func execute(_ contractAddress: String,
                         encodedFunction: Data) -> Promise<TransactionSendingResult> {
         execute(contractAddress,
@@ -287,6 +331,13 @@ public class ZkSyncWallet {
                 nonce: nil)
     }
     
+    /// Execute function of deployed contract.
+    ///
+    /// - Parameters:
+    ///   - contractAddress: Address of deployed contract.
+    ///   - encodedFunction: Prepared function call with or without parameters.
+    ///   - nonce: Custom nonce value of the wallet.
+    /// - Returns: Prepared remote call of transaction.
     public func execute(_ contractAddress: String,
                         encodedFunction: Data,
                         nonce: BigUInt?) -> Promise<TransactionSendingResult> {

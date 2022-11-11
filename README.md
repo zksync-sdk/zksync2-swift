@@ -26,12 +26,14 @@ let wallet = ZkSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
 ## Deploy contract (Create 2) [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014)
 
 ```swift
+import ZkSync2
 
 ```
 
 ## Deploy contract (Create)
 
 ```swift
+import ZkSync2
 
 ```
 
@@ -48,6 +50,7 @@ let transactionSendingResult = try! wallet.deploy(Data.fromHex("0x<bytecode_of_t
 ## Execute contract
 
 ```swift
+import ZkSync2
 
 ```
 
@@ -91,12 +94,14 @@ let transactionSendingResult = try! wallet.execute(contractAddress, encodedFunct
 ## Transfer funds (Native coins)
 
 ```swift
+import ZkSync2
 
 ```
 
 ## Transfer funds (ERC20 tokens)
 
 ```swift
+import ZkSync2
 
 ```
 
@@ -121,13 +126,29 @@ let decimalBalance = Token.ETH.intoDecimal(balance)
 ## Withdraw funds (Native coins)
 
 ```swift
+import ZkSync2
 
+let zkSync: ZkSync // Initialize client
+let signer: EthSigner // Initialize client
+
+let chainID = try! zkSync.web3.eth.getChainIdPromise().wait()
+
+let nonce = try! zkSync.web3.eth.getTransactionCount(address: signer.ethereumAddress,
+                                                     onBlock: ZkBlockParameterName.committed.rawValue)
 ```
 
 ## Withdraw funds (ERC20 tokens)
 
 ```swift
+import ZkSync2
 
+let zkSync: ZkSync // Initialize client
+let signer: EthSigner // Initialize client
+
+let chainID = try! zkSync.web3.eth.getChainIdPromise().wait()
+
+let nonce = try! zkSync.web3.eth.getTransactionCount(address: signer.ethereumAddress,
+                                                     onBlock: ZkBlockParameterName.committed.rawValue)
 ```
 
 ## Withdraw funds via ZkSyncWallet

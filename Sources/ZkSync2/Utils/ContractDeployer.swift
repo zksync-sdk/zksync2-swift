@@ -37,7 +37,7 @@ class ContractDeployer {
         
         let bytecodeHash = ContractDeployer.hashBytecode(bytecode)
         
-        assert(bytecodeHash.toHexString().addHexPrefix() == "0x00379c09b5568d43b0ac6533a2672ee836815530b412f082f0b2e69915aa50fc")
+        // assert(bytecodeHash.toHexString().addHexPrefix() == "0x00379c09b5568d43b0ac6533a2672ee836815530b412f082f0b2e69915aa50fc")
         
         let parameters: [AnyObject] = [
             salt as AnyObject,

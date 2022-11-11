@@ -9,14 +9,14 @@ import Foundation
 import BigInt
 import web3swift
 
-typealias Result<T> = Swift.Result<T, Error>
+public typealias Result<T> = Swift.Result<T, Error>
 
-protocol ZkSync {
+public protocol ZkSync {
     
     var web3: web3 { get set }
     
-    func zksEstimateFee(_ transaction: EthereumTransaction,
-                        completion: @escaping (Result<Fee>) -> Void)
+//    func zksEstimateFee(_ transaction: EthereumTransaction,
+//                        completion: @escaping (Result<Fee>) -> Void)
     
     func zksMainContract(completion: @escaping (Result<String>) -> Void)
     
@@ -29,26 +29,26 @@ protocol ZkSync {
     
     func zksL1ChainId(completion: @escaping (Result<BigUInt>) -> Void)
     
-    func zksGetContractDebugInfo(_ contractAddress: String,
-                                 completion: @escaping (Result<ContractDebugInfo>) -> Void)
-    
-    func zksGetTransactionTrace(_ transactionHash: String,
-                                completion: @escaping (Result<TransactionTrace>) -> Void)
+//    func zksGetContractDebugInfo(_ contractAddress: String,
+//                                 completion: @escaping (Result<ContractDebugInfo>) -> Void)
+//
+//    func zksGetTransactionTrace(_ transactionHash: String,
+//                                completion: @escaping (Result<TransactionTrace>) -> Void)
     
     func zksGetAllAccountBalances(_ address: String,
                                   completion: @escaping (Result<Dictionary<String, String>>) -> Void)
     
     func zksGetBridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void)
     
-    func zksGetL2ToL1MsgProof(_ block: Int,
-                              sender: String,
-                              message: String,
-                              l2LogPosition: Int64?,
-                              completion: @escaping (Result<MessageProof>) -> Void)
+    //    func zksGetL2ToL1MsgProof(_ block: Int,
+    //                              sender: String,
+    //                              message: String,
+    //                              l2LogPosition: Int64?,
+    //                              completion: @escaping (Result<MessageProof>) -> Void)
     
     // TODO: Consider removing.
-    func ethEstimateGas(_ transaction: EthereumTransaction,
-                        completion: @escaping (Result<EthEstimateGas>) -> Void)
+    //    func ethEstimateGas(_ transaction: EthereumTransaction,
+    //                        completion: @escaping (Result<EthEstimateGas>) -> Void)
     
     func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void)
     

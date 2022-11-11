@@ -23,6 +23,18 @@ let signer: EthSigner // Initialize client
 let wallet = ZkSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
 ```
 
+## Deploy contract (Create 2) [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014)
+
+```swift
+
+```
+
+## Deploy contract (Create)
+
+```swift
+
+```
+
 ## Deploy contract via ZkSyncWallet
 
 ```swift
@@ -31,6 +43,12 @@ import ZkSync2
 let wallet: ZkSyncWallet // Initialize wallet
 
 let transactionSendingResult = try! wallet.deploy(Data.fromHex("0x<bytecode_of_the_contract>")!).wait()
+```
+
+## Execute contract
+
+```swift
+
 ```
 
 ## Execute contract via ZkSyncWallet
@@ -70,6 +88,18 @@ func incrementFunction(_ value: BigUInt) -> Data {
 let transactionSendingResult = try! wallet.execute(contractAddress, encodedFunction: incrementFunction(BigUInt.zero)).wait()
 ```
 
+## Transfer funds (Native coins)
+
+```swift
+
+```
+
+## Transfer funds (ERC20 tokens)
+
+```swift
+
+```
+
 ## Transfer funds via ZkSyncWallet
 
 ```swift
@@ -86,6 +116,18 @@ let balance = try! wallet.getBalance().wait()
 
 // Also, you can convert amount number to decimal
 let decimalBalance = Token.ETH.intoDecimal(balance)
+```
+
+## Withdraw funds (Native coins)
+
+```swift
+
+```
+
+## Withdraw funds (ERC20 tokens)
+
+```swift
+
 ```
 
 ## Withdraw funds via ZkSyncWallet

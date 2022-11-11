@@ -194,6 +194,17 @@ class DefaultEthereumProvider: EthereumProvider {
                                                           data: encodedFunction,
                                                           parameters: ethereumParameters)
             
+#if DEBUG
+            print("From: \(ethereumTransaction.envelope.parameters.from)")
+            print("To: \(ethereumTransaction.to)")
+            
+            print("ChainID: \(chainID)")
+            print("Nonce: \(nonce)")
+            
+            print("Gas price: \(gasProvider.gasPrice)")
+            print("Gas limit: \(gasProvider.gasLimit)")
+#endif
+            
             print("Transaction hash: \(String(describing: ethereumTransaction.hash?.toHexString().addHexPrefix()))")
             
             let privateKey = Data.fromHex("0x0000000000000000000000000000000000000000000000000000000000000001")!

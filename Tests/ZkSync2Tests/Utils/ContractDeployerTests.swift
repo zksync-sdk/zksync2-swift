@@ -29,7 +29,7 @@ class ContractDeployerTests: XCTestCase {
     func testHashBytecode() {
         let result = ContractDeployer.hashBytecode(Data(fromHex: CounterContract.Binary)!)
         
-        let expected = "0x00379c09b5568d43b0ac6533a2672ee836815530b412f082f0b2e69915aa50fc"
+        let expected = "0x010000517112c421df08d7b49e4dc1312f4ee62268ee4f5683b11d9e2d33525a"
         XCTAssertEqual(result.toHexString().addHexPrefix(), expected)
     }
 }

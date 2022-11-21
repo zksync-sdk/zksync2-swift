@@ -7,6 +7,7 @@
 
 import XCTest
 import web3swift
+import BigInt
 @testable import ZkSync2
 
 class ContractDeployerTests: XCTestCase {
@@ -34,7 +35,13 @@ class ContractDeployerTests: XCTestCase {
     }
     
     func testComputeL2CreateAddressActual() {
+        let expected = EthereumAddress("0x5107b7154dfc1d3b7f1c4e19b5087e1d3393bcf4")!
         
+        let sender = EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")!
+        
+        let result = ContractDeployer.computeL2CreateAddress(sender, nonce: BigUInt(3))
+        
+        XCTAssertEqual(expected, result)
     }
     
     func testHashBytecode() {

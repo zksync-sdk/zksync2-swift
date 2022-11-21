@@ -9,12 +9,13 @@ import Foundation
 import web3swift
 import BigInt
 
-class ContractDeployer {
+public class ContractDeployer {
     
+    static let CreatePrefix = "zksyncCreate".data(using: .ascii)!.sha3(.keccak256)
     static let Create2Prefix = "zksyncCreate2".data(using: .ascii)!.sha3(.keccak256)
     static let MaxBytecodeSize = BigUInt.two.power(16)
     
-    static func computeL2Create2Address(_ sender: EthereumAddress, bytecode: Data, constructor: Data, salt: Data) -> EthereumAddress {
+    public static func computeL2Create2Address(_ sender: EthereumAddress, bytecode: Data, constructor: Data, salt: Data) -> EthereumAddress {
         let senderBytes = sender.addressData.setLengthLeft(32)
         let bytecodeHash = hashBytecode(bytecode)
         let constructorHash = constructor.sha3(.keccak256)
@@ -31,11 +32,21 @@ class ContractDeployer {
         return EthereumAddress(result.subdata(in: 12..<result.count).toHexString().addHexPrefix())!
     }
     
-    static func computeL2CreateAddress(_ sender: EthereumAddress, nonce: BigUInt) -> EthereumAddress {
-        fatalError("Implement")
+    public static func computeL2CreateAddress(_ sender: EthereumAddress, nonce: BigUInt) -> EthereumAddress {
+        let senderBytes = sender.addressData.setLengthLeft(32)
+        let nonceBytes = nonce.data32
+        
+        var output = Data()
+        output.append(ContractDeployer.CreatePrefix)
+        output.append(senderBytes)
+        output.append(nonceBytes)
+        
+        let result = output.sha3(.keccak256)
+        
+        return EthereumAddress(result.subdata(in: 12..<result.count).toHexString().addHexPrefix())!
     }
     
-    static func encodeCreate2(_ bytecode: Data, calldata: Data = Data()) -> Data {
+    public static func encodeCreate2(_ bytecode: Data, calldata: Data = Data()) -> Data {
         let inputs = [
             ABI.Element.InOut(name: "salt", type: .bytes(length: 32)),
             ABI.Element.InOut(name: "bytecodeHash", type: .bytes(length: 32)),
@@ -79,7 +90,7 @@ class ContractDeployer {
         return encodedCallData
     }
     
-    static func hashBytecode(_ bytecode: Data) -> Data {
+    public static func hashBytecode(_ bytecode: Data) -> Data {
         var bytecodeHash = Web3.Utils.sha256(bytecode)
         
         if bytecode.count % 32 != 0 {

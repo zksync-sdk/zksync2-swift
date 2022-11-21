@@ -11,7 +11,25 @@ import BigInt
 
 class ContractDeployer {
     
+    static let Create2Prefix = "zksyncCreate2".data(using: .ascii)!.sha3(.keccak256)
     static let MaxBytecodeSize = BigUInt.two.power(16)
+    
+    static func computeL2Create2Address(_ sender: EthereumAddress, bytecode: Data, constructor: Data, salt: Data) -> EthereumAddress {
+        let senderBytes = sender.addressData.setLengthLeft(32)
+        let bytecodeHash = hashBytecode(bytecode)
+        let constructorHash = constructor.sha3(.keccak256)
+        
+        var output = Data()
+        output.append(ContractDeployer.Create2Prefix)
+        output.append(senderBytes)
+        output.append(salt.setLengthLeft(32))
+        output.append(bytecodeHash)
+        output.append(constructorHash)
+        
+        let result = output.sha3(.keccak256)
+        
+        return EthereumAddress(result.subdata(in: 12..<result.count).toHexString().addHexPrefix())!
+    }
     
     static func computeL2CreateAddress(_ sender: EthereumAddress, nonce: BigUInt) -> EthereumAddress {
         fatalError("Implement")

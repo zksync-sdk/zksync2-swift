@@ -21,9 +21,8 @@ class DefaultTransactionFeeProvider: ZkTransactionFeeProvider {
         self.feeToken = feeToken
     }
     
-    // NOTE: Not used and not implemented.
     func getFee(for transaction: EthereumTransaction) -> Promise<Fee> {
-        return zkSync.web3.eth.estimateFeePromise(transaction)
+        fatalError("Implement")
     }
     
     func getGasLimit(for transaction: EthereumTransaction) -> Promise<BigUInt> {

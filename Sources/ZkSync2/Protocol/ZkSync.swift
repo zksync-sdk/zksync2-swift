@@ -15,8 +15,8 @@ public protocol ZkSync {
     
     var web3: web3 { get set }
     
-//    func zksEstimateFee(_ transaction: EthereumTransaction,
-//                        completion: @escaping (Result<Fee>) -> Void)
+   func zksEstimateFee(_ transaction: EthereumTransaction,
+                       completion: @escaping (Result<Fee>) -> Void)
     
     func zksMainContract(completion: @escaping (Result<String>) -> Void)
     

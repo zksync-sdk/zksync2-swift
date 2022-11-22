@@ -12,6 +12,35 @@ import web3swift
 extension EthereumTransaction {
     
     static func createEtherTransaction(from: EthereumAddress,
+                                       ergsPrice: BigUInt,
+                                       ergsLimit: BigUInt,
+                                       to: EthereumAddress,
+                                       value: BigUInt) -> EthereumTransaction {
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.type = .eip712
+        transactionOptions.from = from
+        transactionOptions.to = to
+        transactionOptions.gasLimit = .manual(ergsLimit)
+        transactionOptions.gasPrice = .manual(ergsPrice)
+        transactionOptions.value = value
+        
+        var ethereumParameters = EthereumParameters(from: transactionOptions)
+        
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.ergsPerPubdata = BigUInt(160000)
+        EIP712Meta.customSignature = nil
+        EIP712Meta.factoryDeps = nil
+        EIP712Meta.paymasterParams = nil
+        ethereumParameters.EIP712Meta = EIP712Meta
+        
+        return EthereumTransaction(type: .eip712,
+                                   to: to,
+                                   value: value,
+                                   data: Data(),
+                                   parameters: ethereumParameters)
+    }
+    
+    static func createEtherTransaction(from: EthereumAddress,
                                        nonce: BigUInt?,
                                        gasPrice: BigUInt,
                                        gasLimit: BigUInt,

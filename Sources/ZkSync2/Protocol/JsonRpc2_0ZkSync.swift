@@ -23,7 +23,7 @@ class JsonRpc2_0ZkSync: ZkSync {
     func zksEstimateFee(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<Fee>) -> Void) {
         transport.send(method: "zks_estimateFee",
-                       params: [String](), // TODO: Add transaction support.
+                       params: [transaction.encodeAsDictionary()],
                        completion: completion)
     }
     

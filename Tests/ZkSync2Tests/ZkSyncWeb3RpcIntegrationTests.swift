@@ -16,7 +16,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     // static let L1NodeUrl = URL(string: "http://206.189.96.247:8545")!
     // static let L2NodeUrl = URL(string: "http://206.189.96.247:3050")!
     
-    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/25be7ab42c414680a5f89297f8a11a4d")!
+    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/fc6f2c1e05b447969453c194a0326020")!
     static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
     let ethToken = Token.ETH
@@ -239,34 +239,32 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
+            let value = Web3.Utils.parseToBigUInt("0.01", units: .eth)!
+            
             let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: self.credentials.ethereumAddress,
                                                                              onBlock: ZkBlockParameterName.committed.rawValue).wait()
             
-            let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
-                                                                             to: self.credentials.ethereumAddress,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
-                                                                             data: Data(fromHex: "0x")!)
+            var estimate = EthereumTransaction.createEtherTransaction(from: self.credentials.ethereumAddress,
+                                                                      ergsPrice: BigUInt.zero,
+                                                                      ergsLimit: BigUInt.zero,
+                                                                      to: self.credentials.ethereumAddress,
+                                                                      value: value)
             
-            // FIXME: estimateGas value is slightly different on zksync-java
-            let estimateGas = BigUInt(936778)
-            // let estimateGas = try! self.zkSync.web3.eth.estimateGasPromise(estimate, transactionOptions: nil).wait()
-            print("estimateGas: \(estimateGas)")
+            let fee = try! self.zkSync.zksEstimateFee(estimate).wait()
+            print("Fee: \(fee)")
             
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
-            print("gasPrice: \(gasPrice)")
+            print("Gas price: \(gasPrice)")
             
-            print("Fee for transaction: \(estimateGas.multiplied(by: gasPrice))")
+            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
-            transactionOptions.gasLimit = .manual(estimateGas)
-            transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))
-            transactionOptions.maxFeePerGas = .manual(gasPrice)
-            
-            let value: BigUInt = Web3.Utils.parseToBigUInt("1", units: .eth)!
+            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId
@@ -285,7 +283,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let signature = self.signer.signTypedData(self.signer.domain, typedData: transaction).addHexPrefix()
             print("signature: \(signature)")
             
-            assert(signature == "0xd8e0210f361341cb3aeda0467d4ba68fc1d8eed75bef8858a45adff5f9d7e1464f95a07c724284d66b4a0971a1c4175fbecddf982cb9eee39f26a832848c48021c")
+            // assert(signature == "")
             
             let unmarshalledSignature: SECP256K1.UnmarshaledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
             transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
@@ -304,7 +302,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             expectation.fulfill()
         }
         
-        wait(for: [expectation], timeout: 10.0)
+        wait(for: [expectation], timeout: 1000.0)
     }
     
     func testTransferNativeToSelfWeb3j_Legacy() {

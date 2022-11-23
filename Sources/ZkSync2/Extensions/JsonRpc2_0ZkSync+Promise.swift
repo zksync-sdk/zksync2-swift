@@ -8,6 +8,7 @@
 import Foundation
 import BigInt
 import PromiseKit
+import web3swift
 
 extension JsonRpc2_0ZkSync {
     
@@ -47,6 +48,14 @@ extension JsonRpc2_0ZkSync {
     func zksGetBridgeContracts() -> Promise<BridgeAddresses> {
         Promise { seal in
             zksGetBridgeContracts {
+                seal.resolve($0)
+            }
+        }
+    }
+    
+    func zksEstimateFee(_ transaction: EthereumTransaction) -> Promise<Fee> {
+        Promise { seal in
+            zksEstimateFee(transaction) {
                 seal.resolve($0)
             }
         }

@@ -18,7 +18,7 @@ let signer: EthSigner = PrivateKeyEthSigner(credentials, chainId: chainId)
 import ZkSync2
 
 let zkSync: ZkSync // Initialize client
-let signer: EthSigner // Initialize client
+let signer: EthSigner // Initialize signer
 
 let wallet = ZkSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
 ```
@@ -96,6 +96,58 @@ let transactionSendingResult = try! wallet.execute(contractAddress, encodedFunct
 ```swift
 import ZkSync2
 
+let zkSync: ZkSync // Initialize client
+let signer: EthSigner // Initialize signer
+
+let chainId = try! zkSync.web3.eth.getChainIdPromise().wait()
+
+let amountInWei = Web3.Utils.parseToBigUInt("1", units: .eth)!
+
+let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!,
+                                                            onBlock: ZkBlockParameterName.committed.rawValue).wait()
+
+var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
+                                                                 to: EthereumAddress("0x<receiver_address>")!,
+                                                                 ergsPrice: BigUInt.zero,
+                                                                 ergsLimit: BigUInt.zero,
+                                                                 data: Data(hex: "0x"))
+
+let fee = try! zkSync.zksEstimateFee(estimate).wait()
+
+let gasPrice = try! zkSync.web3.eth.getGasPricePromise().wait()
+
+estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+
+var transactionOptions = TransactionOptions.defaultOptions
+transactionOptions.type = .eip712
+transactionOptions.from = EthereumAddress(signer.address)!
+transactionOptions.to = estimate.to
+transactionOptions.gasLimit = .manual(fee.ergsLimit)
+transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
+transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+transactionOptions.value = value
+transactionOptions.nonce = .manual(nonce)
+transactionOptions.chainID = chainId
+
+var ethereumParameters = EthereumParameters(from: transactionOptions)
+ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
+
+var transaction = EthereumTransaction(type: .eip712,
+                                      to: estimate.to,
+                                      nonce: nonce,
+                                      chainID: chainId,
+                                      value: value,
+                                      data: estimate.data,
+                                      parameters: ethereumParameters)
+
+let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
+
+let unmarshalledSignature: SECP256K1.UnmarshaledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+
+let result = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
 ```
 
 ## Transfer funds (ERC20 tokens)
@@ -129,7 +181,7 @@ let decimalBalance = Token.ETH.intoDecimal(balance)
 import ZkSync2
 
 let zkSync: ZkSync // Initialize client
-let signer: EthSigner // Initialize client
+let signer: EthSigner // Initialize signer
 
 let chainID = try! zkSync.web3.eth.getChainIdPromise().wait()
 
@@ -143,7 +195,7 @@ let nonce = try! zkSync.web3.eth.getTransactionCount(address: signer.ethereumAdd
 import ZkSync2
 
 let zkSync: ZkSync // Initialize client
-let signer: EthSigner // Initialize client
+let signer: EthSigner // Initialize signer
 
 let chainID = try! zkSync.web3.eth.getChainIdPromise().wait()
 

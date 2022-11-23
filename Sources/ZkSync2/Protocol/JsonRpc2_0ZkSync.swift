@@ -58,22 +58,6 @@ class JsonRpc2_0ZkSync: ZkSync {
         })
     }
     
-    // FIXME: Is this functionality needed?
-    func zksGetContractDebugInfo(_ contractAddress: String,
-                                 completion: @escaping (Result<ContractDebugInfo>) -> Void) {
-        transport.send(method: "zks_getContractDebugInfo",
-                       params: [contractAddress],
-                       completion: completion)
-    }
-    
-    // FIXME: Is this functionality needed?
-    func zksGetTransactionTrace(_ transactionHash: String,
-                                completion: @escaping (Result<TransactionTrace>) -> Void) {
-        transport.send(method: "zks_getTransactionTrace",
-                       params: [transactionHash],
-                       completion: completion)
-    }
-    
     func zksGetAllAccountBalances(_ address: String,
                                   completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
         transport.send(method: "zks_getAllAccountBalances",

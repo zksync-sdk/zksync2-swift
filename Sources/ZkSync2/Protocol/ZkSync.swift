@@ -29,12 +29,6 @@ public protocol ZkSync {
     
     func zksL1ChainId(completion: @escaping (Result<BigUInt>) -> Void)
     
-//    func zksGetContractDebugInfo(_ contractAddress: String,
-//                                 completion: @escaping (Result<ContractDebugInfo>) -> Void)
-//
-//    func zksGetTransactionTrace(_ transactionHash: String,
-//                                completion: @escaping (Result<TransactionTrace>) -> Void)
-    
     func zksGetAllAccountBalances(_ address: String,
                                   completion: @escaping (Result<Dictionary<String, String>>) -> Void)
     

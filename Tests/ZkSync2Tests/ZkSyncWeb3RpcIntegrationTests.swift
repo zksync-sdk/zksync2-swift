@@ -429,18 +429,25 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testEstimateFee_DeployContract() {
+        let expectation = expectation(description: "Expectation")
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let estimate = EthereumTransaction.create2ContractTransaction(from: self.credentials.ethereumAddress,
+                                                                          ergsPrice: BigUInt.zero,
+                                                                          ergsLimit: BigUInt.zero,
+                                                                          bytecode: Data(fromHex: CounterContract.Binary)!)
+            
+            let fee = try! self.zkSync.zksEstimateFee(estimate).wait()
+            print("Fee: \(fee)")
+            
+            expectation.fulfill()
+        }
         
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testDeployWeb3jContract() {
-        
-    }
-    
-    func testReadWeb3jContract() {
-        
-    }
-    
-    func testWriteWeb3jContract() {
         
     }
     

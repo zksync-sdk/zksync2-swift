@@ -60,4 +60,12 @@ extension JsonRpc2_0ZkSync {
             }
         }
     }
+    
+    func zksGetConfirmedTokens(_ from: Int, limit: Int) -> Promise<[Token]> {
+        Promise { seal in
+            zksGetConfirmedTokens(from, limit: limit) {
+                seal.resolve($0)
+            }
+        }
+    }
 }

@@ -62,9 +62,9 @@ class DefaultEthereumProvider: EthereumProvider {
             throw EthereumProviderError.invalidToken
         }
         
-        let tokenContract = ERC20(web3: web3,
-                                  provider: web3.provider,
-                                  address: tokenAddress)
+        let tokenContract = web3swift.ERC20(web3: web3,
+                                            provider: web3.provider,
+                                            address: tokenAddress)
         
         let maxApproveAmount = BigUInt.two.power(256) - 1
         let amount = limit?.description ?? maxApproveAmount.description
@@ -252,9 +252,9 @@ class DefaultEthereumProvider: EthereumProvider {
             throw EthereumProviderError.invalidToken
         }
         
-        let tokenContract = ERC20(web3: web3,
-                                  provider: web3.provider,
-                                  address: tokenAddress)
+        let tokenContract = web3swift.ERC20(web3: web3,
+                                            provider: web3.provider,
+                                            address: tokenAddress)
         
         let allowance = try tokenContract.getAllowance(originalOwner: ownerAddress,
                                                        delegate: spenderAddress)

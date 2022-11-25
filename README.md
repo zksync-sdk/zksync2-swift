@@ -183,10 +183,79 @@ import ZkSync2
 let zkSync: ZkSync // Initialize client
 let signer: EthSigner // Initialize signer
 
-let chainID = try! zkSync.web3.eth.getChainIdPromise().wait()
+let chainId = try! zkSync.web3.eth.getChainIdPromise().wait()
 
 let nonce = try! zkSync.web3.eth.getTransactionCount(address: signer.ethereumAddress,
                                                      onBlock: ZkBlockParameterName.committed.rawValue)
+                                                     
+let l2EthBridge = try! EthereumAddress(zkSync.zksGetBridgeContracts().wait().l2EthDefaultBridge)!
+
+let inputs = [
+    ABI.Element.InOut(name: "_l1Receiver", type: .address),
+    ABI.Element.InOut(name: "_l2Token", type: .address),
+    ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+]
+
+let withdrawFunction = ABI.Element.Function(name: "withdraw",
+                                            inputs: inputs,
+                                            outputs: [],
+                                            constant: false,
+                                            payable: false)
+
+let elementFunction: ABI.Element = .function(withdrawFunction)
+
+let amount = BigUInt(1000000000000000000)
+
+let parameters: [AnyObject] = [
+    EthereumAddress(signer.address)! as AnyObject,
+    EthereumAddress(Token.ETH.l2Address)! as AnyObject,
+    amount as AnyObject
+]
+
+let calldata = elementFunction.encodeParameters(parameters)!
+
+var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
+                                                                 to: l2EthBridge,
+                                                                 ergsPrice: BigUInt.zero,
+                                                                 ergsLimit: BigUInt.zero,
+                                                                 data: calldata)
+
+let fee = try! zkSync.zksEstimateFee(estimate).wait()
+
+let gasPrice = try! zkSync.web3.eth.getGasPricePromise().wait()
+
+estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+
+var transactionOptions = TransactionOptions.defaultOptions
+transactionOptions.type = .eip712
+transactionOptions.from = EthereumAddress(signer.address)!
+transactionOptions.to = estimate.to
+transactionOptions.gasLimit = .manual(fee.ergsLimit)
+transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
+transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+transactionOptions.value = estimate.value
+transactionOptions.nonce = .manual(nonce)
+transactionOptions.chainID = chainId
+
+var ethereumParameters = EthereumParameters(from: transactionOptions)
+ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
+
+var transaction = EthereumTransaction(type: .eip712,
+                                      to: estimate.to,
+                                      nonce: nonce,
+                                      chainID: chainId,
+                                      value: estimate.value,
+                                      data: estimate.data,
+                                      parameters: ethereumParameters)
+
+let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
+
+let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+
+let result = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
 ```
 
 ## Withdraw funds (ERC20 tokens)
@@ -197,7 +266,7 @@ import ZkSync2
 let zkSync: ZkSync // Initialize client
 let signer: EthSigner // Initialize signer
 
-let chainID = try! zkSync.web3.eth.getChainIdPromise().wait()
+let chainId = try! zkSync.web3.eth.getChainIdPromise().wait()
 
 let nonce = try! zkSync.web3.eth.getTransactionCount(address: signer.ethereumAddress,
                                                      onBlock: ZkBlockParameterName.committed.rawValue)

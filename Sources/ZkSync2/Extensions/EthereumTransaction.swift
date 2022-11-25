@@ -11,6 +11,40 @@ import web3swift
 
 extension EthereumTransaction {
     
+    static func createContractTransaction(from: EthereumAddress,
+                                          ergsPrice: BigUInt,
+                                          ergsLimit: BigUInt,
+                                          bytecode: String) -> EthereumTransaction {
+        let bytecodeBytes = Data(fromHex: bytecode)!
+        let calldata = ContractDeployer.encodeCreate(bytecodeBytes)
+        print("calldata: \(calldata.toHexString().addHexPrefix())")
+        
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.type = .eip712
+        transactionOptions.from = from
+        
+        let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
+        transactionOptions.to = to
+        transactionOptions.gasLimit = .manual(ergsLimit)
+        transactionOptions.gasPrice = .manual(ergsPrice)
+        transactionOptions.value = nil
+        
+        var ethereumParameters = EthereumParameters(from: transactionOptions)
+        
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.ergsPerPubdata = BigUInt(160000)
+        EIP712Meta.customSignature = nil
+        EIP712Meta.factoryDeps = [bytecodeBytes]
+        EIP712Meta.paymasterParams = nil
+        ethereumParameters.EIP712Meta = EIP712Meta
+        
+        return EthereumTransaction(type: .eip712,
+                                   to: to,
+                                   value: nil,
+                                   data: calldata,
+                                   parameters: ethereumParameters)
+    }
+    
     static func createEtherTransaction(from: EthereumAddress,
                                        ergsPrice: BigUInt,
                                        ergsLimit: BigUInt,

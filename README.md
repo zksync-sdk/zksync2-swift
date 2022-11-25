@@ -142,7 +142,7 @@ var transaction = EthereumTransaction(type: .eip712,
 
 let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
 
-let unmarshalledSignature: SECP256K1.UnmarshaledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
 transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
 transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
 transaction.envelope.v = BigUInt(unmarshalledSignature.v)

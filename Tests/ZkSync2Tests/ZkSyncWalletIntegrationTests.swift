@@ -13,10 +13,7 @@ import PromiseKit
 
 class ZkSyncWalletIntegrationTests: XCTestCase {
     
-    // static let L1NodeUrl = URL(string: "http://206.189.96.247:8545")!
-    // static let L2NodeUrl = URL(string: "http://206.189.96.247:3050")!
-    
-    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/25be7ab42c414680a5f89297f8a11a4d")!
+    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/fc6f2c1e05b447969453c194a0326020")!
     static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
     let credentials = Credentials(BigUInt.one)
@@ -388,5 +385,9 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         }
         
         wait(for: [expectation], timeout: 1000.0)
+    }
+    
+    func testSendMessageL2ToL1() {
+        
     }
 }

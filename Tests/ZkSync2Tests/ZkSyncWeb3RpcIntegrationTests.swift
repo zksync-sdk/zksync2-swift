@@ -13,9 +13,6 @@ import PromiseKit
 
 class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
-    // static let L1NodeUrl = URL(string: "http://206.189.96.247:8545")!
-    // static let L2NodeUrl = URL(string: "http://206.189.96.247:3050")!
-    
     static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/fc6f2c1e05b447969453c194a0326020")!
     static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
@@ -31,7 +28,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     var feeProvider: ZkTransactionFeeProvider!
     
-    let contractAddress = "0xca9e8bfcd17df56ae90c2a5608e8824dfd021067"
+    var l1Web3: web3!
     
     override func setUpWithError() throws {
         let expectation = expectation(description: "Expectation.")
@@ -49,6 +46,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             self.feeProvider = DefaultTransactionFeeProvider(zkSync: self.zkSync,
                                                              feeToken: self.ethToken)
             
+            self.l1Web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
+            
             expectation.fulfill()
         }
         
@@ -65,8 +64,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
-            let web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
-            let account = try! web3.eth.getAccounts().first!
+            let account = try! self.l1Web3.eth.getAccounts().first!
             
             let from = account
             XCTAssertEqual(from.address.lowercased(), "0x8a91dc2d28b689474298d91899f0c1baf62cb85b")
@@ -80,12 +78,12 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let to = self.credentials.ethereumAddress
             XCTAssertEqual(to.address.lowercased(), "0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")
             
-            let nonce = try! web3.eth.getTransactionCount(address: to)
+            let nonce = try! self.l1Web3.eth.getTransactionCount(address: to)
             XCTAssertEqual(nonce, BigUInt(0))
             
             let value = Web3.Utils.parseToBigUInt("1000000", units: .Gwei)!
             
-            let chainId = try! web3.eth.getChainIdPromise().wait()
+            let chainId = try! self.l1Web3.eth.getChainIdPromise().wait()
             XCTAssertEqual(chainId, BigUInt(9))
             
             var ethereumTransaction = EthereumTransaction.createEtherTransaction(from: from,
@@ -107,7 +105,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             print("Encoded and signed transaction: \(encodedAndSignedTransaction.toHexString().addHexPrefix())")
             
-            let transactionSendingResult = try! web3.eth.sendRawTransactionPromise(encodedAndSignedTransaction).wait()
+            let transactionSendingResult = try! self.l1Web3.eth.sendRawTransactionPromise(encodedAndSignedTransaction).wait()
             print("Result: \(transactionSendingResult)")
             
             expectation.fulfill()
@@ -116,19 +114,18 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 10.0)
     }
     
-    func testGetBalanceOfTokenL1() {
+    func testGetBalanceOfNativeL1() {
         let expectation = expectation(description: "Expectation")
         
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
-            let web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
             let address = self.credentials.ethereumAddress
             XCTAssertEqual(address, EthereumAddress("0x7e5f4552091a69125d5dfcb7b8c2659029395bdf")!)
             
             let block: DefaultBlockParameterName = .latest
-            let balance = try! web3.eth.getBalancePromise(address: address,
-                                                          onBlock: block.rawValue).wait()
+            let balance = try! self.l1Web3.eth.getBalancePromise(address: address,
+                                                                 onBlock: block.rawValue).wait()
             XCTAssertEqual(balance, BigUInt(0))
             
             expectation.fulfill()
@@ -160,6 +157,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetBalanceOfNative() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -174,6 +172,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetNonce() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -188,6 +187,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetDeploymentNonce() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -208,10 +208,11 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetTransactionReceipt() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
-            let transactionReceipt = try! self.zkSync.web3.eth.getTransactionReceiptPromise("0xc47004cd0ab1d9d7866cfb6d699b73ea5872938f14541661b0f0132e5b8365d1").wait()
+            let transactionReceipt = try! self.zkSync.web3.eth.getTransactionReceiptPromise("0xea87f073bbb8826edf51abbbc77b5812848c92bfb8a825f82a74586ad3553309").wait()
             print("Transaction receipt: \(transactionReceipt)")
             
             expectation.fulfill()
@@ -222,10 +223,11 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetTransaction() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
-            let transactionReceipt = try! self.zkSync.web3.eth.getTransactionDetailsPromise("0xf6b0c2b7f815befda19e895efc26805585ae2002cd7d7f9e782d2c346a108ab6").wait()
+            let transactionReceipt = try! self.zkSync.web3.eth.getTransactionDetailsPromise("0x60c05fffdfca5ffb5884f8dd0a80268f16ef768c71f6e173ed1fb58a50790e29").wait()
             print("Transaction receipt: \(transactionReceipt)")
             
             expectation.fulfill()
@@ -236,6 +238,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testTransferNativeToSelf() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -285,7 +288,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             // assert(signature == "")
             
-            let unmarshalledSignature: SECP256K1.UnmarshaledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+            let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
             transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
             transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
             transaction.envelope.v = BigUInt(unmarshalledSignature.v)
@@ -307,6 +310,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testTransferTokenToSelf() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -369,7 +373,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             // assert(signature == "")
             
-            let unmarshalledSignature: SECP256K1.UnmarshaledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+            let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
             transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
             transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
             transaction.envelope.v = BigUInt(unmarshalledSignature.v)
@@ -394,6 +398,108 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testWithdraw() {
+        let expectation = expectation(description: "Expectation")
+        
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let token = Token.ETH
+            
+            let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: self.credentials.ethereumAddress,
+                                                                             onBlock: ZkBlockParameterName.committed.rawValue).wait()
+            
+            let l2EthBridge = try! EthereumAddress(self.zkSync.zksGetBridgeContracts().wait().l2EthDefaultBridge)!
+            print("l2EthBridge: \(l2EthBridge)")
+            
+            let inputs = [
+                ABI.Element.InOut(name: "_l1Receiver", type: .address),
+                ABI.Element.InOut(name: "_l2Token", type: .address),
+                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+            ]
+            
+            let withdrawFunction = ABI.Element.Function(name: "withdraw",
+                                                        inputs: inputs,
+                                                        outputs: [],
+                                                        constant: false,
+                                                        payable: false)
+            
+            let elementFunction: ABI.Element = .function(withdrawFunction)
+            
+            let amount = BigUInt(10000000000000000)
+            
+            let parameters: [AnyObject] = [
+                self.credentials.ethereumAddress as AnyObject,
+                EthereumAddress(token.l2Address)! as AnyObject,
+                amount as AnyObject
+            ]
+            
+            let calldata = elementFunction.encodeParameters(parameters)!
+            print("calldata: \(calldata.toHexString().addHexPrefix())")
+            
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
+                                                                             to: l2EthBridge,
+                                                                             ergsPrice: BigUInt.zero,
+                                                                             ergsLimit: BigUInt.zero,
+                                                                             data: calldata)
+            
+            print("Value: \(estimate.value)")
+            
+            let fee = try! self.zkSync.zksEstimateFee(estimate).wait()
+            print("Fee: \(fee)")
+            
+            let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
+            print("Gas price: \(gasPrice)")
+            
+            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.type = .eip712
+            transactionOptions.from = self.credentials.ethereumAddress
+            transactionOptions.to = estimate.to
+            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.value = estimate.value
+            transactionOptions.nonce = .manual(nonce)
+            transactionOptions.chainID = self.chainId
+            
+            var ethereumParameters = EthereumParameters(from: transactionOptions)
+            ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
+            
+            var transaction = EthereumTransaction(type: .eip712,
+                                                  to: estimate.to,
+                                                  nonce: nonce,
+                                                  chainID: self.chainId,
+                                                  value: estimate.value,
+                                                  data: estimate.data,
+                                                  parameters: ethereumParameters)
+            
+            let signature = self.signer.signTypedData(self.signer.domain, typedData: transaction).addHexPrefix()
+            print("Signature: \(signature)")
+            
+            // assert(signature == "")
+            
+            let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+            transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+            transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+            transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+            
+            guard let message = transaction.encode(for: .transaction) else {
+                fatalError("Failed to encode transaction.")
+            }
+            
+            print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
+            
+            let sent = try! self.zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
+            print("Result: \(sent)")
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1000.0)
+    }
+    
+    func testWithdrawToken() {
         
     }
     
@@ -405,12 +511,17 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         
     }
     
+    func testEstimateFee_TransferNative() {
+        
+    }
+    
     func testEstimateGas_Execute() {
         
     }
     
     func testEstimateGas_DeployContract() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -430,6 +541,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testEstimateFee_DeployContract() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -463,12 +575,21 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         
     }
     
+    func testDeployContractWithDeps_Create() {
+        
+    }
+    
+    func testDeployContractWithDeps_Create2() {
+        
+    }
+    
     func testExecuteContract() {
         
     }
     
     func testGetAllAccountBalances() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -487,6 +608,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         let limit = 10
         
         let expectation = expectation(description: "Expectation.")
+        
         zkSync.zksGetConfirmedTokens(offset,
                                      limit: limit) { result in
             switch result {
@@ -503,6 +625,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetTokenPrice() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -517,6 +640,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetL1ChainId() {
         let expectation = expectation(description: "Expectation")
+        
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
@@ -531,6 +655,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetBridgeContracts() {
         let expectation = expectation(description: "Expectation.")
+        
         zkSync.zksGetBridgeContracts() { result in
             switch result {
             case .success(let bridgeAddresses):
@@ -546,6 +671,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetTestnetPaymaster() {
         let expectation = expectation(description: "Expectation.")
+        
         zkSync.zksGetTestnetPaymaster() { result in
             switch result {
             case .success(let address):
@@ -561,6 +687,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetL2ToL1MsgProof() {
         let expectation = expectation(description: "Expectation.")
+        
         zkSync.zksGetL2ToL1MsgProof(0,
                                     sender: "",
                                     message: "",
@@ -580,6 +707,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetMainContract() {
         let expectation = expectation(description: "Expectation.")
+        
         zkSync.zksMainContract { result in
             switch result {
             case .success(let mainContract):

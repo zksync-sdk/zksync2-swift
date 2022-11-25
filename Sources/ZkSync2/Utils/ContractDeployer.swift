@@ -50,7 +50,6 @@ public class ContractDeployer {
         let inputs = [
             ABI.Element.InOut(name: "salt", type: .bytes(length: 32)),
             ABI.Element.InOut(name: "bytecodeHash", type: .bytes(length: 32)),
-            ABI.Element.InOut(name: "", type: .uint(bits: 256)),
             ABI.Element.InOut(name: "calldata", type: .dynamicBytes)
         ]
         
@@ -66,12 +65,9 @@ public class ContractDeployer {
         
         let bytecodeHash = ContractDeployer.hashBytecode(bytecode)
         
-        // assert(bytecodeHash.toHexString().addHexPrefix() == "0x00379c09b5568d43b0ac6533a2672ee836815530b412f082f0b2e69915aa50fc")
-        
         let parameters: [AnyObject] = [
             salt as AnyObject,
             bytecodeHash as AnyObject,
-            0 as AnyObject,
             calldata as AnyObject
         ]
         

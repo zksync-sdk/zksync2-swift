@@ -500,7 +500,105 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testWithdrawToken() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let token = try! self.zkSync.zksGetConfirmedTokens(0, limit: 100).wait().filter({ $0.symbol == "USDC" }).first!
+            
+            let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: self.credentials.ethereumAddress,
+                                                                             onBlock: ZkBlockParameterName.committed.rawValue).wait()
+            
+            let l2EthBridge = try! EthereumAddress(self.zkSync.zksGetBridgeContracts().wait().l2EthDefaultBridge)!
+            print("l2EthBridge: \(l2EthBridge)")
+            
+            let inputs = [
+                ABI.Element.InOut(name: "_l1Receiver", type: .address),
+                ABI.Element.InOut(name: "_l2Token", type: .address),
+                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+            ]
+            
+            let withdrawFunction = ABI.Element.Function(name: "withdraw",
+                                                        inputs: inputs,
+                                                        outputs: [],
+                                                        constant: false,
+                                                        payable: false)
+            
+            let elementFunction: ABI.Element = .function(withdrawFunction)
+            
+            let amount = BigUInt(10000000)
+            
+            let parameters: [AnyObject] = [
+                self.credentials.ethereumAddress as AnyObject,
+                EthereumAddress(token.l2Address)! as AnyObject,
+                amount as AnyObject
+            ]
+            
+            let calldata = elementFunction.encodeParameters(parameters)!
+            print("calldata: \(calldata.toHexString().addHexPrefix())")
+            
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
+                                                                             to: l2EthBridge,
+                                                                             ergsPrice: BigUInt.zero,
+                                                                             ergsLimit: BigUInt.zero,
+                                                                             data: calldata)
+            
+            print("Value: \(estimate.value)")
+            
+            let fee = try! self.zkSync.zksEstimateFee(estimate).wait()
+            print("Fee: \(fee)")
+            
+            let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
+            print("Gas price: \(gasPrice)")
+            
+            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.type = .eip712
+            transactionOptions.from = self.credentials.ethereumAddress
+            transactionOptions.to = estimate.to
+            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.value = estimate.value
+            transactionOptions.nonce = .manual(nonce)
+            transactionOptions.chainID = self.chainId
+            
+            var ethereumParameters = EthereumParameters(from: transactionOptions)
+            ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
+            
+            var transaction = EthereumTransaction(type: .eip712,
+                                                  to: estimate.to,
+                                                  nonce: nonce,
+                                                  chainID: self.chainId,
+                                                  value: estimate.value,
+                                                  data: estimate.data,
+                                                  parameters: ethereumParameters)
+            
+            let signature = self.signer.signTypedData(self.signer.domain, typedData: transaction).addHexPrefix()
+            print("Signature: \(signature)")
+            
+            // assert(signature == "")
+            
+            let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+            transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+            transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+            transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+            
+            guard let message = transaction.encode(for: .transaction) else {
+                fatalError("Failed to encode transaction.")
+            }
+            
+            print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
+            
+            let sent = try! self.zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
+            print("Result: \(sent)")
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testEstimateGas_Withdraw() {

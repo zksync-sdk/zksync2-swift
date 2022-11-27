@@ -108,7 +108,7 @@ public extension EIP712Hashable {
         return selfPrimaryType + result.sorted().joined()
     }
     
-    public var typehash: Data {
+    var typehash: Data {
         EIP712.keccak256(encodeType())
     }
     

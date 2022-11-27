@@ -602,7 +602,52 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testEstimateGas_Withdraw() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let l2EthBridge = try! EthereumAddress(self.zkSync.zksGetBridgeContracts().wait().l2EthDefaultBridge)!
+            print("l2EthBridge: \(l2EthBridge)")
+            
+            let inputs = [
+                ABI.Element.InOut(name: "_l1Receiver", type: .address),
+                ABI.Element.InOut(name: "_l2Token", type: .address),
+                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+            ]
+            
+            let withdrawFunction = ABI.Element.Function(name: "withdraw",
+                                                        inputs: inputs,
+                                                        outputs: [],
+                                                        constant: false,
+                                                        payable: false)
+            
+            let elementFunction: ABI.Element = .function(withdrawFunction)
+            
+            let amount = BigUInt(1000000000000000000)
+            
+            let parameters: [AnyObject] = [
+                self.credentials.ethereumAddress as AnyObject,
+                EthereumAddress(Token.ETH.l2Address)! as AnyObject,
+                amount as AnyObject
+            ]
+            
+            let calldata = elementFunction.encodeParameters(parameters)!
+            print("calldata: \(calldata.toHexString().addHexPrefix())")
+            
+            let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
+                                                                             to: l2EthBridge,
+                                                                             ergsPrice: BigUInt.zero,
+                                                                             ergsLimit: BigUInt.zero,
+                                                                             data: calldata)
+            
+            let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
+            XCTAssertEqual(estimateGas, BigUInt(5897360))
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testEstimateGas_TransferNative() {

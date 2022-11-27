@@ -82,10 +82,12 @@ class JsonRpc2_0ZkSync: ZkSync {
     }
     
     func ethEstimateGas(_ transaction: EthereumTransaction,
-                        completion: @escaping (Result<EthEstimateGas>) -> Void) {
+                        completion: @escaping (Result<BigUInt>) -> Void) {
         transport.send(method: "eth_estimateGas",
-                       params: [String](), // TODO: Add transaction support.
-                       completion: completion)
+                       params: [transaction.encodeAsDictionary()],
+                       completion: { (result: Result<String>) in
+            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
+        })
     }
     
     func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void) {

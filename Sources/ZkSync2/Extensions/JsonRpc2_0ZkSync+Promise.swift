@@ -68,4 +68,12 @@ extension JsonRpc2_0ZkSync {
             }
         }
     }
+    
+    func ethEstimateGas(_ transaction: EthereumTransaction) -> Promise<BigUInt> {
+        Promise { seal in
+            ethEstimateGas(transaction) {
+                seal.resolve($0)
+            }
+        }
+    }
 }

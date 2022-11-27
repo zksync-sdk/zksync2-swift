@@ -40,9 +40,8 @@ public protocol ZkSync {
     //                              l2LogPosition: Int64?,
     //                              completion: @escaping (Result<MessageProof>) -> Void)
     
-    // TODO: Consider removing.
-    //    func ethEstimateGas(_ transaction: EthereumTransaction,
-    //                        completion: @escaping (Result<EthEstimateGas>) -> Void)
+    func ethEstimateGas(_ transaction: EthereumTransaction,
+                        completion: @escaping (Result<BigUInt>) -> Void)
     
     func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void)
     

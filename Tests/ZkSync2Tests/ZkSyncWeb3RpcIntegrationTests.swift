@@ -651,7 +651,24 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testEstimateGas_TransferNative() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
+                                                                             to: self.credentials.ethereumAddress,
+                                                                             ergsPrice: BigUInt.zero,
+                                                                             ergsLimit: BigUInt.zero,
+                                                                             data: Data(fromHex: "0x")!)
+            
+            let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
+            XCTAssertEqual(estimateGas, BigUInt(2576507))
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testEstimateFee_TransferNative() {

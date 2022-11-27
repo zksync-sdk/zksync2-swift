@@ -22,12 +22,19 @@ class DefaultTransactionFeeProvider: ZkTransactionFeeProvider {
     }
     
     func getFee(for transaction: EthereumTransaction) -> Promise<Fee> {
-        fatalError("Implement")
+        Promise { seal in
+            zkSync.zksEstimateFee(transaction) {
+                seal.resolve($0)
+            }
+        }
     }
     
     func getGasLimit(for transaction: EthereumTransaction) -> Promise<BigUInt> {
-        return zkSync.web3.eth.estimateGasPromise(transaction,
-                                                  transactionOptions: nil)
+        Promise { seal in
+            zkSync.ethEstimateGas(transaction) {
+                seal.resolve($0)
+            }
+        }
     }
     
     func getFeeToken() -> Token {

@@ -729,7 +729,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
                                                                           ergsLimit: BigUInt.zero,
                                                                           bytecode: Data.fromHex(CounterContract.Binary)!)
             
-            let estimateGas = try! self.zkSync.web3.eth.estimateGasPromise(estimate, transactionOptions: nil).wait()
+            let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
             print("estimateGas: \(estimateGas)")
             
             expectation.fulfill()
@@ -759,7 +759,78 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testDeployWeb3jContract() {
+
+    }
+    
+    func testWeb3jContract() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            var deploy = EthereumTransaction.createContractTransaction(from: self.credentials.ethereumAddress,
+                                                                       ergsPrice: BigUInt.zero,
+                                                                       ergsLimit: BigUInt.zero,
+                                                                       bytecode: CounterContract.Binary)
+            
+            let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: self.credentials.ethereumAddress,
+                                                                             onBlock: DefaultBlockParameterName.pending.rawValue).wait()
+            
+            let fee = try! self.zkSync.zksEstimateFee(deploy).wait()
+            print("Fee: \(fee)")
+            
+            let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
+            print("Gas price: \(gasPrice)")
+            
+            deploy.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.type = .eip712
+            transactionOptions.from = self.credentials.ethereumAddress
+            transactionOptions.to = deploy.to
+            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.value = deploy.value
+            transactionOptions.nonce = .manual(nonce)
+            transactionOptions.chainID = self.chainId
+            
+            var ethereumParameters = EthereumParameters(from: transactionOptions)
+            ethereumParameters.EIP712Meta = deploy.parameters.EIP712Meta
+            
+            var transaction = EthereumTransaction(type: .eip712,
+                                                  to: deploy.to,
+                                                  nonce: nonce,
+                                                  chainID: self.chainId,
+                                                  value: deploy.value,
+                                                  data: deploy.data,
+                                                  parameters: ethereumParameters)
+            
+            let signature = self.signer.signTypedData(self.signer.domain, typedData: transaction).addHexPrefix()
+            print("signature: \(signature)")
+            
+            // assert(signature == "")
+            
+            let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+            transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+            transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+            transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+            
+            guard let message = transaction.encode(for: .transaction) else {
+                fatalError("Failed to encode transaction.")
+            }
+            
+            print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
+            
+            let sent = try! self.zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
+            print("Result: \(sent)")
+            
+            // TODO: Implement `CounterContract`.
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 1000.0)
     }
     
     func testDeployContract_Create() {

@@ -693,7 +693,29 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     }
     
     func testEstimateGas_Execute() {
+        let expectation = expectation(description: "Expectation")
         
+        DispatchQueue.global().async { [weak self] in
+            guard let self = self else { return }
+            
+            let calldata = ZkSync2.ERC20.encodeTransfer(EthereumAddress("0xe1fab3efd74a77c23b426c302d96372140ff7d0c")!,
+                                                        value: BigUInt(1))
+            
+            print("calldata: \(calldata.toHexString().addHexPrefix())")
+            
+            let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
+                                                                             to: EthereumAddress("0x79f73588fa338e685e9bbd7181b410f60895d2a3")!,
+                                                                             ergsPrice: BigUInt.zero,
+                                                                             ergsLimit: BigUInt.zero,
+                                                                             data: calldata)
+            
+            let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
+            print("estimateGas: \(estimateGas)")
+            
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 10.0)
     }
     
     func testEstimateGas_DeployContract() {

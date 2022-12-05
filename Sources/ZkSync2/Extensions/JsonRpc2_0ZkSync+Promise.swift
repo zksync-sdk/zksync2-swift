@@ -28,14 +28,6 @@ extension JsonRpc2_0ZkSync {
         }
     }
     
-    func chainId() -> Promise<BigUInt> {
-        Promise { seal in
-            chainId {
-                seal.resolve($0)
-            }
-        }
-    }
-    
     func zksGetAllAccountBalances(_ address: String) -> Promise<Dictionary<String, String>> {
         Promise { seal in
             zksGetAllAccountBalances(address,

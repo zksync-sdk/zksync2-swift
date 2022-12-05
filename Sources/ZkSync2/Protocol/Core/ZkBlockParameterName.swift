@@ -7,14 +7,14 @@
 
 import Foundation
 
-enum DefaultBlockParameterName: String {
+public enum DefaultBlockParameterName: String {
     
     case earliest = "earliest"
     case latest = "latest"
     case pending = "pending"
 }
 
-enum ZkBlockParameterName: String {
+public enum ZkBlockParameterName: String {
     
     case committed = "committed"
     case finalized = "finalized"

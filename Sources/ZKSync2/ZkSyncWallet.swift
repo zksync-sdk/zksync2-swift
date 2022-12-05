@@ -401,9 +401,15 @@ public class ZkSyncWallet {
                    at: .committed)
     }
     
-    func getBalance(_ address: String,
-                    token: Token,
-                    at: ZkBlockParameterName) -> Promise<BigUInt> {
+    /// Get balance of wallet by address in `Token` at block `DefaultBlockParameter`.
+    /// - Parameters:
+    ///   - address: Wallet address.
+    ///   - token: Token object supported by ZkSync.
+    ///   - at: Block variant.
+    /// - Returns: Prepared get balance call.
+    public func getBalance(_ address: String,
+                           token: Token,
+                           at: ZkBlockParameterName) -> Promise<BigUInt> {
         guard let ethereumAddress = EthereumAddress(address),
               let l2EthereumAddress = EthereumAddress(token.l2Address) else {
             fatalError("Tokens are not valid.")
@@ -425,16 +431,23 @@ public class ZkSyncWallet {
         }
     }
     
-    func getNonce(_ at: ZkBlockParameterName) -> Promise<BigUInt> {
+    /// Get nonce for wallet at block `DefaultBlockParameter` (wallet address gets from `EthSigner`).
+    /// - Parameter at: Block variant.
+    /// - Returns: Prepared get nonce call.
+    public func getNonce(_ at: ZkBlockParameterName) -> Promise<BigUInt> {
         zkSync.web3.eth.getTransactionCountPromise(address: signer.address,
                                                    onBlock: at.rawValue)
     }
     
-    func getNonce() throws -> BigUInt {
+    /// Get nonce for wallet at block `.committed`.
+    /// - Returns: Nonce for wallet.
+    public func getNonce() throws -> BigUInt {
         try getNonce(.committed).wait()
     }
     
-    func getNonce() -> Promise<BigUInt> {
+    /// Get nonce for wallet at block `.committed`.
+    /// - Returns: Prepared get nonce call.
+    public func getNonce() -> Promise<BigUInt> {
         getNonce(.committed)
     }
     

@@ -11,6 +11,47 @@ import web3swift
 
 extension EthereumTransaction {
     
+    static func createEthCallTransaction(from: EthereumAddress,
+                                         to: EthereumAddress,
+                                         data: String) -> EthereumTransaction {
+        fatalError("Implement.")
+    }
+    
+    static func createContractTransaction(from: EthereumAddress,
+                                          ergsPrice: BigUInt,
+                                          ergsLimit: BigUInt,
+                                          bytecode: String,
+                                          calldata: Data) -> EthereumTransaction {
+        let bytecodeBytes = Data(fromHex: bytecode)!
+        let calldataCreate = ContractDeployer.encodeCreate(bytecodeBytes, calldata: calldata)
+        print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
+        
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.type = .eip712
+        transactionOptions.from = from
+        
+        let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
+        transactionOptions.to = to
+        transactionOptions.gasLimit = .manual(ergsLimit)
+        transactionOptions.gasPrice = .manual(ergsPrice)
+        transactionOptions.value = nil
+        
+        var ethereumParameters = EthereumParameters(from: transactionOptions)
+        
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.ergsPerPubdata = BigUInt(160000)
+        EIP712Meta.customSignature = nil
+        EIP712Meta.factoryDeps = [bytecodeBytes]
+        EIP712Meta.paymasterParams = nil
+        ethereumParameters.EIP712Meta = EIP712Meta
+        
+        return EthereumTransaction(type: .eip712,
+                                   to: to,
+                                   value: nil,
+                                   data: calldataCreate,
+                                   parameters: ethereumParameters)
+    }
+    
     static func createContractTransaction(from: EthereumAddress,
                                           ergsPrice: BigUInt,
                                           ergsLimit: BigUInt,

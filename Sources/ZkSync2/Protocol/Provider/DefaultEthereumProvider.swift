@@ -194,6 +194,13 @@ class DefaultEthereumProvider: EthereumProvider {
                                                           data: encodedFunction,
                                                           parameters: ethereumParameters)
             
+            let privateKey = Data.fromHex("0x0000000000000000000000000000000000000000000000000000000000000001")!
+            try! ethereumTransaction.sign(privateKey: privateKey)
+            
+            guard let encodedAndSignedTransaction = ethereumTransaction.encode(for: .transaction) else {
+                fatalError("Failed to encode transaction.")
+            }
+            
 #if DEBUG
             print("From: \(ethereumTransaction.envelope.parameters.from)")
             print("To: \(ethereumTransaction.to)")
@@ -203,18 +210,11 @@ class DefaultEthereumProvider: EthereumProvider {
             
             print("Gas price: \(gasProvider.gasPrice)")
             print("Gas limit: \(gasProvider.gasLimit)")
-#endif
             
             print("Transaction hash: \(String(describing: ethereumTransaction.hash?.toHexString().addHexPrefix()))")
             
-            let privateKey = Data.fromHex("0x0000000000000000000000000000000000000000000000000000000000000001")!
-            try! ethereumTransaction.sign(privateKey: privateKey)
-            
-            guard let encodedAndSignedTransaction = ethereumTransaction.encode(for: .transaction) else {
-                fatalError("Failed to encode transaction.")
-            }
-            
             print("Encoded and signed transaction: \(encodedAndSignedTransaction.toHexString().addHexPrefix())")
+#endif
             
             return l1EthBridge.web3.eth.sendRawTransactionPromise(encodedAndSignedTransaction)
         } else {

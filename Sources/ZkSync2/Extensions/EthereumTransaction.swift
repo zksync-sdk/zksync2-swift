@@ -24,7 +24,10 @@ extension EthereumTransaction {
                                           calldata: Data) -> EthereumTransaction {
         let bytecodeBytes = Data(fromHex: bytecode)!
         let calldataCreate = ContractDeployer.encodeCreate(bytecodeBytes, calldata: calldata)
+        
+#if DEBUG
         print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
+#endif
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
@@ -58,7 +61,10 @@ extension EthereumTransaction {
                                           bytecode: String) -> EthereumTransaction {
         let bytecodeBytes = Data(fromHex: bytecode)!
         let calldata = ContractDeployer.encodeCreate(bytecodeBytes)
+        
+#if DEBUG
         print("calldata: \(calldata.toHexString().addHexPrefix())")
+#endif
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712

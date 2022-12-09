@@ -112,7 +112,10 @@ public class ZkSyncWallet {
             
             // TODO: Verify calldata.
             calldata = encodedCallData
+            
+#if DEBUG
             print("Calldata: \(calldata.toHexString().addHexPrefix())")
+#endif
             
             txTo = tokenToUse.l2Address
             txAmount = nil
@@ -485,13 +488,8 @@ public class ZkSyncWallet {
                                            data: transaction.data,
                                            parameters: ethereumParameters)
         
-        print("Transaction hash: \(String(describing: prepared.hash?.toHexString().addHexPrefix()))")
-        
         let domain = signer.domain
         let signature = signer.signTypedData(domain, typedData: prepared)
-        
-        print("Signature: \(signature))")
-        
         let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
         prepared.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
         prepared.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
@@ -501,7 +499,11 @@ public class ZkSyncWallet {
             fatalError("Failed to encode transaction.")
         }
         
+#if DEBUG
+        print("Transaction hash: \(String(describing: prepared.hash?.toHexString().addHexPrefix()))")
+        print("Signature: \(signature))")
         print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
+#endif
         
         return zkSync.web3.eth.sendRawTransactionPromise(transaction)
     }

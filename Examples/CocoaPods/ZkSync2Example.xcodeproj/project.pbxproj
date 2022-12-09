@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8A6DB4B2287B98D600B926C0 /* ZkSync2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B1287B98D600B926C0 /* ZKSync2ExampleApp.swift */; };
+		8A6DB4B2287B98D600B926C0 /* ZkSync2ExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B1287B98D600B926C0 /* ZkSync2ExampleApp.swift */; };
 		8A6DB4B4287B98D600B926C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B3287B98D600B926C0 /* ContentView.swift */; };
 		8A6DB4B6287B98D700B926C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B5287B98D700B926C0 /* Assets.xcassets */; };
 		8A6DB4B9287B98D700B926C0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8A6DB4B8287B98D700B926C0 /* Preview Assets.xcassets */; };
@@ -15,7 +15,7 @@
 
 /* Begin PBXFileReference section */
 		8A6DB4AE287B98D600B926C0 /* ZkSync2Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZkSync2Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8A6DB4B1287B98D600B926C0 /* ZKSync2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZKSync2ExampleApp.swift; sourceTree = "<group>"; };
+		8A6DB4B1287B98D600B926C0 /* ZkSync2ExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSync2ExampleApp.swift; sourceTree = "<group>"; };
 		8A6DB4B3287B98D600B926C0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8A6DB4B5287B98D700B926C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8A6DB4B8287B98D700B926C0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -35,7 +35,7 @@
 		8A6DB4A5287B98D600B926C0 = {
 			isa = PBXGroup;
 			children = (
-				8A6DB4B0287B98D600B926C0 /* ZKSync2Example */,
+				8A6DB4B0287B98D600B926C0 /* ZkSync2Example */,
 				8A6DB4AF287B98D600B926C0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -48,15 +48,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8A6DB4B0287B98D600B926C0 /* ZKSync2Example */ = {
+		8A6DB4B0287B98D600B926C0 /* ZkSync2Example */ = {
 			isa = PBXGroup;
 			children = (
-				8A6DB4B1287B98D600B926C0 /* ZKSync2ExampleApp.swift */,
+				8A6DB4B1287B98D600B926C0 /* ZkSync2ExampleApp.swift */,
 				8A6DB4B3287B98D600B926C0 /* ContentView.swift */,
 				8A6DB4B5287B98D700B926C0 /* Assets.xcassets */,
 				8A6DB4B7287B98D700B926C0 /* Preview Content */,
 			);
-			path = ZKSync2Example;
+			path = ZkSync2Example;
 			sourceTree = "<group>";
 		};
 		8A6DB4B7287B98D700B926C0 /* Preview Content */ = {
@@ -138,7 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8A6DB4B4287B98D600B926C0 /* ContentView.swift in Sources */,
-				8A6DB4B2287B98D600B926C0 /* ZKSync2ExampleApp.swift in Sources */,
+				8A6DB4B2287B98D600B926C0 /* ZkSync2ExampleApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

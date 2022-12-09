@@ -40,7 +40,7 @@
 			isa = PBXGroup;
 			children = (
 				8A6DB4C1287BA4C700B926C0 /* Packages */,
-				8A6DB496287B987E00B926C0 /* ZKSync2Example */,
+				8A6DB496287B987E00B926C0 /* ZkSync2Example */,
 				8A6DB495287B987E00B926C0 /* Products */,
 				8A6DB4C4287BACFC00B926C0 /* Frameworks */,
 			);
@@ -54,7 +54,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		8A6DB496287B987E00B926C0 /* ZKSync2Example */ = {
+		8A6DB496287B987E00B926C0 /* ZkSync2Example */ = {
 			isa = PBXGroup;
 			children = (
 				8A6DB4C3287BACF500B926C0 /* Info.plist */,
@@ -63,7 +63,7 @@
 				8A6DB49B287B988000B926C0 /* Assets.xcassets */,
 				8A6DB49D287B988000B926C0 /* Preview Content */,
 			);
-			path = ZKSync2Example;
+			path = ZkSync2Example;
 			sourceTree = "<group>";
 		};
 		8A6DB49D287B988000B926C0 /* Preview Content */ = {

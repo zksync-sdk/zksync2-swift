@@ -6,9 +6,13 @@
 //
 
 import Foundation
-import web3swift
 import BigInt
 import CryptoSwift
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync
+#endif
 
 public protocol Structurable: EIP712Hashable {
     

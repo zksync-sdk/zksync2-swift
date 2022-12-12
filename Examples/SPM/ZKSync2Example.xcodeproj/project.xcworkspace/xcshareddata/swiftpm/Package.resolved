@@ -48,10 +48,10 @@
     {
       "identity" : "web3swift",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/MaximAlien/web3swift.git",
+      "location" : "https://github.com/zksync-sdk/web3swift.git",
       "state" : {
-        "branch" : "2.6.5-patch",
-        "revision" : "c69d93c7f85f9c0b7252271e2883af6e9f390388"
+        "revision" : "57f8ff9ecba69be2d21d4ebadc1197b5f0614064",
+        "version" : "2.6.5-zksync"
       }
     }
   ],

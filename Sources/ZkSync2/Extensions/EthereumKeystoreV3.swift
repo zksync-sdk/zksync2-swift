@@ -6,8 +6,12 @@
 //
 
 import Foundation
-import web3swift
 import BigInt
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync
+#endif
 
 public typealias Credentials = EthereumKeystoreV3
 

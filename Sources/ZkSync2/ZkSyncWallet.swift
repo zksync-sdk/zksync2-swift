@@ -7,8 +7,12 @@
 
 import Foundation
 import BigInt
-import web3swift
 import PromiseKit
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync
+#endif
 
 public class ZkSyncWallet {
     
@@ -422,9 +426,9 @@ public class ZkSyncWallet {
             return zkSync.web3.eth.getBalancePromise(address: ethereumAddress,
                                                      onBlock: at.rawValue)
         } else {
-            let erc20 = web3swift.ERC20(web3: zkSync.web3,
-                                        provider: zkSync.web3.provider,
-                                        address: l2EthereumAddress)
+            let erc20 = ERC20(web3: zkSync.web3,
+                              provider: zkSync.web3.provider,
+                              address: l2EthereumAddress)
             
             let balance = try! erc20.getBalance(account: ethereumAddress)
             

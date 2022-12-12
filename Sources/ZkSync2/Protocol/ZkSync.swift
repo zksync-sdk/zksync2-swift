@@ -7,7 +7,11 @@
 
 import Foundation
 import BigInt
+#if canImport(web3swift)
 import web3swift
+#else
+import web3swift_zksync
+#endif
 
 public typealias Result<T> = Swift.Result<T, Error>
 

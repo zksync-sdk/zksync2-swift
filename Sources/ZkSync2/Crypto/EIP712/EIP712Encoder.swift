@@ -7,8 +7,12 @@
 
 import Foundation
 import BigInt
-import web3swift
 import CryptoSwift
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync
+#endif
 
 class EIP712Encoder {
     

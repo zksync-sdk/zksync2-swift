@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import web3swift_zksync
 
 struct ContentView: View {
     var body: some View {

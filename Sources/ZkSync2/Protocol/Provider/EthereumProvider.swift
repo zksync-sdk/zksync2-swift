@@ -7,8 +7,12 @@
 
 import Foundation
 import BigInt
-import web3swift
 import PromiseKit
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync
+#endif
 
 protocol EthereumProvider {
     

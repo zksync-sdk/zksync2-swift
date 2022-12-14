@@ -7,8 +7,12 @@
 
 import Foundation
 import BigInt
-import web3swift
 import PromiseKit
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync
+#endif
 
 extension DefaultEthereumProvider {
     
@@ -62,9 +66,9 @@ class DefaultEthereumProvider: EthereumProvider {
             throw EthereumProviderError.invalidToken
         }
         
-        let tokenContract = web3swift.ERC20(web3: web3,
-                                            provider: web3.provider,
-                                            address: tokenAddress)
+        let tokenContract = ERC20(web3: web3,
+                                  provider: web3.provider,
+                                  address: tokenAddress)
         
         let maxApproveAmount = BigUInt.two.power(256) - 1
         let amount = limit?.description ?? maxApproveAmount.description
@@ -252,9 +256,9 @@ class DefaultEthereumProvider: EthereumProvider {
             throw EthereumProviderError.invalidToken
         }
         
-        let tokenContract = web3swift.ERC20(web3: web3,
-                                            provider: web3.provider,
-                                            address: tokenAddress)
+        let tokenContract = ERC20(web3: web3,
+                                  provider: web3.provider,
+                                  address: tokenAddress)
         
         let allowance = try tokenContract.getAllowance(originalOwner: ownerAddress,
                                                        delegate: spenderAddress)

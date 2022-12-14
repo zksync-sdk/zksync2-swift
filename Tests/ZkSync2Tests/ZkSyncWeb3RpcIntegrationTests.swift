@@ -329,7 +329,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             let value = BigUInt(10000000)
             
-            let calldata = ZkSync2.ERC20.encodeTransfer(self.credentials.ethereumAddress, value: value)
+            let calldata = ZkERC20.encodeTransfer(self.credentials.ethereumAddress, value: value)
             print("calldata: \(calldata.toHexString().addHexPrefix())")
             
             var estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
@@ -698,8 +698,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
-            let calldata = ZkSync2.ERC20.encodeTransfer(EthereumAddress("0xe1fab3efd74a77c23b426c302d96372140ff7d0c")!,
-                                                        value: BigUInt(1))
+            let calldata = ZkERC20.encodeTransfer(EthereumAddress("0xe1fab3efd74a77c23b426c302d96372140ff7d0c")!,
+                                                  value: BigUInt(1))
             
             print("calldata: \(calldata.toHexString().addHexPrefix())")
             

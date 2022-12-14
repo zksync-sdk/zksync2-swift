@@ -5,9 +5,13 @@
 //  Created by Maxim Makhun on 9/29/22.
 //
 
-import web3swift
 import BigInt
 import PromiseKit
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync
+#endif
 
 extension web3.Eth {
     

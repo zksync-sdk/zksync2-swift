@@ -1,5 +1,5 @@
 //
-//  Eip712EncoderTests.swift
+//  EIP712EncoderTests.swift
 //  ZkSync2Tests
 //
 //  Created by Maxim Makhun on 8/16/22.
@@ -9,7 +9,7 @@ import XCTest
 @testable import ZkSync2
 import web3swift
 
-class Eip712EncoderTests: XCTestCase {
+class EIP712EncoderTests: XCTestCase {
     
     let message = Mail()
     

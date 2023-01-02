@@ -7,7 +7,7 @@
 
 import XCTest
 
-class CustomPaymasterTests: XCTestCase {
+class CustomPaymasterTests: BaseIntegrationEnv {
     
     override func setUpWithError() throws {
         

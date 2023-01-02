@@ -11,47 +11,10 @@ import BigInt
 import PromiseKit
 @testable import ZkSync2
 
-class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
-    
-    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/fc6f2c1e05b447969453c194a0326020")!
-    static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
-    
-    let ethToken = Token.ETH
-    
-    var zkSync: JsonRpc2_0ZkSync!
-    
-    let credentials = Credentials(BigUInt.one)
-    
-    var signer: EthSigner!
-    
-    var chainId: BigUInt!
-    
-    var feeProvider: ZkTransactionFeeProvider!
-    
-    var l1Web3: web3!
+class ZKSyncWeb3RpcIntegrationTests: BaseIntegrationEnv {
     
     override func setUpWithError() throws {
-        let expectation = expectation(description: "Expectation.")
         
-        DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            
-            self.zkSync = JsonRpc2_0ZkSync(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl)
-            
-            self.chainId = try! self.zkSync.web3.eth.getChainIdPromise().wait()
-            
-            self.signer = PrivateKeyEthSigner(self.credentials,
-                                              chainId: self.chainId)
-            
-            self.feeProvider = DefaultTransactionFeeProvider(zkSync: self.zkSync,
-                                                             feeToken: self.ethToken)
-            
-            self.l1Web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 10.0)
     }
     
     override func tearDownWithError() throws {

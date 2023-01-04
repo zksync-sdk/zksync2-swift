@@ -55,11 +55,11 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
             let web3 = try! Web3.new(ZkSyncWalletIntegrationTests.L1NodeUrl)
             
             let balanceL1 = try! web3.eth.getBalance(address: self.credentials.ethereumAddress)
-            print("Balance (L1): \(balanceL1)")
+            print("Balance (L1, \(self.credentials.address)): \(balanceL1)")
             
             let balanceL2 = try! self.wallet.zkSync.web3.eth.getBalance(address: self.credentials.ethereumAddress,
                                                                         onBlock: ZkBlockParameterName.committed.rawValue)
-            print("Balance (L2): \(balanceL2)")
+            print("Balance (L2, \(self.credentials.address)): \(balanceL2)")
             
             expectation.fulfill()
         }

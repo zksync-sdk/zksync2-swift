@@ -4,5 +4,5 @@ use_frameworks!
 install! 'cocoapods', :warn_for_unused_master_specs_repo => false
 
 target 'ZkSync2Example' do
-  pod 'web3swift-zksync', '2.6.5-zksync'
+  pod 'ZkSync2', '~> 0.0.1'
 end

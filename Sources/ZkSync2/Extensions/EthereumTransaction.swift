@@ -199,7 +199,8 @@ extension EthereumTransaction {
                                            ergsPrice: BigUInt,
                                            ergsLimit: BigUInt,
                                            bytecode: Data,
-                                           calldata: Data = Data()) -> EthereumTransaction {
+                                           calldata: Data = Data(),
+                                           salt: Data = Data(capacity: 32)) -> EthereumTransaction {
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.from = from
@@ -219,7 +220,9 @@ extension EthereumTransaction {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.from = from
         
-        let calldataCreate = ContractDeployer.encodeCreate2(bytecode, calldata: calldata)
+        let calldataCreate = ContractDeployer.encodeCreate2(bytecode,
+                                                            calldata: calldata,
+                                                            salt: salt)
         
         var EIP712Meta = EIP712Meta()
         EIP712Meta.ergsPerPubdata = BigUInt(160000)

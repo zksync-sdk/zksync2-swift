@@ -39,10 +39,10 @@ class BaseIntegrationEnv: XCTestCase {
             
             self.zkSync = JsonRpc2_0ZkSync(BaseIntegrationEnv.L2NodeUrl)
             
+            self.chainId = try! self.zkSync.web3.eth.getChainIdPromise().wait()
+            
             self.signer = PrivateKeyEthSigner(self.credentials,
                                               chainId: self.chainId)
-            
-            self.chainId = try! self.zkSync.web3.eth.getChainIdPromise().wait()
             
             self.feeProvider = DefaultTransactionFeeProvider(zkSync: self.zkSync,
                                                              feeToken: self.ethToken)

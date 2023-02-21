@@ -137,8 +137,8 @@ public class ZkSyncWallet {
         
         var estimate = EthereumTransaction.createFunctionCallTransaction(from: from,
                                                                          to: to,
-                                                                         ergsPrice: BigUInt.zero,
-                                                                         ergsLimit: BigUInt.zero,
+                                                                         gasPrice: BigUInt.zero,
+                                                                         gasLimit: BigUInt.zero,
                                                                          value: txAmount,
                                                                          data: calldata)
         
@@ -259,8 +259,8 @@ public class ZkSyncWallet {
         
         var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
                                                                          to: EthereumAddress(l2Bridge)!,
-                                                                         ergsPrice: BigUInt.zero,
-                                                                         ergsLimit: BigUInt.zero,
+                                                                         gasPrice: BigUInt.zero,
+                                                                         gasLimit: BigUInt.zero,
                                                                          data: calldata)
         
         // TODO: Verify chainID value.
@@ -317,8 +317,8 @@ public class ZkSyncWallet {
         }
         
         let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!,
-                                                                      ergsPrice: BigUInt.zero,
-                                                                      ergsLimit: BigUInt.zero,
+                                                                      gasPrice: BigUInt.zero,
+                                                                      gasLimit: BigUInt.zero,
                                                                       bytecode: bytecode,
                                                                       calldata: validCalldata)
         
@@ -359,8 +359,8 @@ public class ZkSyncWallet {
         
         let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
                                                                          to: EthereumAddress(contractAddress)!,
-                                                                         ergsPrice: BigUInt.zero,
-                                                                         ergsLimit: BigUInt.zero,
+                                                                         gasPrice: BigUInt.zero,
+                                                                         gasLimit: BigUInt.zero,
                                                                          data: encodedFunction)
         
         return estimateAndSend(estimate, nonce: nonceToUse)

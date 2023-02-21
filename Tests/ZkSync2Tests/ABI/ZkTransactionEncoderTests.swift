@@ -134,7 +134,7 @@ class ZkTransactionEncoderTests: XCTestCase {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         
         var EIP712Meta = EIP712Meta()
-        EIP712Meta.ergsPerPubdata = BigUInt.zero
+        EIP712Meta.gasPerPubdata = BigUInt.zero
         EIP712Meta.customSignature = Data()
         ethereumParameters.EIP712Meta = EIP712Meta
         
@@ -199,7 +199,7 @@ class ZkTransactionEncoderTests: XCTestCase {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         
         var EIP712Meta = EIP712Meta()
-        EIP712Meta.ergsPerPubdata = BigUInt.zero
+        EIP712Meta.gasPerPubdata = BigUInt.zero
         EIP712Meta.customSignature = Data()
         EIP712Meta.factoryDeps = [bytecodeBytes]
         EIP712Meta.paymasterParams = nil
@@ -255,7 +255,7 @@ class ZkTransactionEncoderTests: XCTestCase {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         
         var EIP712Meta = EIP712Meta()
-        EIP712Meta.ergsPerPubdata = BigUInt.zero
+        EIP712Meta.gasPerPubdata = BigUInt.zero
         EIP712Meta.customSignature = Data()
         EIP712Meta.factoryDeps = nil
         EIP712Meta.paymasterParams = nil

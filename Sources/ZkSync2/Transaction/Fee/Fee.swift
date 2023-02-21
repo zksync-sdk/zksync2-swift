@@ -10,17 +10,17 @@ import BigInt
 
 public struct Fee: Decodable {
     
-    var ergsLimit: BigUInt
+    var gasLimit: BigUInt
     
-    var ergsPerPubdataLimit: BigUInt
+    var gasPerPubdataLimit: BigUInt
     
     var maxFeePerErg: BigUInt
     
     var maxPriorityFeePerErg: BigUInt
     
     enum CodingKeys: String, CodingKey {
-        case ergsLimit = "ergs_limit"
-        case ergsPerPubdataLimit = "ergs_per_pubdata_limit"
+        case gasLimit = "gas_limit"
+        case gasPerPubdataLimit = "gas_per_pubdata_limit"
         case maxFeePerErg = "max_fee_per_erg"
         case maxPriorityFeePerErg = "max_priority_fee_per_erg"
     }
@@ -28,11 +28,11 @@ public struct Fee: Decodable {
     public init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
-        let ergsLimit = try values.decode(String.self, forKey: .ergsLimit)
-        self.ergsLimit = BigUInt(fromHex: ergsLimit)!
+        let gasLimit = try values.decode(String.self, forKey: .gasLimit)
+        self.gasLimit = BigUInt(fromHex: gasLimit)!
         
-        let ergsPerPubdataLimit = try values.decode(String.self, forKey: .ergsPerPubdataLimit)
-        self.ergsPerPubdataLimit = BigUInt(fromHex: ergsPerPubdataLimit)!
+        let gasPerPubdataLimit = try values.decode(String.self, forKey: .gasPerPubdataLimit)
+        self.gasPerPubdataLimit = BigUInt(fromHex: gasPerPubdataLimit)!
         
         let maxFeePerErg = try values.decode(String.self, forKey: .maxFeePerErg)
         self.maxFeePerErg = BigUInt(fromHex: maxFeePerErg)!

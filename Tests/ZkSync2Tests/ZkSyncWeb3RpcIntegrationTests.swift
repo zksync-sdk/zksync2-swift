@@ -248,8 +248,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
                                                                              onBlock: ZkBlockParameterName.committed.rawValue).wait()
             
             var estimate = EthereumTransaction.createEtherTransaction(from: self.credentials.ethereumAddress,
-                                                                      ergsPrice: BigUInt.zero,
-                                                                      ergsLimit: BigUInt.zero,
+                                                                      gasPrice: BigUInt.zero,
+                                                                      gasLimit: BigUInt.zero,
                                                                       to: self.credentials.ethereumAddress,
                                                                       value: value)
             
@@ -259,13 +259,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
             print("Gas price: \(gasPrice)")
             
-            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
-            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.gasLimit = .manual(fee.gasLimit)
             transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
             transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = value
@@ -334,8 +334,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             var estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
                                                                              to: tokenAddress,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
                                                                              data: calldata)
             
             let fee = try! self.zkSync.zksEstimateFee(estimate).wait()
@@ -344,13 +344,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
             print("Gas price: \(gasPrice)")
             
-            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
-            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.gasLimit = .manual(fee.gasLimit)
             transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
             transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = estimate.value
@@ -438,8 +438,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             var estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
                                                                              to: l2EthBridge,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
                                                                              data: calldata)
             
             print("Value: \(estimate.value)")
@@ -450,13 +450,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
             print("Gas price: \(gasPrice)")
             
-            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
-            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.gasLimit = .manual(fee.gasLimit)
             transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
             transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = estimate.value
@@ -540,8 +540,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             var estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
                                                                              to: l2EthBridge,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
                                                                              data: calldata)
             
             print("Value: \(estimate.value)")
@@ -552,13 +552,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
             print("Gas price: \(gasPrice)")
             
-            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
-            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.gasLimit = .manual(fee.gasLimit)
             transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
             transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = estimate.value
@@ -637,8 +637,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
                                                                              to: l2EthBridge,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
                                                                              data: calldata)
             
             let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
@@ -658,8 +658,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
                                                                              to: self.credentials.ethereumAddress,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
                                                                              data: Data(fromHex: "0x")!)
             
             let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
@@ -679,8 +679,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
                                                                              to: self.credentials.ethereumAddress,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
                                                                              data: Data(fromHex: "0x")!)
             
             let estimateFee = try! self.zkSync.zksEstimateFee(estimate).wait()
@@ -705,8 +705,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             
             let estimate = EthereumTransaction.createFunctionCallTransaction(from: self.credentials.ethereumAddress,
                                                                              to: EthereumAddress("0x79f73588fa338e685e9bbd7181b410f60895d2a3")!,
-                                                                             ergsPrice: BigUInt.zero,
-                                                                             ergsLimit: BigUInt.zero,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
                                                                              data: calldata)
             
             let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
@@ -725,8 +725,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             guard let self = self else { return }
             
             let estimate = EthereumTransaction.create2ContractTransaction(from: self.credentials.ethereumAddress,
-                                                                          ergsPrice: BigUInt.zero,
-                                                                          ergsLimit: BigUInt.zero,
+                                                                          gasPrice: BigUInt.zero,
+                                                                          gasLimit: BigUInt.zero,
                                                                           bytecode: Data.fromHex(CounterContract.Binary)!)
             
             let estimateGas = try! self.zkSync.ethEstimateGas(estimate).wait()
@@ -745,8 +745,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             guard let self = self else { return }
             
             let estimate = EthereumTransaction.create2ContractTransaction(from: self.credentials.ethereumAddress,
-                                                                          ergsPrice: BigUInt.zero,
-                                                                          ergsLimit: BigUInt.zero,
+                                                                          gasPrice: BigUInt.zero,
+                                                                          gasLimit: BigUInt.zero,
                                                                           bytecode: Data(fromHex: CounterContract.Binary)!)
             
             let fee = try! self.zkSync.zksEstimateFee(estimate).wait()
@@ -769,8 +769,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             guard let self = self else { return }
             
             var deploy = EthereumTransaction.createContractTransaction(from: self.credentials.ethereumAddress,
-                                                                       ergsPrice: BigUInt.zero,
-                                                                       ergsLimit: BigUInt.zero,
+                                                                       gasPrice: BigUInt.zero,
+                                                                       gasLimit: BigUInt.zero,
                                                                        bytecode: CounterContract.Binary)
             
             let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: self.credentials.ethereumAddress,
@@ -782,13 +782,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
             print("Gas price: \(gasPrice)")
             
-            deploy.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            deploy.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = deploy.to
-            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.gasLimit = .manual(fee.gasLimit)
             transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
             transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = deploy.value
@@ -856,8 +856,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
                                                                              nonce: deploymentNonce)
             
             var estimate = EthereumTransaction.createContractTransaction(from: self.credentials.ethereumAddress,
-                                                                         ergsPrice: BigUInt.zero,
-                                                                         ergsLimit: BigUInt.zero,
+                                                                         gasPrice: BigUInt.zero,
+                                                                         gasLimit: BigUInt.zero,
                                                                          bytecode: CounterContract.Binary)
             
             let fee = try! self.zkSync.zksEstimateFee(estimate).wait()
@@ -866,13 +866,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
             print("Gas price: \(gasPrice)")
             
-            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
-            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.gasLimit = .manual(fee.gasLimit)
             transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
             transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = estimate.value
@@ -947,8 +947,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let constructorContract = try! String(contentsOf: constructorContractBinaryFileURL, encoding: .ascii).trim()
             
             var estimate = EthereumTransaction.createContractTransaction(from: self.credentials.ethereumAddress,
-                                                                         ergsPrice: BigUInt.zero,
-                                                                         ergsLimit: BigUInt.zero,
+                                                                         gasPrice: BigUInt.zero,
+                                                                         gasLimit: BigUInt.zero,
                                                                          bytecode: constructorContract,
                                                                          calldata: constructor)
             
@@ -958,13 +958,13 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             let gasPrice = try! self.zkSync.web3.eth.getGasPricePromise().wait()
             print("Gas price: \(gasPrice)")
             
-            estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+            estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
             
             var transactionOptions = TransactionOptions.defaultOptions
             transactionOptions.type = .eip712
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
-            transactionOptions.gasLimit = .manual(fee.ergsLimit)
+            transactionOptions.gasLimit = .manual(fee.gasLimit)
             transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
             transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
             transactionOptions.value = estimate.value

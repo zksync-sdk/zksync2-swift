@@ -1,4 +1,4 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.5
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -16,7 +16,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/zksync-sdk/web3swift.git",
-            exact: "2.6.5-zksync"
+            .exact("mm/MTL-153-rename-ergs-to-gas")
         ),
         .package(
             url: "https://github.com/Alamofire/Alamofire.git",

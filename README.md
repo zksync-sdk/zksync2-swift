@@ -108,21 +108,21 @@ let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAdd
 
 var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
                                                                  to: EthereumAddress("0x<receiver_address>")!,
-                                                                 ergsPrice: BigUInt.zero,
-                                                                 ergsLimit: BigUInt.zero,
+                                                                 gasPrice: BigUInt.zero,
+                                                                 gasLimit: BigUInt.zero,
                                                                  data: Data(hex: "0x"))
 
 let fee = try! zkSync.zksEstimateFee(estimate).wait()
 
 let gasPrice = try! zkSync.web3.eth.getGasPricePromise().wait()
 
-estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
 
 var transactionOptions = TransactionOptions.defaultOptions
 transactionOptions.type = .eip712
 transactionOptions.from = EthereumAddress(signer.address)!
 transactionOptions.to = estimate.to
-transactionOptions.gasLimit = .manual(fee.ergsLimit)
+transactionOptions.gasLimit = .manual(fee.gasLimit)
 transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
 transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
 transactionOptions.value = value
@@ -216,21 +216,21 @@ let calldata = elementFunction.encodeParameters(parameters)!
 
 var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
                                                                  to: l2EthBridge,
-                                                                 ergsPrice: BigUInt.zero,
-                                                                 ergsLimit: BigUInt.zero,
+                                                                 gasPrice: BigUInt.zero,
+                                                                 gasLimit: BigUInt.zero,
                                                                  data: calldata)
 
 let fee = try! zkSync.zksEstimateFee(estimate).wait()
 
 let gasPrice = try! zkSync.web3.eth.getGasPricePromise().wait()
 
-estimate.parameters.EIP712Meta?.ergsPerPubdata = fee.ergsPerPubdataLimit
+estimate.parameters.EIP712Meta?.gasPerPubdata = fee.gasPerPubdataLimit
 
 var transactionOptions = TransactionOptions.defaultOptions
 transactionOptions.type = .eip712
 transactionOptions.from = EthereumAddress(signer.address)!
 transactionOptions.to = estimate.to
-transactionOptions.gasLimit = .manual(fee.ergsLimit)
+transactionOptions.gasLimit = .manual(fee.gasLimit)
 transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
 transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
 transactionOptions.value = estimate.value

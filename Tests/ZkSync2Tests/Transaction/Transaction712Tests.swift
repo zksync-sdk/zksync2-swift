@@ -27,7 +27,7 @@ class Transaction712Tests: XCTestCase {
         let transactionRequest = buildTransaction()
         let encodedType = transactionRequest.encodeType()
         
-        XCTAssertEqual(encodedType, "Transaction(uint256 txType,uint256 from,uint256 to,uint256 ergsLimit,uint256 ergsPerPubdataByteLimit,uint256 maxFeePerErg,uint256 maxPriorityFeePerErg,uint256 paymaster,uint256 nonce,uint256 value,bytes data,bytes32[] factoryDeps,bytes paymasterInput)")
+        XCTAssertEqual(encodedType, "Transaction(uint256 txType,uint256 from,uint256 to,uint256 gasLimit,uint256 gasPerPubdataByteLimit,uint256 maxFeePerErg,uint256 maxPriorityFeePerErg,uint256 paymaster,uint256 nonce,uint256 value,bytes data,bytes32[] factoryDeps,bytes paymasterInput)")
     }
     
     func testSerializeToEIP712EncodedValue() {
@@ -67,7 +67,7 @@ class Transaction712Tests: XCTestCase {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         
         var EIP712Meta = EIP712Meta()
-        EIP712Meta.ergsPerPubdata = BigUInt.zero
+        EIP712Meta.gasPerPubdata = BigUInt.zero
         EIP712Meta.customSignature = nil
         EIP712Meta.factoryDeps = nil
         EIP712Meta.paymasterParams = PaymasterParams()

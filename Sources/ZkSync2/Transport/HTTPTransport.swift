@@ -99,7 +99,10 @@ class JRPCDecoder: DataDecoder {
     func decode<D>(_ type: D.Type, from data: Data) throws -> D where D: Decodable {
         NSLog("Response data: \(D.Type.self) \(String(decoding: data, as: UTF8.self)) ")
         
-        let response = try JSONDecoder().decode(JRPC.Response<D>.self, from: data)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(DateFormatter.default)
+        
+        let response = try decoder.decode(JRPC.Response<D>.self, from: data)
         
         guard let result = response.result else {
             guard let error = response.error else {

@@ -16,7 +16,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/zksync-sdk/web3swift.git",
-            .exact("mm/MTL-153-rename-ergs-to-gas")
+            .branch("v2.6.5-zksync")
         ),
         .package(
             url: "https://github.com/Alamofire/Alamofire.git",

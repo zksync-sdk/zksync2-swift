@@ -14,15 +14,15 @@ public struct Fee: Decodable {
     
     var gasPerPubdataLimit: BigUInt
     
-    var maxFeePerErg: BigUInt
+    var maxFeePerGas: BigUInt
     
-    var maxPriorityFeePerErg: BigUInt
+    var maxPriorityFeePerGas: BigUInt
     
     enum CodingKeys: String, CodingKey {
         case gasLimit = "gas_limit"
         case gasPerPubdataLimit = "gas_per_pubdata_limit"
-        case maxFeePerErg = "max_fee_per_erg"
-        case maxPriorityFeePerErg = "max_priority_fee_per_erg"
+        case maxFeePerGas = "max_fee_per_gas"
+        case maxPriorityFeePerGas = "max_priority_fee_per_gas"
     }
     
     public init(from decoder: Decoder) throws {
@@ -34,10 +34,10 @@ public struct Fee: Decodable {
         let gasPerPubdataLimit = try values.decode(String.self, forKey: .gasPerPubdataLimit)
         self.gasPerPubdataLimit = BigUInt(fromHex: gasPerPubdataLimit)!
         
-        let maxFeePerErg = try values.decode(String.self, forKey: .maxFeePerErg)
-        self.maxFeePerErg = BigUInt(fromHex: maxFeePerErg)!
+        let maxFeePerGas = try values.decode(String.self, forKey: .maxFeePerGas)
+        self.maxFeePerGas = BigUInt(fromHex: maxFeePerGas)!
         
-        let maxPriorityFeePerErg = try values.decode(String.self, forKey: .maxPriorityFeePerErg)
-        self.maxPriorityFeePerErg = BigUInt(fromHex: maxPriorityFeePerErg)!
+        let maxPriorityFeePerGas = try values.decode(String.self, forKey: .maxPriorityFeePerGas)
+        self.maxPriorityFeePerGas = BigUInt(fromHex: maxPriorityFeePerGas)!
     }
 }

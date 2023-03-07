@@ -266,8 +266,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
             transactionOptions.gasLimit = .manual(fee.gasLimit)
-            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
-            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
             transactionOptions.value = value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId
@@ -351,8 +351,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
             transactionOptions.gasLimit = .manual(fee.gasLimit)
-            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
-            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
             transactionOptions.value = estimate.value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId
@@ -457,8 +457,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
             transactionOptions.gasLimit = .manual(fee.gasLimit)
-            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
-            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
             transactionOptions.value = estimate.value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId
@@ -559,8 +559,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
             transactionOptions.gasLimit = .manual(fee.gasLimit)
-            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
-            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
             transactionOptions.value = estimate.value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId
@@ -789,8 +789,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = deploy.to
             transactionOptions.gasLimit = .manual(fee.gasLimit)
-            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
-            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
             transactionOptions.value = deploy.value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId
@@ -873,8 +873,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
             transactionOptions.gasLimit = .manual(fee.gasLimit)
-            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
-            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
             transactionOptions.value = estimate.value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId
@@ -965,8 +965,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             transactionOptions.from = self.credentials.ethereumAddress
             transactionOptions.to = estimate.to
             transactionOptions.gasLimit = .manual(fee.gasLimit)
-            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerErg)
-            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerErg)
+            transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+            transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
             transactionOptions.value = estimate.value
             transactionOptions.nonce = .manual(nonce)
             transactionOptions.chainID = self.chainId

@@ -27,7 +27,7 @@ class Transaction712Tests: XCTestCase {
         let transactionRequest = buildTransaction()
         let encodedType = transactionRequest.encodeType()
         
-        XCTAssertEqual(encodedType, "Transaction(uint256 txType,uint256 from,uint256 to,uint256 gasLimit,uint256 gasPerPubdataByteLimit,uint256 maxFeePerErg,uint256 maxPriorityFeePerErg,uint256 paymaster,uint256 nonce,uint256 value,bytes data,bytes32[] factoryDeps,bytes paymasterInput)")
+        XCTAssertEqual(encodedType, "Transaction(uint256 txType,uint256 from,uint256 to,uint256 gasLimit,uint256 gasPerPubdataByteLimit,uint256 maxFeePerGas,uint256 maxPriorityFeePerGas,uint256 paymaster,uint256 nonce,uint256 value,bytes data,bytes32[] factoryDeps,bytes paymasterInput)")
     }
     
     func testSerializeToEIP712EncodedValue() {
@@ -36,7 +36,7 @@ class Transaction712Tests: XCTestCase {
         
         print("Encoded transaction: \(encodedTransaction.toHexString().addHexPrefix())")
         
-        XCTAssertEqual(encodedTransaction.toHexString().addHexPrefix(), "0x2360af215549f2e44413f5a6eb25ecf40590c231e24a70b23a942f995814dc77")
+        XCTAssertEqual(encodedTransaction.toHexString().addHexPrefix(), "0x1e40bcee418db11047ffefb27b304f8ec1b5d644c35c56878f5cc12988b3162d")
     }
     
     func testSerializeToEIP712Message() {

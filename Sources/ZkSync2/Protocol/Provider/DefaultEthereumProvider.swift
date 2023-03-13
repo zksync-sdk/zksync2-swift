@@ -265,6 +265,67 @@ class DefaultEthereumProvider: EthereumProvider {
         
         return allowance > (threshold ?? DefaultEthereumProvider.DefaultThreshold)
     }
+    
+    func requestExecute() -> Promise<TransactionSendingResult> {
+        fatalError("Not implemented.")
+    }
+    
+    public func finalizeEthWithdrawal(_ l2BlockNumber: BigUInt,
+                                      l2MessageIndex: BigUInt,
+                                      l2TxNumberInBlock: UInt16,
+                                      message: Data,
+                                      merkleProof: [Data]) -> Promise<TransactionSendingResult> {
+        fatalError("Not implemented.")
+    }
+    
+    func finalizeWithdrawal() -> Promise<TransactionSendingResult> {
+        fatalError("Not implemented.")
+    }
+    
+    func isEthWithdrawalFinalized() -> Promise<TransactionSendingResult> {
+        fatalError("Not implemented.")
+    }
+    
+    func isWithdrawalFinalized() -> Promise<TransactionSendingResult> {
+        fatalError("Not implemented.")
+    }
+    
+    func getBaseCost(_ gasLimit: BigUInt,
+                     gasPerPubdataByte: BigUInt = BigUInt(50000),
+                     gasPrice: BigUInt?) -> Promise<TransactionSendingResult> {
+        var gasPrice = gasPrice
+        if gasPrice == nil {
+            gasPrice = try! web3.eth.getGasPrice()
+        }
+        
+        let baseCostInputs = [
+            ABI.Element.InOut(name: "_gasPrice", type: .uint(bits: 256)),
+            ABI.Element.InOut(name: "_l2GasLimit", type: .uint(bits: 256)),
+            ABI.Element.InOut(name: "_l2GasPerPubdataByteLimit", type: .uint(bits: 256))
+        ]
+        
+        let baseCostFunction: ABI.Element = .function(ABI.Element.Function(name: "l2TransactionBaseCost",
+                                                                           inputs: baseCostInputs,
+                                                                           outputs: [],
+                                                                           constant: false,
+                                                                           payable: false))
+        
+        let baseCostParameters: [AnyObject] = [
+            gasPrice,
+            gasLimit,
+            gasPerPubdataByte
+        ] as [AnyObject]
+        
+        guard let encodedFunction = baseCostFunction.encodeParameters(baseCostParameters) else {
+            fatalError("Encoded function should be valid")
+        }
+        
+#if DEBUG
+        print("Encoded function: \(encodedFunction.toHexString().addHexPrefix())")
+#endif
+        
+        fatalError("Not implemented.")
+    }
 }
 
 extension DefaultEthereumProvider {

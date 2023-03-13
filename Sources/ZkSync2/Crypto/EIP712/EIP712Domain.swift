@@ -10,7 +10,7 @@ import BigInt
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 public class EIP712Domain: Structurable {
@@ -23,7 +23,7 @@ public class EIP712Domain: Structurable {
     
     let version: String
     
-    let chainId: EIP712.UInt256
+    public let chainId: EIP712.UInt256
     
     var verifyingContract: EIP712.Address? = nil
     

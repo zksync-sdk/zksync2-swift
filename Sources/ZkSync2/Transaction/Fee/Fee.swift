@@ -10,13 +10,13 @@ import BigInt
 
 public struct Fee: Decodable {
     
-    var gasLimit: BigUInt
+    public var gasLimit: BigUInt
     
-    var gasPerPubdataLimit: BigUInt
+    public var gasPerPubdataLimit: BigUInt
     
-    var maxFeePerGas: BigUInt
+    public var maxFeePerGas: BigUInt
     
-    var maxPriorityFeePerGas: BigUInt
+    public var maxPriorityFeePerGas: BigUInt
     
     enum CodingKeys: String, CodingKey {
         case gasLimit = "gas_limit"

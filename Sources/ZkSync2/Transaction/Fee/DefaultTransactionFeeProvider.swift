@@ -11,7 +11,7 @@ import PromiseKit
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 class DefaultTransactionFeeProvider: ZkTransactionFeeProvider {
@@ -26,11 +26,7 @@ class DefaultTransactionFeeProvider: ZkTransactionFeeProvider {
     }
     
     func getFee(for transaction: EthereumTransaction) -> Promise<Fee> {
-        Promise { seal in
-            zkSync.zksEstimateFee(transaction) {
-                seal.resolve($0)
-            }
-        }
+        return zkSync.zksEstimateFee(transaction)
     }
     
     func getGasLimit(for transaction: EthereumTransaction) -> Promise<BigUInt> {

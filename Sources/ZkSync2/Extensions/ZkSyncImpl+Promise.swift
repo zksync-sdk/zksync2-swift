@@ -1,5 +1,5 @@
 //
-//  JsonRpc2_0ZkSync+Promise.swift
+//  ZkSyncImpl+Promise.swift
 //  ZkSync2
 //
 //  Created by Maxim Makhun on 10/1/22.
@@ -11,10 +11,18 @@ import PromiseKit
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
-extension JsonRpc2_0ZkSync {
+public extension ZkSyncImpl {
+    
+    func zksMainContract() -> Promise<String> {
+        Promise { seal in
+            zksMainContract {
+                seal.resolve($0)
+            }
+        }
+    }
     
     func zksGetTokenPrice(_ tokenAddress: String) -> Promise<Decimal> {
         Promise { seal in
@@ -68,6 +76,14 @@ extension JsonRpc2_0ZkSync {
     func ethEstimateGas(_ transaction: EthereumTransaction) -> Promise<BigUInt> {
         Promise { seal in
             ethEstimateGas(transaction) {
+                seal.resolve($0)
+            }
+        }
+    }
+    
+    func zksGetTestnetPaymaster() -> Promise<String> {
+        Promise { seal in
+            zksGetTestnetPaymaster() {
                 seal.resolve($0)
             }
         }

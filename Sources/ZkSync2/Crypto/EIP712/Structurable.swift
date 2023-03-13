@@ -11,7 +11,7 @@ import CryptoSwift
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 public protocol Structurable: EIP712Hashable {
@@ -32,22 +32,22 @@ public protocol EIP712Hashable {
 public class EIP712 {
     
     public typealias `Type` = (label: String, value: Any)
-    typealias Address = EthereumAddress
-    typealias UInt256 = BigUInt
-    typealias UInt = Swift.UInt
-    typealias UInt8 = Swift.UInt8
-    typealias Bytes = Data
-    typealias Bytes32Array = [Data]
+    public typealias Address = EthereumAddress
+    public typealias UInt256 = BigUInt
+    public typealias UInt = Swift.UInt
+    public typealias UInt8 = Swift.UInt8
+    public typealias Bytes = Data
+    public typealias Bytes32Array = [Data]
     
-    static func keccak256(_ data: [UInt8]) -> Data {
+    public static func keccak256(_ data: [UInt8]) -> Data {
         Data(SHA3(variant: .keccak256).calculate(for: data))
     }
     
-    static func keccak256(_ string: String) -> Data {
+    public static func keccak256(_ string: String) -> Data {
         keccak256(Array(string.utf8))
     }
     
-    static func keccak256(_ data: Data) -> Data {
+    public static func keccak256(_ data: Data) -> Data {
         keccak256(data.bytes)
     }
 }
@@ -127,18 +127,7 @@ public extension EIP712Hashable {
             case let data as EIP712.Bytes:
                 result = EIP712.keccak256(data)
             case let data as EIP712.Bytes32Array:
-                let factoryDepsHashes = data.map({ EIP712.keccak256($0) })
-                
-                var allData = Data()
-                factoryDepsHashes.forEach {
-                    guard $0.count == 32 else {
-                        preconditionFailure("ABI encode error")
-                    }
-                    
-                    allData.append($0)
-                }
-                
-                result = EIP712.keccak256(allData)
+                result = EIP712.keccak256(self.factoryDepsHashes(data: data))
             case is EIP712.UInt8:
                 result = ABIEncoder.encodeSingleType(type: .uint(bits: 8), value: field as AnyObject)!
             case is EIP712.UInt256:
@@ -164,5 +153,20 @@ public extension EIP712Hashable {
         
         let encoded = parameters.flatMap { $0.bytes }
         return EIP712.keccak256(encoded)
+    }
+    
+    internal func factoryDepsHashes(data: EIP712.Bytes32Array) -> Data {
+        let factoryDepsHashes = data.map({ ContractDeployer.hashBytecode($0) })
+        
+        var allData = Data()
+        factoryDepsHashes.forEach {
+            guard $0.count == 32 else {
+                preconditionFailure("ABI encode error")
+            }
+            
+            allData.append($0)
+        }
+        
+        return allData
     }
 }

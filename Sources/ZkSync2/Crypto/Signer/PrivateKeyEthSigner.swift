@@ -10,7 +10,7 @@ import BigInt
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 public class PrivateKeyEthSigner: EthSigner {
@@ -99,8 +99,8 @@ public class PrivateKeyEthSigner: EthSigner {
     
     // TODO: Implement verification with no prefix.
     public func verifySignature(_ signature: String,
-                         message: Data,
-                         prefixed: Bool) -> Bool {
+                                message: Data,
+                                prefixed: Bool) -> Bool {
         let messageHash: Data
         if prefixed {
             guard let personalMessageHash = Web3.Utils.hashPersonalMessage(message) else {

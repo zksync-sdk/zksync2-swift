@@ -10,7 +10,7 @@ import BigInt
 
 public struct Token: TokenId, Decodable {
     
-    static let DefaultAddress = "0x0000000000000000000000000000000000000000"
+    public static let DefaultAddress = "0x0000000000000000000000000000000000000000"
     
     public static var ETH: Token {
         return Token(l1Address: Token.DefaultAddress,
@@ -19,10 +19,17 @@ public struct Token: TokenId, Decodable {
                      decimals: 18)
     }
     
-    let l1Address: String
-    let l2Address: String
-    let symbol: String
-    let decimals: Int
+    public let l1Address: String
+    public let l2Address: String
+    public let symbol: String
+    public let decimals: Int
+    
+    public init(l1Address: String, l2Address: String, symbol: String, decimals: Int) {
+        self.l1Address = l1Address
+        self.l2Address = l2Address
+        self.symbol = symbol
+        self.decimals = decimals
+    }
     
     public func intoDecimal(_ amount: BigUInt) -> Decimal {
         let sourceDecimal = Decimal(string: "\(amount)")!

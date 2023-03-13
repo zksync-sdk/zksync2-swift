@@ -11,7 +11,7 @@ import PromiseKit
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 protocol EthereumProvider {
@@ -32,14 +32,44 @@ protocol EthereumProvider {
                   amount: BigUInt,
                   to address: String) throws -> Promise<TransactionSendingResult>
     
+    /// Get base cost for L2 transaction.
+    /// - Parameters:
+    ///   - gasLimit: Gas limit for L2 transaction.
+    ///   - gasPerPubdataByte: Gas per pubdata byte.
+    ///   - gasPrice: Gas price for L2 transaction.
+    func getBaseCost(_ gasLimit: BigUInt,
+                     gasPerPubdataByte: BigUInt,
+                     gasPrice: BigUInt?) throws -> Promise<[String: Any]>
+    
+    /// Send request execute transaction to ZkSync contract.
+    /// - Parameters:
+    ///   - contractAddress: Address of contract to call.
+    ///   - l2Value: Value to send to contract.
+    ///   - calldata: Calldata to send to contract.
+    ///   - gasLimit: Gas limit for L2 transaction.
+    ///   - factoryDeps: Factory dependencies.
+    ///   - operatorTips: Tips for operator on L2 that executes deposit.
+    ///   - gasPrice: Gas price for L2 transaction.
+    ///   - refundRecipient: Address of L2 receiver refund in ZkSync.
+    func requestExecute(_ contractAddress: String,
+                        l2Value: BigUInt,
+                        calldata: Data,
+                        gasLimit: BigUInt,
+                        factoryDeps: [Data]?,
+                        operatorTips: BigUInt?,
+                        gasPrice: BigUInt?,
+                        refundRecipient: String) throws -> Promise<TransactionSendingResult>
+    
     /// Send deposit transaction to ZkSync contract. For ERC20 token must be approved beforehand
     /// using `EthereumProvider.approveDeposits()`.
     /// - Parameters:
     ///   - token: Token object supported by ZkSync.
     ///   - amount: Amount of tokens to transfer.
+    ///   - operatorTips: Tips for operator on L2 that executes deposit.
     ///   - userAddress: Address of L2 deposit receiver in ZkSync.
     func deposit(with token: Token,
                  amount: BigUInt,
+                 operatorTips: BigUInt,
                  to userAddress: String) throws -> Promise<TransactionSendingResult>
     
     /// Send withdraw transaction to ZkSync contract.
@@ -64,6 +94,5 @@ protocol EthereumProvider {
     /// ZkSync Bridge for ERC20 smart-contract address in Ethereum blockchain.
     var l1ERC20BridgeAddress: String { get }
     
-    /// ZkSync Bridge for Eth smart-contract address in Ethereum blockchain.
-    var l1EthBridgeAddress: String { get }
+    var mainContractAddress: String { get }
 }

@@ -9,8 +9,7 @@ import Foundation
 
 public struct BridgeAddresses: Decodable {
     
-    var l1EthDefaultBridge: String
-    var l2EthDefaultBridge: String
-    var l1Erc20DefaultBridge: String
-    var l2Erc20DefaultBridge: String
+    let l1Erc20DefaultBridge: String
+    
+    let l2Erc20DefaultBridge: String
 }

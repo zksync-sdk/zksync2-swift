@@ -9,7 +9,7 @@ import Foundation
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 extension Web3.Utils {
@@ -653,7 +653,7 @@ extension Web3.Utils {
         },
         {
             "internalType": "uint256",
-            "name": "_ergsLimit",
+            "name": "_gasLimit",
             "type": "uint256"
         },
         {
@@ -794,7 +794,7 @@ extension Web3.Utils {
         },
         {
             "internalType": "uint256",
-            "name": "_ergsLimit",
+            "name": "_gasLimit",
             "type": "uint256"
         },
         {
@@ -1261,7 +1261,7 @@ extension Web3.Utils {
         },
         {
             "internalType": "uint256",
-            "name": "_ergsLimit",
+            "name": "_gasLimit",
             "type": "uint256"
         },
         {
@@ -1294,7 +1294,7 @@ extension Web3.Utils {
         },
         {
             "internalType": "uint256",
-            "name": "_ergsLimit",
+            "name": "_gasLimit",
             "type": "uint256"
         },
         {

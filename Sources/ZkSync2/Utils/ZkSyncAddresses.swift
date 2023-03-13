@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct ZkSyncAddresses {
+public struct ZkSyncAddresses {
     
-    static let EthAddress = "0x0000000000000000000000000000000000000000"
-    static let ContractDeployerAddress = "0x0000000000000000000000000000000000008006"
-    static let NonceHolderAddress = "0x0000000000000000000000000000000000008003"
-    static let MessenerAddress = "0x0000000000000000000000000000000000008008"
+    public static let EthAddress = "0x0000000000000000000000000000000000000000"
+    public static let ContractDeployerAddress = "0x0000000000000000000000000000000000008006"
+    public static let NonceHolderAddress = "0x0000000000000000000000000000000000008003"
+    public static let MessengerAddress = "0x0000000000000000000000000000000000008008"
 }

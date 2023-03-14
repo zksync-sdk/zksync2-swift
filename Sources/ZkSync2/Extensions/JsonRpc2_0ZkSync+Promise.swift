@@ -16,6 +16,14 @@ import web3swift_zksync
 
 extension JsonRpc2_0ZkSync {
     
+    func zksMainContract() -> Promise<String> {
+        Promise { seal in
+            zksMainContract {
+                seal.resolve($0)
+            }
+        }
+    }
+    
     func zksGetTokenPrice(_ tokenAddress: String) -> Promise<Decimal> {
         Promise { seal in
             zksGetTokenPrice(tokenAddress) {

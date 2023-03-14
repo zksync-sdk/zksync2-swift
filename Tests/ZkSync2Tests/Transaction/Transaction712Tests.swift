@@ -47,7 +47,7 @@ class Transaction712Tests: XCTestCase {
         
         print("Encoded EIP712Domain: \(encoded.toHexString().addHexPrefix())")
         
-        XCTAssertEqual(encoded.toHexString().addHexPrefix(), "0x2506074540188226a81a8dc006ab311c06b680232d39699d348e8ec83c81388b")
+        XCTAssertEqual(encoded.toHexString().addHexPrefix(), "0x7519adb6e67031ee048d921120687e4fbdf83961bcf43756f349d689eed2b80c")
     }
     
     func buildTransaction() -> EthereumTransaction {

@@ -90,4 +90,12 @@ public protocol ZkSync {
     ///
     /// - Parameter completion: Completion handler with result that contains paymaster address.
     func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void)
+    
+    /// Get transaction details.
+    ///
+    /// - Parameters:
+    ///   - transactionHash: Hash of the executed transaction hash with sent message.
+    ///   - completion: Completion handler with result that contains transaction details.
+    func zksGetTransactionDetails(_ transactionHash: String,
+                                  completion: @escaping (Result<TransactionDetails>) -> Void)
 }

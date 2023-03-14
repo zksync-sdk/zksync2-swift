@@ -99,4 +99,11 @@ class JsonRpc2_0ZkSync: ZkSync {
                        params: [String](),
                        completion: completion)
     }
+    
+    func zksGetTransactionDetails(_ transactionHash: String,
+                                  completion: @escaping (Result<TransactionDetails>) -> Void) {
+        transport.send(method: "zks_getTransactionDetails",
+                       params: [transactionHash],
+                       completion: completion)
+    }
 }

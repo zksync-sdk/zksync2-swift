@@ -125,6 +125,11 @@ extension Web3.Utils {
             "type": "uint256"
         },
         {
+            "internalType": "uint16",
+            "name": "_l2TxNumberInBlock",
+            "type": "uint16"
+        },
+        {
             "internalType": "bytes32[]",
             "name": "_merkleProof",
             "type": "bytes32[]"
@@ -151,6 +156,16 @@ extension Web3.Utils {
             "internalType": "uint256",
             "name": "_amount",
             "type": "uint256"
+        },
+        {
+            "internalType": "uint256",
+            "name": "_l2TxGasLimit",
+            "type": "uint256"
+        },
+        {
+            "internalType": "uint256",
+            "name": "_l2TxGasPerPubdataByte",
+            "type": "uint256"
         }
     ],
     "name": "deposit",
@@ -175,6 +190,11 @@ extension Web3.Utils {
             "internalType": "uint256",
             "name": "_l2MessageIndex",
             "type": "uint256"
+        },
+        {
+            "internalType": "uint16",
+            "name": "_l2TxNumberInBlock",
+            "type": "uint16"
         },
         {
             "internalType": "bytes",

@@ -79,9 +79,17 @@ class JsonRpc2_0ZkSync: ZkSync {
                               sender: String,
                               message: String,
                               l2LogPosition: Int64?, // FIXME: Should l2LogPosition be used?
-                              completion: @escaping (Result<MessageProof>) -> Void) {
+                              completion: @escaping (Result<L2ToL1MessageProof>) -> Void) {
         transport.send(method: "zks_getL2ToL1MsgProof",
                        params: [String(block), sender, message],
+                       completion: completion)
+    }
+    
+    func zksGetL2ToL1LogProof(_ txHash: String,
+                              logIndex: Int,
+                              completion: @escaping (Result<L2ToL1MessageProof>) -> Void) {
+        transport.send(method: "zks_getL2ToL1LogProof",
+                       params: [txHash, String(logIndex)],
                        completion: completion)
     }
     
@@ -104,6 +112,13 @@ class JsonRpc2_0ZkSync: ZkSync {
                                   completion: @escaping (Result<TransactionDetails>) -> Void) {
         transport.send(method: "zks_getTransactionDetails",
                        params: [transactionHash],
+                       completion: completion)
+    }
+    
+    func zksGetBlockDetails(_ block: Int,
+                            completion: @escaping (Result<BlockDetails>) -> Void) {
+        transport.send(method: "zks_getBlockDetails",
+                       params: [String(block)],
                        completion: completion)
     }
 }

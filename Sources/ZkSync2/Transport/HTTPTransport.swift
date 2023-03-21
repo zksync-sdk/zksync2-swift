@@ -97,7 +97,15 @@ class HTTPTransport: Transport {
 class JRPCDecoder: DataDecoder {
     
     func decode<D>(_ type: D.Type, from data: Data) throws -> D where D: Decodable {
-        NSLog("Response data: \(D.Type.self) \(String(decoding: data, as: UTF8.self)) ")
+#if DEBUG
+        if let json = try? JSONSerialization.jsonObject(with: data,
+                                                        options: .mutableContainers),
+           let jsonData = try? JSONSerialization.data(withJSONObject: json,
+                                                      options: .prettyPrinted) {
+            let responseString = String(decoding: jsonData, as: UTF8.self)
+            print("Response data: \(D.Type.self) \(responseString)")
+        }
+#endif
         
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(DateFormatter.default)

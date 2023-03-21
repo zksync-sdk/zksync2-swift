@@ -30,7 +30,7 @@ public protocol ZkSync {
     /// Get address of main contract for current network chain.
     ///
     /// - Parameter completion: Completion handler with result that contains main contract.
-    func zksMainContract(completion: @escaping (Result<String>) -> Void)
+    func zksMainContract(_ completion: @escaping (Result<String>) -> Void)
     
     /// Get list of the tokens supported by ZkSync.
     /// The tokens are returned in alphabetical order by their symbol, so basically, the token
@@ -54,7 +54,7 @@ public protocol ZkSync {
     /// Get chain identifier of the L1 chain.
     ///
     /// - Parameter completion: Completion handler with result that contains L1 chain identifier.
-    func zksL1ChainId(completion: @escaping (Result<BigUInt>) -> Void)
+    func zksL1ChainId(_ completion: @escaping (Result<BigUInt>) -> Void)
     
     /// Get all known balances for the given account.
     ///
@@ -98,4 +98,12 @@ public protocol ZkSync {
     ///   - completion: Completion handler with result that contains transaction details.
     func zksGetTransactionDetails(_ transactionHash: String,
                                   completion: @escaping (Result<TransactionDetails>) -> Void)
+    
+    /// Get transaction by hash.
+    ///
+    /// - Parameters:
+    ///   - transactionHash: Hash of the executed transaction.
+    ///   - completion: Completion handler with result that contains transaction response.
+    func zksGetTransactionByHash(_ transactionHash: String,
+                                 completion: @escaping (Result<TransactionResponse>) -> Void)
 }

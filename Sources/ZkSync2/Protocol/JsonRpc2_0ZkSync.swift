@@ -31,7 +31,7 @@ class JsonRpc2_0ZkSync: ZkSync {
                        completion: completion)
     }
     
-    func zksMainContract(completion: @escaping (Result<String>) -> Void) {
+    func zksMainContract(_ completion: @escaping (Result<String>) -> Void) {
         transport.send(method: "zks_getMainContract",
                        params: [String](),
                        completion: completion)
@@ -54,7 +54,7 @@ class JsonRpc2_0ZkSync: ZkSync {
         })
     }
     
-    func zksL1ChainId(completion: @escaping (Result<BigUInt>) -> Void) {
+    func zksL1ChainId(_ completion: @escaping (Result<BigUInt>) -> Void) {
         transport.send(method: "zks_L1ChainId",
                        params: [String](),
                        completion: { (result: Result<String>) in
@@ -119,6 +119,13 @@ class JsonRpc2_0ZkSync: ZkSync {
                             completion: @escaping (Result<BlockDetails>) -> Void) {
         transport.send(method: "zks_getBlockDetails",
                        params: [String(block)],
+                       completion: completion)
+    }
+    
+    func zksGetTransactionByHash(_ transactionHash: String,
+                                 completion: @escaping (Result<TransactionResponse>) -> Void) {
+        transport.send(method: "eth_getTransactionByHash",
+                       params: [transactionHash],
                        completion: completion)
     }
 }

@@ -107,10 +107,24 @@ public protocol ZkSync {
     func zksGetTransactionByHash(_ transactionHash: String,
                                  completion: @escaping (Result<TransactionResponse>) -> Void)
     
+    /// Get block by hash.
+    ///
+    /// - Parameters:
+    ///   - blockHash: Hash of a block.
+    ///   - returnFullTransactionObjects: If `true` returns the full transaction objects,
+    ///   otherwise only the hashes of the transactions.
+    ///   - completion: Completion handler with result that contains block details.
     func zksGetBlockByHash(_ blockHash: String,
                            returnFullTransactionObjects: Bool,
                            completion: @escaping (Result<BlockDetails>) -> Void)
     
+    /// Get block by number.
+    ///
+    /// - Parameters:
+    ///   - blockNumber: Name of the block.
+    ///   - returnFullTransactionObjects: If `true` returns the full transaction objects,
+    ///   otherwise only the hashes of the transactions.
+    ///   - completion: Completion handler with result that contains block details.
     func zksGetBlockByNumber(_ blockNumber: UInt,
                              returnFullTransactionObjects: Bool,
                              completion: @escaping (Result<BlockDetails>) -> Void)

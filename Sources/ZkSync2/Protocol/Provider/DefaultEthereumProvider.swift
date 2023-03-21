@@ -63,8 +63,8 @@ class DefaultEthereumProvider: EthereumProvider {
                          limit: BigUInt?) throws -> Promise<TransactionSendingResult> {
         guard let tokenAddress = EthereumAddress(token.l1Address),
               let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
-            throw EthereumProviderError.invalidToken
-        }
+                  throw EthereumProviderError.invalidToken
+              }
         
         let tokenContract = ERC20(web3: web3,
                                   provider: web3.provider,
@@ -107,8 +107,8 @@ class DefaultEthereumProvider: EthereumProvider {
                      to address: String) throws -> WriteTransaction {
         guard let fromAddress = EthereumAddress(l1ERC20BridgeAddress),
               let toAddress = EthereumAddress(address) else {
-            throw EthereumProviderError.invalidAddress
-        }
+                  throw EthereumProviderError.invalidAddress
+              }
         
         guard let transaction = web3.eth.sendETH(from: fromAddress,
                                                  to: toAddress,
@@ -126,8 +126,8 @@ class DefaultEthereumProvider: EthereumProvider {
         guard let fromAddress = EthereumAddress(l1ERC20BridgeAddress),
               let toAddress = EthereumAddress(address),
               let erc20ContractAddress = EthereumAddress(token.l1Address) else {
-            throw EthereumProviderError.invalidToken
-        }
+                  throw EthereumProviderError.invalidToken
+              }
         
         guard let transaction = web3.eth.sendERC20tokensWithKnownDecimals(tokenAddress: erc20ContractAddress,
                                                                           from: fromAddress,
@@ -253,8 +253,8 @@ class DefaultEthereumProvider: EthereumProvider {
         guard let tokenAddress = EthereumAddress(token.l1Address),
               let ownerAddress = EthereumAddress(address),
               let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
-            throw EthereumProviderError.invalidToken
-        }
+                  throw EthereumProviderError.invalidToken
+              }
         
         let tokenContract = ERC20(web3: web3,
                                   provider: web3.provider,

@@ -128,4 +128,20 @@ class JsonRpc2_0ZkSync: ZkSync {
                        params: [transactionHash],
                        completion: completion)
     }
+    
+    func zksGetBlockByHash(_ blockHash: String,
+                           returnFullTransactionObjects: Bool,
+                           completion: @escaping (Result<BlockDetails>) -> Void) {
+        transport.send(method: "eth_getBlockByHash",
+                       params: [blockHash],
+                       completion: completion)
+    }
+    
+    func zksGetBlockByNumber(_ blockNumber: UInt,
+                             returnFullTransactionObjects: Bool,
+                             completion: @escaping (Result<BlockDetails>) -> Void) {
+        transport.send(method: "eth_getBlockByNumber",
+                       params: [String(blockNumber)],
+                       completion: completion)
+    }
 }

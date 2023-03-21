@@ -106,4 +106,12 @@ public protocol ZkSync {
     ///   - completion: Completion handler with result that contains transaction response.
     func zksGetTransactionByHash(_ transactionHash: String,
                                  completion: @escaping (Result<TransactionResponse>) -> Void)
+    
+    func zksGetBlockByHash(_ blockHash: String,
+                           returnFullTransactionObjects: Bool,
+                           completion: @escaping (Result<BlockDetails>) -> Void)
+    
+    func zksGetBlockByNumber(_ blockNumber: UInt,
+                             returnFullTransactionObjects: Bool,
+                             completion: @escaping (Result<BlockDetails>) -> Void)
 }

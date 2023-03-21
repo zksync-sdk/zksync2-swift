@@ -1198,4 +1198,40 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         
         wait(for: [expectation], timeout: 5.0)
     }
+    
+    func testGetBlockByHash() {
+        let expectation = expectation(description: "Expectation.")
+        
+        zkSync.zksGetBlockByHash("0x0898f4b225276625e1d5d2cc4dc5b7a1acb896daece7e46c8202a47da9a13a27",
+                                 returnFullTransactionObjects: true,
+                                 completion: { result in
+            switch result {
+            case .success(let blockDetails):
+                print(blockDetails)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testGetBlockByNumber() {
+        let expectation = expectation(description: "Expectation.")
+        
+        zkSync.zksGetBlockByNumber(UInt(fromHex: "0xb108e")!,
+                                   returnFullTransactionObjects: true,
+                                   completion: { result in
+            switch result {
+            case .success(let blockDetails):
+                print(blockDetails)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
 }

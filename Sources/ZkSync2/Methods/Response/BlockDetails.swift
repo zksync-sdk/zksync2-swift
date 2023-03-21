@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct BlockDetails: Decodable {
+public struct BlockDetails: Decodable {
     
     let commitTxHash: String?
     

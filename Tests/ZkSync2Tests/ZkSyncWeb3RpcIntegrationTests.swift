@@ -1206,8 +1206,8 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
                                  returnFullTransactionObjects: true,
                                  completion: { result in
             switch result {
-            case .success(let blockDetails):
-                print(blockDetails)
+            case .success(let block):
+                print(block)
             case .failure(let error):
                 XCTFail("Failed with error: \(error)")
             }
@@ -1219,10 +1219,25 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
     func testGetBlockByNumber() {
         let expectation = expectation(description: "Expectation.")
-        
-        zkSync.zksGetBlockByNumber(UInt(fromHex: "0xb108e")!,
+        zkSync.zksGetBlockByNumber(.finalized,
                                    returnFullTransactionObjects: true,
                                    completion: { result in
+            switch result {
+            case .success(let block):
+                print(block)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testGetBlockDetails() {
+        let expectation = expectation(description: "Expectation.")
+        zkSync.zksGetBlockDetails(0,
+                                  completion: { result in
             switch result {
             case .success(let blockDetails):
                 print(blockDetails)

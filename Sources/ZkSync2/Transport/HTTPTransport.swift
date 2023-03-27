@@ -85,7 +85,7 @@ class HTTPTransport: Transport {
             }
         } else if case let AFError.responseValidationFailed(reason) = afError,
                   case let .unacceptableStatusCode(code) = reason {
-            return ZKSyncError.invalidStatusCode(code: code)
+            return ZkSyncError.invalidStatusCode(code: code)
         } else if case let AFError.sessionTaskFailed(error: taskError) = afError {
             return taskError
         }
@@ -114,15 +114,15 @@ class JRPCDecoder: DataDecoder {
         
         guard let result = response.result else {
             guard let error = response.error else {
-                throw ZKSyncError.emptyResponse
+                throw ZkSyncError.emptyResponse
             }
-            throw ZKSyncError.rpcError(code: error.code, message: error.message)
+            throw ZkSyncError.rpcError(code: error.code, message: error.message)
         }
         return result
     }
 }
 
-enum ZKSyncError: LocalizedError {
+enum ZkSyncError: LocalizedError {
     
     case emptyResponse
     case invalidStatusCode(code: Int)

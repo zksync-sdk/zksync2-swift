@@ -175,7 +175,7 @@ class JsonRpc2_0ZkSync: ZkSync {
     
     func zksGetBlockByHash(_ blockHash: String,
                            returnFullTransactionObjects: Bool,
-                           completion: @escaping (Result<Block>) -> Void) {
+                           completion: @escaping (Result<ZkBlock>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: blockHash),
             JRPC.Parameter(type: .bool, value: returnFullTransactionObjects)
@@ -188,7 +188,7 @@ class JsonRpc2_0ZkSync: ZkSync {
     
     func zksGetBlockByNumber(_ block: DefaultBlockParameterName,
                              returnFullTransactionObjects: Bool,
-                             completion: @escaping (Result<Block>) -> Void) {
+                             completion: @escaping (Result<ZkBlock>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: block.rawValue),
             JRPC.Parameter(type: .bool, value: true)

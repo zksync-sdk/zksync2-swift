@@ -116,7 +116,7 @@ public protocol ZkSync {
     ///   - completion: Completion handler with result that contains block.
     func zksGetBlockByHash(_ blockHash: String,
                            returnFullTransactionObjects: Bool,
-                           completion: @escaping (Result<Block>) -> Void)
+                           completion: @escaping (Result<ZkBlock>) -> Void)
     
     /// Get block by number.
     ///
@@ -127,7 +127,7 @@ public protocol ZkSync {
     ///   - completion: Completion handler with result that contains block.
     func zksGetBlockByNumber(_ block: DefaultBlockParameterName,
                              returnFullTransactionObjects: Bool,
-                             completion: @escaping (Result<Block>) -> Void)
+                             completion: @escaping (Result<ZkBlock>) -> Void)
     
     /// Get block details.
     ///

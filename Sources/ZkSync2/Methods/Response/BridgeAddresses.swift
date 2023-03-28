@@ -9,10 +9,6 @@ import Foundation
 
 public struct BridgeAddresses: Decodable {
     
-    let l1EthDefaultBridge: String // Remove
-    
-    let l2EthDefaultBridge: String // Remove
-    
     let l1Erc20DefaultBridge: String
     
     let l2Erc20DefaultBridge: String

@@ -232,16 +232,7 @@ public class ZkSyncWallet {
         let semaphore = DispatchSemaphore(value: 0)
         
         if tokenToUse.isETH {
-            zkSync.zksGetBridgeContracts { result in
-                switch result {
-                case .success(let bridgeAddresses):
-                    l2Bridge = bridgeAddresses.l2EthDefaultBridge
-                case .failure(let error):
-                    fatalError("Failed with error: \(error.localizedDescription)")
-                }
-                
-                semaphore.signal()
-            }
+            fatalError("ETH withdrawals are not supported yet.")
         } else {
             zkSync.zksGetBridgeContracts { result in
                 switch result {

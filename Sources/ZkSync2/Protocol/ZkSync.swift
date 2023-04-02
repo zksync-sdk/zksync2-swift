@@ -107,6 +107,14 @@ public protocol ZkSync {
     func zksGetTransactionByHash(_ transactionHash: String,
                                  completion: @escaping (Result<TransactionResponse>) -> Void)
     
+    // TODO: Add the ability to set filter.
+    
+    /// Get logs.
+    ///
+    /// - Parameters:
+    ///   - completion: Completion handler with result that contains logs.
+    func zksGetLogs(_ completion: @escaping (Result<Log>) -> Void)
+    
     /// Get block by hash.
     ///
     /// - Parameters:

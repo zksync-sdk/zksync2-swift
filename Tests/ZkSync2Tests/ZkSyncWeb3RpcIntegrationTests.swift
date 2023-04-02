@@ -1199,6 +1199,22 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
         wait(for: [expectation], timeout: 5.0)
     }
     
+    func testGetLogs() {
+        let expectation = expectation(description: "Expectation.")
+        
+        zkSync.zksGetLogs { result in
+            switch result {
+            case .success(let logs):
+                print(logs)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
     func testGetBlockByHash() {
         let expectation = expectation(description: "Expectation.")
         

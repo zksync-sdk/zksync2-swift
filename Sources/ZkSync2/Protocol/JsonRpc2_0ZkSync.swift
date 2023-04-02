@@ -173,6 +173,12 @@ class JsonRpc2_0ZkSync: ZkSync {
                        completion: completion)
     }
     
+    func zksGetLogs(_ completion: @escaping (Result<Log>) -> Void) {
+        transport.send(method: "eth_getLogs",
+                       parameters: [],
+                       completion: completion)
+    }
+    
     func zksGetBlockByHash(_ blockHash: String,
                            returnFullTransactionObjects: Bool,
                            completion: @escaping (Result<Block>) -> Void) {

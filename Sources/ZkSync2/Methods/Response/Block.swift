@@ -12,26 +12,47 @@ import BigInt
 public struct Block: Decodable {
     
     let number: BigUInt
+    
     let hash: Data
+    
     let parentHash: Data
+    
     let nonce: Data?
+    
     let sha3Uncles: Data
+    
     var logsBloom: EthereumBloomFilter? = nil
+    
     let transactionsRoot: Data
+    
     let stateRoot: Data
+    
     let receiptsRoot: Data
+    
     var miner: EthereumAddress? = nil
+    
     let difficulty: BigUInt
+    
     let totalDifficulty: BigUInt
+    
     let extraData: Data
+    
     let size: BigUInt
+    
     let gasLimit: BigUInt
+    
     let gasUsed: BigUInt
+    
     let baseFeePerGas: BigUInt?
+    
     let timestamp: Date
+    
     let transactions: [TransactionInBlock]
+    
     let uncles: [Data]
+    
     let l1BatchNumber: BigUInt
+    
     let l1BatchTimestamp: BigUInt
     
     enum CodingKeys: String, CodingKey {

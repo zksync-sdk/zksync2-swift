@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  Log.swift
+//  ZkSync2
 //
 //  Created by Maxim Makhun on 20.03.2023.
 //

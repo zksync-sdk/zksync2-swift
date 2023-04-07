@@ -9,6 +9,7 @@ import SwiftUI
 
 @main
 struct ZkSync2ExampleApp: App {
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

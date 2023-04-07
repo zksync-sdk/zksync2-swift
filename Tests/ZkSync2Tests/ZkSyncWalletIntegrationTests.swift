@@ -13,7 +13,7 @@ import PromiseKit
 
 class ZkSyncWalletIntegrationTests: XCTestCase {
     
-    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/fc6f2c1e05b447969453c194a0326020")!
+    static let L1NodeUrl = URL(string: "https://rpc.ankr.com/eth_goerli")!
     static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
     let credentials = Credentials(BigUInt.one)
@@ -112,7 +112,7 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
             
             let web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
             
-            let amount = Web3.Utils.parseToBigUInt("9", units: .eth)!
+            let amount = Web3.Utils.parseToBigUInt("1", units: .Gwei)!
             
             let gasProvider = DefaultGasProvider()
             
@@ -122,6 +122,7 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
             
             let transactionSendingResult = try! defaultEthereumProvider.deposit(with: Token.ETH,
                                                                                 amount: amount,
+                                                                                operatorTips: BigUInt.zero,
                                                                                 to: self.credentials.address).wait()
             
             print("Transaction hash: \(transactionSendingResult.hash)")

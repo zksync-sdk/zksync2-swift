@@ -39,7 +39,7 @@ protocol EthereumProvider {
     ///   - gasPrice: Gas price for L2 transaction.
     func getBaseCost(_ gasLimit: BigUInt,
                      gasPerPubdataByte: BigUInt,
-                     gasPrice: BigUInt?) throws -> Promise<BigUInt>
+                     gasPrice: BigUInt?) throws -> Promise<[String: Any]>
     
     /// Send request execute transaction to ZkSync contract.
     /// - Parameters:
@@ -56,7 +56,7 @@ protocol EthereumProvider {
                         calldata: Data,
                         gasLimit: BigUInt,
                         factoryDeps: [Data]?,
-                        operatorTips: BigUInt,
+                        operatorTips: BigUInt?,
                         gasPrice: BigUInt?,
                         refundRecipient: String) throws -> Promise<TransactionSendingResult>
     
@@ -93,4 +93,6 @@ protocol EthereumProvider {
     
     /// ZkSync Bridge for ERC20 smart-contract address in Ethereum blockchain.
     var l1ERC20BridgeAddress: String { get }
+    
+    var mainContractAddress: String { get }
 }

@@ -13,7 +13,7 @@ import PromiseKit
 
 class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     
-    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/fc6f2c1e05b447969453c194a0326020")!
+    static let L1NodeUrl = URL(string: "https://rpc.ankr.com/eth_goerli")!
     static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
     let ethToken = Token.ETH

@@ -14,4 +14,5 @@ import web3swift_zksync
 extension EthereumAddress {
     
     static let Default = EthereumAddress("0x0000000000000000000000000000000000000000")!
+    static let L2EthTokenAddress = EthereumAddress("0x000000000000000000000000000000000000800a")!
 }

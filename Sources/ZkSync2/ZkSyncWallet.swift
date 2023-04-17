@@ -20,6 +20,7 @@ public class ZkSyncWallet {
     
     let signer: EthSigner
     
+    // FIXME: Is fee provider still needed?
     let feeProvider: ZkTransactionFeeProvider
     
     public init(_ zkSync: ZkSync, ethSigner: EthSigner, feeToken: Token) {
@@ -197,29 +198,6 @@ public class ZkSyncWallet {
             tokenToUse = Token.ETH
         }
         
-        let inputs = [
-            ABI.Element.InOut(name: "_l1Receiver", type: .address),
-            ABI.Element.InOut(name: "_l2Token", type: .address),
-            ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
-        ]
-        
-        let function = ABI.Element.Function(name: "withdraw",
-                                            inputs: inputs,
-                                            outputs: [],
-                                            constant: false,
-                                            payable: false)
-        
-        let elementFunction: ABI.Element = .function(function)
-        
-        let parameters: [AnyObject] = [
-            EthereumAddress(to) as AnyObject,
-            EthereumAddress(tokenToUse.l2Address) as AnyObject,
-            amount as AnyObject
-        ]
-        
-        // TODO: Verify calldata.
-        let calldata = elementFunction.encodeParameters(parameters)!
-        
         let nonceToUse: BigUInt
         if let nonce = nonce {
             nonceToUse = nonce
@@ -227,13 +205,65 @@ public class ZkSyncWallet {
             nonceToUse = try! getNonce()
         }
         
-        var l2Bridge: String = ""
-        
-        let semaphore = DispatchSemaphore(value: 0)
-        
         if tokenToUse.isETH {
-            fatalError("ETH withdrawals are not supported yet.")
+            let inputs = [
+                ABI.Element.InOut(name: "_l1Receiver", type: .address)
+            ]
+            
+            let function = ABI.Element.Function(name: "withdraw",
+                                                inputs: inputs,
+                                                outputs: [],
+                                                constant: false,
+                                                payable: true)
+            
+            let withdrawFunction: ABI.Element = .function(function)
+            
+            let parameters: [AnyObject] = [
+                EthereumAddress(to) as AnyObject,
+            ]
+            
+            // TODO: Verify calldata.
+            let calldata = withdrawFunction.encodeParameters(parameters)!
+            
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
+                                                                             to: EthereumAddress.L2EthTokenAddress,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
+                                                                             value: amount,
+                                                                             data: calldata)
+            
+            // TODO: Verify chainID value.
+            estimate.envelope.parameters.chainID = signer.domain.chainId
+            
+            return estimateAndSend(estimate, nonce: nonceToUse)
         } else {
+            let inputs = [
+                ABI.Element.InOut(name: "_l1Receiver", type: .address),
+                ABI.Element.InOut(name: "_l2Token", type: .address),
+                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+            ]
+            
+            let function = ABI.Element.Function(name: "withdraw",
+                                                inputs: inputs,
+                                                outputs: [],
+                                                constant: false,
+                                                payable: true)
+            
+            let withdrawFunction: ABI.Element = .function(function)
+            
+            let parameters: [AnyObject] = [
+                EthereumAddress(to) as AnyObject,
+                EthereumAddress(tokenToUse.l2Address) as AnyObject,
+                amount as AnyObject
+            ]
+            
+            // TODO: Verify calldata.
+            let calldata = withdrawFunction.encodeParameters(parameters)!
+            
+            var l2Bridge: String = ""
+            
+            let semaphore = DispatchSemaphore(value: 0)
+            
             zkSync.zksGetBridgeContracts { result in
                 switch result {
                 case .success(let bridgeAddresses):
@@ -244,20 +274,20 @@ public class ZkSyncWallet {
                 
                 semaphore.signal()
             }
+            
+            semaphore.wait()
+            
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
+                                                                             to: EthereumAddress(l2Bridge)!,
+                                                                             gasPrice: BigUInt.zero,
+                                                                             gasLimit: BigUInt.zero,
+                                                                             data: calldata)
+            
+            // TODO: Verify chainID value.
+            estimate.envelope.parameters.chainID = signer.domain.chainId
+            
+            return estimateAndSend(estimate, nonce: nonceToUse)
         }
-        
-        semaphore.wait()
-        
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
-                                                                         to: EthereumAddress(l2Bridge)!,
-                                                                         gasPrice: BigUInt.zero,
-                                                                         gasLimit: BigUInt.zero,
-                                                                         data: calldata)
-        
-        // TODO: Verify chainID value.
-        estimate.envelope.parameters.chainID = signer.domain.chainId
-        
-        return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
     /// Deploy new smart-contract into chain (this method uses create2, see [EIP-1014](https://eips.ethereum.org/EIPS/eip-1014)).
@@ -451,25 +481,26 @@ public class ZkSyncWallet {
     
     func estimateAndSend(_ transaction: EthereumTransaction, nonce: BigUInt) -> Promise<TransactionSendingResult> {
         let chainID = signer.domain.chainId
-        let gas = try! feeProvider.getGasLimit(for: transaction).wait()
-        let gasPrice = feeProvider.gasPrice
+        let gasPrice = try! zkSync.web3.eth.getGasPrice()
+        
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.type = .eip712
+        transactionOptions.chainID = chainID
+        transactionOptions.nonce = .manual(nonce)
+        transactionOptions.to = transaction.to
+        transactionOptions.value = transaction.value
+        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))
+        transactionOptions.maxFeePerGas = .manual(gasPrice)
+        transactionOptions.from = transaction.parameters.from
+        
+        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
+        transactionOptions.gasLimit = .manual(gas)
         
 #if DEBUG
         print("chainID: \(chainID)")
         print("gas: \(gas)")
         print("gasPrice: \(gasPrice)")
 #endif
-        
-        var transactionOptions = TransactionOptions.defaultOptions
-        transactionOptions.type = .eip712
-        transactionOptions.chainID = chainID
-        transactionOptions.nonce = .manual(nonce)
-        transactionOptions.gasLimit = .manual(gas)
-        transactionOptions.to = transaction.to
-        transactionOptions.value = transaction.value
-        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))
-        transactionOptions.maxFeePerGas = .manual(gasPrice)
-        transactionOptions.from = transaction.parameters.from
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta

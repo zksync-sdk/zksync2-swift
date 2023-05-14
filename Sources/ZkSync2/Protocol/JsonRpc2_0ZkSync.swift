@@ -27,7 +27,7 @@ class JsonRpc2_0ZkSync: ZkSync {
     func zksEstimateFee(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<Fee>) -> Void) {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary())
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
         ]
         
         transport.send(method: "zks_estimateFee",
@@ -124,7 +124,7 @@ class JsonRpc2_0ZkSync: ZkSync {
     func ethEstimateGas(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<BigUInt>) -> Void) {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary())
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
         ]
         
         transport.send(method: "eth_estimateGas",

@@ -14,12 +14,11 @@ import web3swift_zksync
 #endif
 
 extension EthereumTransaction: Structurable {
-    
     public func getTypeName() -> String {
         "Transaction"
     }
     
-    public func eip712types() -> [ZkSync2.EIP712.`Type`] {
+    public func eip712types() -> [EIP712.`Type`] {
         let envelope = envelope as! EIP712Envelope
         
         return [

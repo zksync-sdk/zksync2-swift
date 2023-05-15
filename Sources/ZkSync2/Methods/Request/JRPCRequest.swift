@@ -6,7 +6,11 @@
 //
 
 import Foundation
+#if canImport(web3swift)
 import web3swift
+#else
+import web3swift_zksync
+#endif
 
 extension JRPC {
     

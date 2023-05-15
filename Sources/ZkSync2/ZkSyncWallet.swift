@@ -136,12 +136,7 @@ public class ZkSyncWallet {
             nonceToUse = try! getNonce()
         }
         
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: from,
-                                                                         to: to,
-                                                                         gasPrice: BigUInt.zero,
-                                                                         gasLimit: BigUInt.zero,
-                                                                         value: txAmount,
-                                                                         data: calldata)
+        var estimate = EthereumTransaction.createFunctionCallTransaction(from: from, to: to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: txAmount, data: calldata)
         
         // TODO: Verify chainID value.
         estimate.envelope.parameters.chainID = signer.domain.chainId
@@ -225,12 +220,7 @@ public class ZkSyncWallet {
             // TODO: Verify calldata.
             let calldata = withdrawFunction.encodeParameters(parameters)!
             
-            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
-                                                                             to: EthereumAddress.L2EthTokenAddress,
-                                                                             gasPrice: BigUInt.zero,
-                                                                             gasLimit: BigUInt.zero,
-                                                                             value: amount,
-                                                                             data: calldata)
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
             
             // TODO: Verify chainID value.
             estimate.envelope.parameters.chainID = signer.domain.chainId
@@ -277,11 +267,7 @@ public class ZkSyncWallet {
             
             semaphore.wait()
             
-            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
-                                                                             to: EthereumAddress(l2Bridge)!,
-                                                                             gasPrice: BigUInt.zero,
-                                                                             gasLimit: BigUInt.zero,
-                                                                             data: calldata)
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
             
             // TODO: Verify chainID value.
             estimate.envelope.parameters.chainID = signer.domain.chainId
@@ -337,11 +323,7 @@ public class ZkSyncWallet {
             validCalldata = Data(hex: "0x")
         }
         
-        let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!,
-                                                                      gasPrice: BigUInt.zero,
-                                                                      gasLimit: BigUInt.zero,
-                                                                      bytecode: bytecode,
-                                                                      calldata: validCalldata)
+        let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, calldata: validCalldata)
         
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
@@ -378,11 +360,7 @@ public class ZkSyncWallet {
         
         // TODO: Validate calldata.
         
-        let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!,
-                                                                         to: EthereumAddress(contractAddress)!,
-                                                                         gasPrice: BigUInt.zero,
-                                                                         gasLimit: BigUInt.zero,
-                                                                         data: encodedFunction)
+        let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(contractAddress)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: encodedFunction)
         
         return estimateAndSend(estimate, nonce: nonceToUse)
     }

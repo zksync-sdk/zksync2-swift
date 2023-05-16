@@ -14,12 +14,15 @@ import web3swift_zksync
 #endif
 
 class DepositManager: BaseManager {
-    public static func deposit() {
+    func deposit(callback: (() -> Void)) {
         let value: BigUInt = 1
         
         let credentials = Credentials("0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110")
         
         let zkSync: ZkSync = JsonRpc2_0ZkSync(URL(string: "http://127.0.0.1:3050")!)
+        
+        // deposit on l1
+        // get hash from priorityOp
         
         //        self.aaaa = try! DefaultEthereumProvider.load(zkSync, web3: zkSync.web3, gasProvider: DefaultGasProvider()).wait()
         //
@@ -40,10 +43,6 @@ class DepositManager: BaseManager {
         
         let result = try! defaultEthereumProvider.deposit(with: token, amount: value, operatorTips: BigUInt(0.0001), to: "0xa61464658AfeAf65CccaaFD3a512b69A83B77618").wait()
         
-        print("1111", result)
-        //            case .failure(let error):
-        //                print("2222", error)
-        //            }
-        //        }
+        callback()
     }
 }

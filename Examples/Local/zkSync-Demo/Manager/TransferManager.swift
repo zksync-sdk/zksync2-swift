@@ -75,10 +75,8 @@ class TransferManager: BaseManager {
         transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
         transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
         transaction.envelope.v = BigUInt(unmarshalledSignature.v)
-        
+        print("1111", transaction.parameters.gasLimit, transaction.parameters.gasPrice, transaction.parameters.maxPriorityFeePerGas, transaction.parameters.maxFeePerGas)
         let result = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
-        
-        print("result:", result)
         
         callback()
     }

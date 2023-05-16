@@ -461,28 +461,33 @@ public class ZkSyncWallet {
         let chainID = signer.domain.chainId
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
         
+        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
+        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+        
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.chainID = chainID
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.to = transaction.to
         transactionOptions.value = transaction.value
-        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))
-        transactionOptions.maxFeePerGas = .manual(gasPrice)
+        transactionOptions.gasLimit = .manual(fee.gasLimit)
+        transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+        transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
         transactionOptions.from = transaction.parameters.from
         
-        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
-        transactionOptions.gasLimit = .manual(gas)
+//111        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
+//        transactionOptions.gasLimit = .manual(gas)
         
 #if DEBUG
         print("chainID: \(chainID)")
-        print("gas: \(gas)")
+        //print("gas: \(gas)")
         print("gasPrice: \(gasPrice)")
 #endif
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)
+        
         ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
-        ethereumParameters.from = transaction.parameters.from
+//        ethereumParameters.from = transaction.parameters.from
         
         var prepared = EthereumTransaction(type: .eip712,
                                            to: transaction.to,
@@ -508,7 +513,8 @@ public class ZkSyncWallet {
         print("Signature: \(signature))")
         print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
 #endif
-        
-        return zkSync.web3.eth.sendRawTransactionPromise(transaction)
+        print("1111", prepared.envelope.parameters.gasLimit, prepared.parameters.gasLimit)
+        print("1111", prepared.parameters.gasLimit, prepared.parameters.gasPrice, prepared.parameters.maxPriorityFeePerGas, prepared.parameters.maxFeePerGas)
+        return zkSync.web3.eth.sendRawTransactionPromise(prepared)//222
     }
 }

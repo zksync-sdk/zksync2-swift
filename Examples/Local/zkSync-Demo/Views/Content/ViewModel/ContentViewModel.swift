@@ -20,11 +20,31 @@ class ContentViewModel: ObservableObject {
         
         let decimalBalance = Token.ETH.intoDecimal(balance)
         
-        self.balance = decimalBalance
+        DispatchQueue.main.async {
+            self.balance = decimalBalance
+        }
     }
     
     func transferViaWallet() {
+        transferManager.transferViaWallet(callback: {
+            refreshBalance()
+        })
+    }
+    
+    func transfer() {
         transferManager.transfer(callback: {
+            refreshBalance()
+        })
+    }
+    
+    func deposit() {
+        depositManager.deposit(callback: {
+            refreshBalance()
+        })
+    }
+    
+    func withdrawViaWallet() {
+        withdrawManager.withdrawViaWallet(callback: {
             refreshBalance()
         })
     }

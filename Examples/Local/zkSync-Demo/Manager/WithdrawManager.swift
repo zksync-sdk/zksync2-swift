@@ -14,7 +14,7 @@ import web3swift_zksync
 #endif
 
 class WithdrawManager: BaseManager {
-    func withdrawViaWallet() {
+    func withdrawViaWallet(callback: (() -> Void)) {
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
         
         print("gasPrice:", gasPrice)
@@ -29,13 +29,17 @@ class WithdrawManager: BaseManager {
         
         // Also we can withdraw ERC20 token
         let token: Token = Token(l1Address: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049", l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
-        
-        let transactionSendingResult = try! wallet.withdraw("0xa61464658AfeAf65CccaaFD3a512b69A83B77618", amount: amount, token: token).wait()
-        
-        print(transactionSendingResult)
+        //0xa61464658AfeAf65CccaaFD3a512b69A83B77618
+        let transactionSendingResult = try! wallet.withdraw("0x000000000000000000000000000000000000800a", amount: amount, token: token).wait()
         
         let balance2 = try! wallet.getBalance().wait()
         
         print("balance after:", balance2)
+        
+        // finalize withdraw on l1
+        // get l2 hash from priority op
+        // wait for transaction to be finalized
+        
+        callback()
     }
 }

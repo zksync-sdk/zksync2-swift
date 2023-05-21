@@ -40,7 +40,7 @@ struct ContentView: View {
             
             Button(action: {
                 DispatchQueue.global().async {
-                    viewModel.transfer()
+                    viewModel.deposit()
                 }
             }, label: {
                 Text("Deposit")

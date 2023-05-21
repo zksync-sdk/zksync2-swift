@@ -29,7 +29,7 @@ class WithdrawManager: BaseManager {
         
         // Also we can withdraw ERC20 token
         let token: Token = Token(l1Address: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049", l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
-        //0xa61464658AfeAf65CccaaFD3a512b69A83B77618
+        
         let transactionSendingResult = try! wallet.withdraw("0x000000000000000000000000000000000000800a", amount: amount, token: token).wait()
         
         let balance2 = try! wallet.getBalance().wait()

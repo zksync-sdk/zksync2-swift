@@ -258,9 +258,12 @@ class DefaultEthereumProvider: EthereumProvider {
             l1ToL2GasPerPubData
         ] as [AnyObject]
         
-        if let factoryDeps = factoryDeps as AnyObject? {
-            parameters.append(factoryDeps)
-        }
+        let bytesArr: [Data] = []
+        parameters.append(bytesArr as AnyObject)
+        
+//        if let factoryDeps = factoryDeps as AnyObject? {
+//            parameters.append(factoryDeps)
+//        }
         
         parameters.append(EthereumAddress(contractAddress)! as AnyObject)
         
@@ -271,15 +274,40 @@ class DefaultEthereumProvider: EthereumProvider {
             operatorTipsValue = BigUInt.zero
         }
         
-        let totalValue = l2Value + baseCost + operatorTipsValue
+        let totalValue = l2Value + baseCost// + operatorTipsValue
         
-        parameters.append(totalValue as AnyObject)
+//        parameters.append(totalValue as AnyObject)
+        
+        let nonce = try! self.web3.eth.getTransactionCountPromise(address: EthereumAddress("0x36615Cf349d7F6344891B1e7CA7C72883F5dc049")!).wait()
+        
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.type = .legacy
+        transactionOptions.from = EthereumAddress("0x36615Cf349d7F6344891B1e7CA7C72883F5dc049")!
+        transactionOptions.to = zkSyncContract.contract.address
+//        if let nonce = nonce {
+            transactionOptions.nonce = .manual(nonce)
+//        }
+        transactionOptions.gasLimit = .manual(gasLimit)
+        transactionOptions.gasPrice = .manual(gasPrice!)
+//        transactionOptions.maxPriorityFeePerGas = .manual(gasPrice!)
+        transactionOptions.value = totalValue
+        transactionOptions.chainID = self.web3.provider.network?.chainID
         
         guard let transaction = zkSyncContract.write("requestL2Transaction",
                                                      parameters: parameters,
-                                                     transactionOptions: nil) else {
+                                                     transactionOptions: transactionOptions) else {
             return Promise(error: EthereumProviderError.invalidParameter)
         }
+        
+        var tx = transaction.transaction//try! transaction.assemble(transactionOptions: transactionOptions)
+        
+        let credentials = Credentials("0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110")
+        
+        try! tx.sign(privateKey: "0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110".data(using: .utf8)!)
+        
+        
+        //333
+        //return web3.eth.sendRawTransactionPromise(tx)
         
         return transaction.sendPromise()
     }

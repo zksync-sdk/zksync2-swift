@@ -39,7 +39,7 @@ class ContentViewModel: ObservableObject {
     
     func deposit() {
         depositManager.deposit(callback: {
-            refreshBalance()
+            self.refreshBalance()
         })
     }
     

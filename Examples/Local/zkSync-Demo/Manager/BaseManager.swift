@@ -17,9 +17,10 @@ class BaseManager {
     let credentials = Credentials("0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110")
     
     let zkSync: ZkSync = JsonRpc2_0ZkSync(URL(string: "http://127.0.0.1:3050")!)
+    let eth: web3 = try! Web3.new(URL(string: "http://127.0.0.1:8545")!)
     
     var chainId: BigUInt {
-        try! zkSync.web3.eth.getChainIdPromise().wait()
+        return try! zkSync.web3.eth.getChainIdPromise().wait()
     }
     
     var signer: EthSigner {

@@ -480,7 +480,7 @@ public class ZkSyncWallet {
         
 #if DEBUG
         print("chainID: \(chainID)")
-        //print("gas: \(gas)")
+        //111print("gas: \(gas)")
         print("gasPrice: \(gasPrice)")
 #endif
         
@@ -513,8 +513,6 @@ public class ZkSyncWallet {
         print("Signature: \(signature))")
         print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
 #endif
-        print("1111", prepared.envelope.parameters.gasLimit, prepared.parameters.gasLimit)
-        print("1111", prepared.parameters.gasLimit, prepared.parameters.gasPrice, prepared.parameters.maxPriorityFeePerGas, prepared.parameters.maxFeePerGas)
-        return zkSync.web3.eth.sendRawTransactionPromise(prepared)//222
+        return zkSync.web3.eth.sendRawTransactionPromise(prepared)
     }
 }

@@ -35,9 +35,28 @@ class DepositManager: BaseManager {
                     
                     let token = Token(l1Address: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049", l2Address: Token.DefaultAddress, symbol: "ETH", decimals: 18)
                     
-                    let result = try! defaultEthereumProvider.deposit(with: token, amount: value, operatorTips: BigUInt(0), to: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049").wait()
+                    //let result = try! defaultEthereumProvider.deposit(with: token, amount: value, operatorTips: BigUInt(0), to: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049").wait()
                     
-                    callback()
+                    self.zkSync.zksGetBridgeContracts { result in
+                        DispatchQueue.global().async {
+                            switch result {
+                            case .success(let bridgeAddresses):
+                                let l2Bridge = bridgeAddresses.l2Erc20DefaultBridge
+                                
+                                print("1111", l2Bridge, bridgeAddresses.l1Erc20DefaultBridge)
+                                
+                                let result = try! defaultEthereumProvider.finalizeDeposit(address, l2Receiver: l2Bridge, l1Token: "0x36615Cf349d7F6344891B1e7CA7C72883F5dc049", amount: value, data: Data()).wait()
+                                
+                                print("hash:", result)
+                                
+                                callback()
+                            case .failure(let error):
+                                fatalError("Failed with error: \(error.localizedDescription)")
+                            }
+                        }
+                    }
+                    
+                    
                 default: return
                 }
             }

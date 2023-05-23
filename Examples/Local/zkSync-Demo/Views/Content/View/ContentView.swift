@@ -16,6 +16,14 @@ struct ContentView: View {
             
             Button(action: {
                 DispatchQueue.global().async {
+                    viewModel.check()
+                }
+            }, label: {
+                Text("Check")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
                     viewModel.refreshBalance()
                 }
             }, label: {

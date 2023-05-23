@@ -15,6 +15,12 @@ class ContentViewModel: ObservableObject {
     
     @Published var balance: Decimal = 0
     
+    func check() {
+        baseManager.check(callback: {
+            
+        })
+    }
+    
     func refreshBalance() {
         let balance = try! baseManager.wallet.getBalance().wait()
         

@@ -144,6 +144,140 @@ public class ZkSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
+    //----------------------
+    /// Withdraw native coins to L1 chain.
+    ///
+    /// - Parameters:
+    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
+    ///   - amount: Amount of the funds to be withdrawn.
+    /// - Returns: Prepared remote call of transaction.
+    public func deposit(_ from: String,
+                         amount: BigUInt) -> Promise<TransactionSendingResult> {
+        deposit(from,
+                 amount: amount,
+                 token: nil,
+                 nonce: nil)
+    }
+    
+    /// Withdraw native coins or tokens to L1 chain.
+    ///
+    /// - Parameters:
+    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
+    ///   - amount: Amount of the funds to be withdrawn.
+    ///   - token: Token object supported by ZkSync.
+    /// - Returns: Prepared remote call of transaction.
+    public func deposit(_ from: String,
+                         amount: BigUInt,
+                         token: Token) -> Promise<TransactionSendingResult> {
+        deposit(from,
+                 amount: amount,
+                 token: token,
+                 nonce: nil)
+    }
+    //111
+    /// Withdraw native coins to L1 chain.
+    ///
+    /// - Parameters:
+    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
+    ///   - amount: Amount of the funds to be withdrawn.
+    ///   - token: Token object supported by ZkSync.
+    ///   - nonce: Custom nonce value of the wallet.
+    /// - Returns: Prepared remote call of transaction.
+    public func deposit(_ from: String,
+                         amount: BigUInt,
+                         token: Token?,
+                         nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+        let tokenToUse: Token
+        if let token = token {
+            tokenToUse = token
+        } else {
+            tokenToUse = Token.ETH
+        }
+        
+        let nonceToUse: BigUInt
+        if let nonce = nonce {
+            nonceToUse = nonce
+        } else {
+            nonceToUse = try! getNonce()
+        }
+        
+        if tokenToUse.isETH {
+            let inputs = [
+                ABI.Element.InOut(name: "_l1Receiver", type: .address)
+            ]
+            
+            let function = ABI.Element.Function(name: "withdraw",
+                                                inputs: inputs,
+                                                outputs: [],
+                                                constant: false,
+                                                payable: true)
+            
+            let withdrawFunction: ABI.Element = .function(function)
+            
+            let parameters: [AnyObject] = [
+                EthereumAddress(from) as AnyObject,
+            ]
+            
+            // TODO: Verify calldata.
+            let calldata = withdrawFunction.encodeParameters(parameters)!
+            
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
+            
+            // TODO: Verify chainID value.
+            estimate.envelope.parameters.chainID = signer.domain.chainId
+            
+            return estimateAndSend(estimate, nonce: nonceToUse)
+        } else {
+            let inputs = [
+                ABI.Element.InOut(name: "_l1Receiver", type: .address),
+                ABI.Element.InOut(name: "_l2Token", type: .address),
+                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+            ]
+            
+            let function = ABI.Element.Function(name: "withdraw",
+                                                inputs: inputs,
+                                                outputs: [],
+                                                constant: false,
+                                                payable: true)
+            
+            let withdrawFunction: ABI.Element = .function(function)
+            
+            let parameters: [AnyObject] = [
+                EthereumAddress(from) as AnyObject,
+                EthereumAddress(tokenToUse.l2Address) as AnyObject,
+                amount as AnyObject
+            ]
+            
+            // TODO: Verify calldata.
+            let calldata = withdrawFunction.encodeParameters(parameters)!
+            
+            var l2Bridge: String = ""
+            
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            zkSync.zksGetBridgeContracts { result in
+                switch result {
+                case .success(let bridgeAddresses):
+                    l2Bridge = bridgeAddresses.l2Erc20DefaultBridge
+                case .failure(let error):
+                    fatalError("Failed with error: \(error.localizedDescription)")
+                }
+                
+                semaphore.signal()
+            }
+            
+            semaphore.wait()
+            
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
+            
+            // TODO: Verify chainID value.
+            estimate.envelope.parameters.chainID = signer.domain.chainId
+            
+            return estimateAndSend(estimate, nonce: nonceToUse)
+        }
+    }
+    //----------------------
+    
     /// Withdraw native coins to L1 chain.
     ///
     /// - Parameters:

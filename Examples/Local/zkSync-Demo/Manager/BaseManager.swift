@@ -30,4 +30,10 @@ class BaseManager {
     var wallet: ZkSyncWallet {
         ZkSyncWallet(zkSync, ethSigner: signer, feeToken: Token.ETH)
     }
+    
+    func check(callback: (() -> Void)) {
+        let hash = "0xf4bd346181e199b20dc4f6b9c7cd5a29e1ca4a4aedd8614841067826191d2fd9"
+        
+        let transaction = EthereumTransaction(to: EthereumAddress("")!, data: Data())
+    }
 }

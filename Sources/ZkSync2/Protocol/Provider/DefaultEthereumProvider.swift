@@ -711,6 +711,31 @@ class DefaultEthereumProvider: EthereumProvider {
         
         return transaction.callPromise()
     }
+    //444
+    func finalizeDeposit(_ l1Sender: String,
+                         l2Receiver: String,
+                         l1Token: String,
+                         amount: BigUInt,
+                         data: Data) -> Promise<[String: Any]> {
+        let l2Bridge = web3.contract(Web3.Utils.IL2Bridge,
+                                     at: EthereumAddress(l2Receiver))!
+        
+        let parameters = [
+            l1Sender,
+            l2Receiver,
+            l1Token,
+            amount,
+            data
+        ] as [AnyObject]
+        
+        guard let transaction = l2Bridge.read("finalizeDeposit",
+                                                    parameters: parameters,
+                                                    transactionOptions: nil) else {
+            return Promise(error: EthereumProviderError.invalidParameter)
+        }
+        
+        return transaction.callPromise()
+    }
 }
 
 extension DefaultEthereumProvider {

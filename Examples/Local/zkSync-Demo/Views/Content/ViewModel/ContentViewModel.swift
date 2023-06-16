@@ -31,6 +31,24 @@ class ContentViewModel: ObservableObject {
         }
     }
     
+    func accountAbstraction() {
+        baseManager.accountAbstraction(callback: {
+            
+        })
+    }
+    
+    func deploySmartContract() {
+        baseManager.deploySmartContract(callback: {
+            
+        })
+    }
+    
+    func deploySmartContractViaWallet() {
+        baseManager.deploySmartContractViaWallet(callback: {
+            
+        })
+    }
+    
     func transferViaWallet() {
         transferManager.transferViaWallet(callback: {
             refreshBalance()

@@ -194,12 +194,14 @@ extension EthereumTransaction {
         
         return ethereumTransaction
     }
-    
+    //222
     static func create2ContractTransaction(from: EthereumAddress,
                                            gasPrice: BigUInt,
                                            gasLimit: BigUInt,
                                            bytecode: Data,
-                                           calldata: Data = Data()) -> EthereumTransaction {
+                                           deps: [Data],
+                                           calldata: Data = Data(),
+                                           salt: Data) -> EthereumTransaction {
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.from = from
@@ -218,19 +220,24 @@ extension EthereumTransaction {
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.from = from
+        ethereumParameters.gasPrice = gasPrice
+        ethereumParameters.gasLimit = gasLimit
         
-        let calldataCreate = ContractDeployer.encodeCreate2(bytecode, calldata: calldata)
+        //let calldataCreate = ContractDeployer.encodeCreate2(bytecode, calldata: calldata)
+        let calldataCreate = ContractDeployer.encodeCreate2Account(bytecode, calldata: calldata, salt: salt, version: .version1)
         
         var EIP712Meta = EIP712Meta()
         EIP712Meta.gasPerPubdata = BigUInt(160000)
         EIP712Meta.factoryDeps = [bytecode]
+        print("factoryDeps: \(EIP712Meta.factoryDeps!.first!.toHexString().addHexPrefix())")
         EIP712Meta.paymasterParams = nil
+        EIP712Meta.customSignature = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         
         let ethereumTransaction = EthereumTransaction(type: .eip712,
                                                       to: to,
                                                       // nonce: ,
-                                                      // chainID: ,
+                                                      chainID: BigUInt(270),
                                                       value: nil,
                                                       data: calldataCreate,
                                                       parameters: ethereumParameters)

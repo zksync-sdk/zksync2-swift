@@ -61,7 +61,7 @@ class TransferManager: BaseManager {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
         
-        var transaction = EthereumTransaction(type: .eip712,
+        var transaction = EthereumTransaction(type: .legacy,
                                               to: estimate.to,
                                               nonce: nonce,
                                               chainID: chainId,
@@ -75,7 +75,7 @@ class TransferManager: BaseManager {
         transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
         transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
         transaction.envelope.v = BigUInt(unmarshalledSignature.v)
-        print("1111", transaction.parameters.gasLimit, transaction.parameters.gasPrice, transaction.parameters.maxPriorityFeePerGas, transaction.parameters.maxFeePerGas)
+        
         let result = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
         
         callback()

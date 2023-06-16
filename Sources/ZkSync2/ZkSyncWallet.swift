@@ -457,7 +457,7 @@ public class ZkSyncWallet {
             validCalldata = Data(hex: "0x")
         }
         
-        let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, calldata: validCalldata)
+        let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, deps: [bytecode], calldata: validCalldata, salt: Data())
         
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
@@ -596,7 +596,7 @@ public class ZkSyncWallet {
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
         
         var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
-        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+        //let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
@@ -604,9 +604,9 @@ public class ZkSyncWallet {
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.to = transaction.to
         transactionOptions.value = transaction.value
-        transactionOptions.gasLimit = .manual(fee.gasLimit)
-        transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
-        transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
+        transactionOptions.gasLimit = .manual(BigUInt(100000)) //.manual(fee.gasLimit)
+        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000))//.manual(fee.maxPriorityFeePerGas)
+        transactionOptions.maxFeePerGas = .manual(BigUInt(250000))//.manual(fee.maxFeePerGas) gasPrice
         transactionOptions.from = transaction.parameters.from
         
 //111        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)

@@ -45,6 +45,8 @@ class EIP712Encoder {
         outputData.append(EIP712Encoder.encodeValue(domain))
         outputData.append(EIP712Encoder.encodeValue(typedData))
         
-        return Data(SHA3(variant: .keccak256).calculate(for: outputData.bytes))
+        let data = Data(SHA3(variant: .keccak256).calculate(for: outputData.bytes))
+        
+        return data
     }
 }

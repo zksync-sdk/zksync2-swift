@@ -115,7 +115,7 @@ public extension EIP712Hashable {
     var typehash: Data {
         EIP712.keccak256(encodeType())
     }
-    
+    //555
     func hash() throws -> Data {
         var parameters: [Data] = [self.typehash]
         for case let (_, field) in eip712types() {
@@ -127,18 +127,7 @@ public extension EIP712Hashable {
             case let data as EIP712.Bytes:
                 result = EIP712.keccak256(data)
             case let data as EIP712.Bytes32Array:
-                let factoryDepsHashes = data.map({ EIP712.keccak256($0) })
-                
-                var allData = Data()
-                factoryDepsHashes.forEach {
-                    guard $0.count == 32 else {
-                        preconditionFailure("ABI encode error")
-                    }
-                    
-                    allData.append($0)
-                }
-                
-                result = EIP712.keccak256(allData)
+                result = EIP712.keccak256(self.factoryDepsHashes(data: data))
             case is EIP712.UInt8:
                 result = ABIEncoder.encodeSingleType(type: .uint(bits: 8), value: field as AnyObject)!
             case is EIP712.UInt256:
@@ -164,5 +153,20 @@ public extension EIP712Hashable {
         
         let encoded = parameters.flatMap { $0.bytes }
         return EIP712.keccak256(encoded)
+    }
+    
+    internal func factoryDepsHashes(data: EIP712.Bytes32Array) -> Data {
+        let factoryDepsHashes = data.map({ ContractDeployer.hashBytecode($0) })
+        
+        var allData = Data()
+        factoryDepsHashes.forEach {
+            guard $0.count == 32 else {
+                preconditionFailure("ABI encode error")
+            }
+            
+            allData.append($0)
+        }
+        
+        return allData
     }
 }

@@ -32,6 +32,30 @@ struct ContentView: View {
             
             Button(action: {
                 DispatchQueue.global().async {
+                    viewModel.accountAbstraction()
+                }
+            }, label: {
+                Text("Account Abstraction")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
+                    viewModel.deploySmartContract()
+                }
+            }, label: {
+                Text("Deploy Smart Contract")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
+                    viewModel.deploySmartContractViaWallet()
+                }
+            }, label: {
+                Text("Deploy Smart Contract via Wallet")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
                     viewModel.transferViaWallet()
                 }
             }, label: {

@@ -595,8 +595,9 @@ public class ZkSyncWallet {
         let chainID = signer.domain.chainId
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
         
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
-        //let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+        let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
+        
+        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
@@ -604,24 +605,23 @@ public class ZkSyncWallet {
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.to = transaction.to
         transactionOptions.value = transaction.value
-        transactionOptions.gasLimit = .manual(BigUInt(100000)) //111.manual(fee.gasLimit)
-        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
-        transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//111.manual(fee.maxFeePerGas) gasPrice
+        transactionOptions.gasLimit = .manual(fee.gasLimit)
+        transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+        transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
         transactionOptions.from = transaction.parameters.from
         
-//111        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
-//        transactionOptions.gasLimit = .manual(gas)
+        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
+        transactionOptions.gasLimit = .manual(gas)
         
 #if DEBUG
         print("chainID: \(chainID)")
-        //111print("gas: \(gas)")
+        print("gas: \(gas)")
         print("gasPrice: \(gasPrice)")
 #endif
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         
         ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
-//111        ethereumParameters.from = transaction.parameters.from
         
         var prepared = EthereumTransaction(type: .eip712,
                                            to: transaction.to,

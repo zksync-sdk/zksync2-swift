@@ -195,7 +195,7 @@ class SmartContractManager: BaseManager {
                     guard var encodedCallData = elementFunction.encodeParameters(parameters) else {
                         fatalError("Failed to encode function.")
                     }
-                    
+                    //111
                     encodedCallData = encodedCallData.dropFirst()
                     encodedCallData = encodedCallData.dropFirst()
                     encodedCallData = encodedCallData.dropFirst()
@@ -212,6 +212,12 @@ class SmartContractManager: BaseManager {
                     
                     var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: contractTransaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: contractTransaction.data)
                     
+//111                    let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+//
+//                    print("1111 1", fee.gasLimit)
+//                    print("1111 2", fee.maxPriorityFeePerGas)
+//                    print("1111 3", fee.maxFeePerGas)
+                    
                     var transactionOptions = TransactionOptions.defaultOptions
                     transactionOptions.type = .eip712
                     transactionOptions.chainID = chainID
@@ -219,13 +225,13 @@ class SmartContractManager: BaseManager {
                     transactionOptions.to = contractTransaction.to
                     transactionOptions.value = contractTransaction.value
                     //111transactionOptions.gasLimit = .manual(BigUInt(1073041))//.manual(fee.gasLimit)
-                    transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//.manual(fee.maxPriorityFeePerGas)
-                    transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//.manual(fee.maxFeePerGas) gasPrice
+                    transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
+                    transactionOptions.maxFeePerGas = .manual(gasPrice)
                     transactionOptions.from = contractTransaction.parameters.from
                     
-                    //111                    let estimateGas = try! zkSync.web3.eth.estimateGas(contractTransaction, transactionOptions: transactionOptions)
-                    //                    print("estimateGas:", estimateGas)
-                    //                    transactionOptions.gasLimit = .manual(estimateGas)
+                    let estimateGas = try! zkSync.web3.eth.estimateGas(estimate, transactionOptions: transactionOptions)
+                    print("estimateGas:", estimateGas)
+                    transactionOptions.gasLimit = .manual(estimateGas)
                     
                     var ethereumParameters = EthereumParameters(from: transactionOptions)
                     ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta

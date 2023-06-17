@@ -272,7 +272,7 @@ class DefaultEthereumProvider: EthereumProvider {
         
         let totalValue = l2Value + baseCost + operatorTipsValue
         
-//        parameters.append(totalValue as AnyObject)
+//111        parameters.append(totalValue as AnyObject)
         
         let nonce = try! self.web3.eth.getTransactionCountPromise(address: EthereumAddress(contractAddress)!).wait()
         
@@ -280,12 +280,12 @@ class DefaultEthereumProvider: EthereumProvider {
         transactionOptions.type = .legacy
         transactionOptions.from = EthereumAddress(contractAddress)!
         transactionOptions.to = zkSyncContract.contract.address
-//        if let nonce = nonce {
+//111        if let nonce = nonce {
             transactionOptions.nonce = .manual(nonce)
 //        }
         transactionOptions.gasLimit = .manual(gasLimit)
         transactionOptions.gasPrice = .manual(gasPrice!)
-//        transactionOptions.maxPriorityFeePerGas = .manual(gasPrice!)
+//111        transactionOptions.maxPriorityFeePerGas = .manual(gasPrice!)
         transactionOptions.value = totalValue
         transactionOptions.chainID = self.web3.provider.network?.chainID
         
@@ -711,7 +711,7 @@ class DefaultEthereumProvider: EthereumProvider {
         
         return transaction.callPromise()
     }
-    //444
+    
     func finalizeDeposit(_ l1Sender: String,
                          l2Receiver: String,
                          l1Token: String,

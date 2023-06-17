@@ -115,7 +115,7 @@ public extension EIP712Hashable {
     var typehash: Data {
         EIP712.keccak256(encodeType())
     }
-    //555
+    
     func hash() throws -> Data {
         var parameters: [Data] = [self.typehash]
         for case let (_, field) in eip712types() {

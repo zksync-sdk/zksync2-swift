@@ -77,9 +77,9 @@ class BaseManager {
         transactionOptions.type = .eip712
         transactionOptions.from = EthereumAddress(signer.address)!
         transactionOptions.to = estimate.to
-        transactionOptions.gasLimit = .manual(BigUInt(144857))//444.manual(fee.gasLimit)
-        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//444.manual(fee.maxPriorityFeePerGas)
-        transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//444.manual(fee.maxFeePerGas)
+        transactionOptions.gasLimit = .manual(BigUInt(144857))//111.manual(fee.gasLimit)
+        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
+        transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//111.manual(fee.maxFeePerGas)
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.chainID = chainId
         
@@ -222,7 +222,7 @@ class BaseManager {
                     
                     let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
                     
-                    let contractTransaction = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: encodedCallData, salt: Data())
+                    let contractTransaction = EthereumTransaction.create2AccountTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: encodedCallData, salt: Data(), chainId: signer.domain.chainId)
                     
                     let address = ContractDeployer.computeL2Create2Address(EthereumAddress(signer.address)!, bytecode: bytecodeData, constructor: Data(), salt: Data())
                     
@@ -237,12 +237,12 @@ class BaseManager {
                     transactionOptions.nonce = .manual(nonce)
                     transactionOptions.to = contractTransaction.to
                     transactionOptions.value = contractTransaction.value
-                    //transactionOptions.gasLimit = .manual(BigUInt(1073041))//.manual(fee.gasLimit)
+                    //111transactionOptions.gasLimit = .manual(BigUInt(1073041))//.manual(fee.gasLimit)
                     transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//.manual(fee.maxPriorityFeePerGas)
                     transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//.manual(fee.maxFeePerGas) gasPrice
                     transactionOptions.from = contractTransaction.parameters.from
                     
-//222                    let estimateGas = try! zkSync.web3.eth.estimateGas(contractTransaction, transactionOptions: transactionOptions)
+//111                    let estimateGas = try! zkSync.web3.eth.estimateGas(contractTransaction, transactionOptions: transactionOptions)
 //                    print("estimateGas:", estimateGas)
 //                    transactionOptions.gasLimit = .manual(estimateGas)
                     
@@ -286,7 +286,7 @@ class BaseManager {
         
 //        let bytecodeBytes = Data(fromArray: hexArr )
 //        let bytecodeBytes = Data(fromHex: bytecode)!
-        let contractTransaction = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeBytes, deps: [bytecodeBytes], calldata: Data(), salt: Data())
+        let contractTransaction = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeBytes, deps: [bytecodeBytes], calldata: Data(), salt: Data(), chainId: signer.domain.chainId)
         
         let address = ContractDeployer.computeL2Create2Address(EthereumAddress(signer.address)!, bytecode: bytecodeBytes, constructor: Data(), salt: Data())
         //0x24275566908ede24fe40a6ce8e59b56bcf555301

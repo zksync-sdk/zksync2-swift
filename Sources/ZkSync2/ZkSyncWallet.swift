@@ -174,7 +174,7 @@ public class ZkSyncWallet {
                  token: token,
                  nonce: nil)
     }
-    //111
+    
     /// Withdraw native coins to L1 chain.
     ///
     /// - Parameters:
@@ -457,7 +457,7 @@ public class ZkSyncWallet {
             validCalldata = Data(hex: "0x")
         }
         
-        let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, deps: [bytecode], calldata: validCalldata, salt: Data())
+        let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, deps: [bytecode], calldata: validCalldata, salt: Data(), chainId: signer.domain.chainId)
         
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
@@ -604,9 +604,9 @@ public class ZkSyncWallet {
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.to = transaction.to
         transactionOptions.value = transaction.value
-        transactionOptions.gasLimit = .manual(BigUInt(100000)) //.manual(fee.gasLimit)
-        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000))//.manual(fee.maxPriorityFeePerGas)
-        transactionOptions.maxFeePerGas = .manual(BigUInt(250000))//.manual(fee.maxFeePerGas) gasPrice
+        transactionOptions.gasLimit = .manual(BigUInt(100000)) //111.manual(fee.gasLimit)
+        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
+        transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//111.manual(fee.maxFeePerGas) gasPrice
         transactionOptions.from = transaction.parameters.from
         
 //111        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
@@ -621,7 +621,7 @@ public class ZkSyncWallet {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         
         ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
-//        ethereumParameters.from = transaction.parameters.from
+//111        ethereumParameters.from = transaction.parameters.from
         
         var prepared = EthereumTransaction(type: .eip712,
                                            to: transaction.to,

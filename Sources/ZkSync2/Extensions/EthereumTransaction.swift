@@ -52,22 +52,25 @@ extension EthereumTransaction {
         EIP712Meta.paymasterParams = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         
-        return EthereumTransaction(type: .eip712,
-                                   to: to,
-                                   value: nil,
-                                   data: calldataCreate,
-                                   parameters: ethereumParameters)
+        return EthereumTransaction(
+            type: .eip712,
+            to: to,
+            value: nil,
+            data: calldataCreate,
+            parameters: ethereumParameters
+        )
     }
     
-    static func createContractTransaction(from: EthereumAddress,
+    static func createAccountTransaction(from: EthereumAddress,
                                           gasPrice: BigUInt,
                                           gasLimit: BigUInt,
-                                          bytecode: String) -> EthereumTransaction {
+                                          bytecode: String,
+                                          calldata: Data) -> EthereumTransaction {
         let bytecodeBytes = Data(fromHex: bytecode)!
-        let calldata = ContractDeployer.encodeCreate(bytecodeBytes)
+        let calldataCreate = ContractDeployer.encodeCreateAccount(bytecodeBytes, calldata: calldata, version: .version1)
         
 #if DEBUG
-        print("calldata: \(calldata.toHexString().addHexPrefix())")
+        print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
 #endif
         
         var transactionOptions = TransactionOptions.defaultOptions
@@ -89,11 +92,13 @@ extension EthereumTransaction {
         EIP712Meta.paymasterParams = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         
-        return EthereumTransaction(type: .eip712,
-                                   to: to,
-                                   value: nil,
-                                   data: calldata,
-                                   parameters: ethereumParameters)
+        return EthereumTransaction(
+            type: .eip712,
+            to: to,
+            value: nil,
+            data: calldataCreate,
+            parameters: ethereumParameters
+        )
     }
     
     static func createEtherTransaction(from: EthereumAddress,
@@ -118,11 +123,13 @@ extension EthereumTransaction {
         EIP712Meta.paymasterParams = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         
-        return EthereumTransaction(type: .eip712,
-                                   to: to,
-                                   value: value,
-                                   data: Data(),
-                                   parameters: ethereumParameters)
+        return EthereumTransaction(
+            type: .eip712,
+            to: to,
+            value: value,
+            data: Data(),
+            parameters: ethereumParameters
+        )
     }
     
     static func createEtherTransaction(from: EthereumAddress,
@@ -146,13 +153,15 @@ extension EthereumTransaction {
         
         let ethereumParameters = EthereumParameters(from: transactionOptions)
         
-        return EthereumTransaction(type: .eip1559,
-                                   to: to,
-                                   nonce: nonce != nil ? nonce! : BigUInt.zero,
-                                   chainID: chainID,
-                                   value: value,
-                                   data: Data(),
-                                   parameters: ethereumParameters)
+        return EthereumTransaction(
+            type: .eip1559,
+            to: to,
+            nonce: nonce != nil ? nonce! : BigUInt.zero,
+            chainID: chainID,
+            value: value,
+            data: Data(),
+            parameters: ethereumParameters
+        )
     }
     
     static func createFunctionCallTransaction(from: EthereumAddress,
@@ -169,12 +178,6 @@ extension EthereumTransaction {
         transactionOptions.gasLimit = .manual(gasLimit)
         transactionOptions.value = value
         
-        // transactionOptions.nonce =
-        // transactionOptions.chainID =
-        // transactionOptions.maxPriorityFeePerGas =
-        // transactionOptions.maxFeePerGas =
-        // transactionOptions.callOnBlock =
-        
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         
         var EIP712Meta = EIP712Meta()
@@ -184,24 +187,27 @@ extension EthereumTransaction {
         EIP712Meta.paymasterParams = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         
-        let ethereumTransaction = EthereumTransaction(type: .eip712,
-                                                      to: to,
-                                                      // nonce: ,
-                                                      // chainID: ,
-                                                      value: value,
-                                                      data: data,
-                                                      parameters: ethereumParameters)
+        let ethereumTransaction = EthereumTransaction(
+            type: .eip712,
+            to: to,
+            // nonce: ,
+            // chainID: ,
+            value: value,
+            data: data,
+            parameters: ethereumParameters
+        )
         
         return ethereumTransaction
     }
-    //222
+    
     static func create2ContractTransaction(from: EthereumAddress,
                                            gasPrice: BigUInt,
                                            gasLimit: BigUInt,
                                            bytecode: Data,
                                            deps: [Data],
                                            calldata: Data = Data(),
-                                           salt: Data) -> EthereumTransaction {
+                                           salt: Data,
+                                           chainId: BigUInt) -> EthereumTransaction {
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         transactionOptions.from = from
@@ -212,18 +218,57 @@ extension EthereumTransaction {
         transactionOptions.to = to
         transactionOptions.value = nil
         
-        // transactionOptions.nonce =
-        // transactionOptions.chainID =
-        // transactionOptions.maxPriorityFeePerGas =
-        // transactionOptions.maxFeePerGas =
-        // transactionOptions.callOnBlock =
+        var ethereumParameters = EthereumParameters(from: transactionOptions)
+        ethereumParameters.from = from
+        ethereumParameters.gasPrice = gasPrice
+        ethereumParameters.gasLimit = gasLimit
+        
+        let calldataCreate = ContractDeployer.encodeCreate2(bytecode, calldata: calldata)
+        
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.gasPerPubdata = BigUInt(160000)
+        EIP712Meta.factoryDeps = [bytecode]
+        print("factoryDeps: \(EIP712Meta.factoryDeps!.first!.toHexString().addHexPrefix())")
+        EIP712Meta.paymasterParams = nil
+        EIP712Meta.customSignature = nil
+        ethereumParameters.EIP712Meta = EIP712Meta
+        
+        let ethereumTransaction = EthereumTransaction(
+            type: .eip712,
+            to: to,
+            // nonce: ,
+            chainID: chainId,
+            value: nil,
+            data: calldataCreate,
+            parameters: ethereumParameters
+        )
+        
+        return ethereumTransaction
+    }
+    
+    static func create2AccountTransaction(from: EthereumAddress,
+                                           gasPrice: BigUInt,
+                                           gasLimit: BigUInt,
+                                           bytecode: Data,
+                                           deps: [Data],
+                                           calldata: Data = Data(),
+                                           salt: Data,
+                                           chainId: BigUInt) -> EthereumTransaction {
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.type = .eip712
+        transactionOptions.from = from
+        transactionOptions.gasPrice = .manual(gasPrice)
+        transactionOptions.gasLimit = .manual(gasLimit)
+        
+        let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
+        transactionOptions.to = to
+        transactionOptions.value = nil
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.from = from
         ethereumParameters.gasPrice = gasPrice
         ethereumParameters.gasLimit = gasLimit
         
-        //let calldataCreate = ContractDeployer.encodeCreate2(bytecode, calldata: calldata)
         let calldataCreate = ContractDeployer.encodeCreate2Account(bytecode, calldata: calldata, salt: salt, version: .version1)
         
         var EIP712Meta = EIP712Meta()
@@ -234,13 +279,15 @@ extension EthereumTransaction {
         EIP712Meta.customSignature = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         
-        let ethereumTransaction = EthereumTransaction(type: .eip712,
-                                                      to: to,
-                                                      // nonce: ,
-                                                      chainID: BigUInt(270),
-                                                      value: nil,
-                                                      data: calldataCreate,
-                                                      parameters: ethereumParameters)
+        let ethereumTransaction = EthereumTransaction(
+            type: .eip712,
+            to: to,
+            // nonce: ,
+            chainID: chainId,
+            value: nil,
+            data: calldataCreate,
+            parameters: ethereumParameters
+        )
         
         return ethereumTransaction
     }

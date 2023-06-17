@@ -74,6 +74,8 @@
 		FADECD7C2A10F7F6004E419A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FADECD7B2A10F7F6004E419A /* Preview Assets.xcassets */; };
 		FAF7A9662A3C7AEF000B02E4 /* AccountAbstraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7A9652A3C7AEF000B02E4 /* AccountAbstraction.swift */; };
 		FAF7A9682A3C7F78000B02E4 /* Paymaster.json in Resources */ = {isa = PBXBuildFile; fileRef = FAF7A9672A3C7F78000B02E4 /* Paymaster.json */; };
+		FAF7A96A2A3DD86C000B02E4 /* SmartContractManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7A9692A3DD86C000B02E4 /* SmartContractManager.swift */; };
+		FAF7A96C2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7A96B2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -147,6 +149,8 @@
 		FADECD7B2A10F7F6004E419A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		FAF7A9652A3C7AEF000B02E4 /* AccountAbstraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAbstraction.swift; sourceTree = "<group>"; };
 		FAF7A9672A3C7F78000B02E4 /* Paymaster.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = Paymaster.json; path = ../../../../../../../Downloads/Paymaster.json; sourceTree = "<group>"; };
+		FAF7A9692A3DD86C000B02E4 /* SmartContractManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractManager.swift; sourceTree = "<group>"; };
+		FAF7A96B2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSyncTransactionReceiptProcessor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -316,6 +320,7 @@
 				FA7CBEB22A10F9EC005A7E58 /* ZkSyncAddresses.swift */,
 				FA7CBEB32A10F9EC005A7E58 /* Paymaster.swift */,
 				FAF7A9652A3C7AEF000B02E4 /* AccountAbstraction.swift */,
+				FAF7A96B2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -408,6 +413,7 @@
 			children = (
 				FAF7A9672A3C7F78000B02E4 /* Paymaster.json */,
 				FA7CBF0E2A111150005A7E58 /* BaseManager.swift */,
+				FAF7A9692A3DD86C000B02E4 /* SmartContractManager.swift */,
 				FA7CBF0B2A111112005A7E58 /* TransferManager.swift */,
 				FA7CBF102A11119D005A7E58 /* DepositManager.swift */,
 				FA7CBF122A1111CE005A7E58 /* WithdrawManager.swift */,
@@ -588,6 +594,7 @@
 				FA7CBEE22A10F9EC005A7E58 /* BridgeAddresses.swift in Sources */,
 				FA7CBEF02A10F9EC005A7E58 /* ZkBlockParameterName.swift in Sources */,
 				FA7CBEE12A10F9EC005A7E58 /* TransactionDetails.swift in Sources */,
+				FAF7A96A2A3DD86C000B02E4 /* SmartContractManager.swift in Sources */,
 				FA7CBED42A10F9EC005A7E58 /* IL2Bridge.swift in Sources */,
 				FA7CBF012A10F9EC005A7E58 /* EthereumTransaction.swift in Sources */,
 				FA7CBEE92A10F9EC005A7E58 /* ContractDeployer.swift in Sources */,
@@ -631,6 +638,7 @@
 				FA7CBEF32A10F9EC005A7E58 /* EthereumProvider.swift in Sources */,
 				FA7CBED02A10F9EC005A7E58 /* EthereumTransaction+EIP712.swift in Sources */,
 				FA7CBEEA2A10F9EC005A7E58 /* ZkSyncABI.swift in Sources */,
+				FAF7A96C2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift in Sources */,
 				FA7CBEF82A10F9EC005A7E58 /* Web3Eth.swift in Sources */,
 				FA7CBED62A10F9EC005A7E58 /* PrivateKeyEthSigner.swift in Sources */,
 				FA7CBEE02A10F9EC005A7E58 /* L2ToL1MessageProof.swift in Sources */,

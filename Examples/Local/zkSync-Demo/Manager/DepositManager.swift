@@ -17,8 +17,7 @@ class DepositManager: BaseManager {
     func deposit(callback: @escaping (() -> Void)) {
         let value: BigUInt = 1
         
-        let keyStore = EthereumKeystoreV3("0x7726827caac94a7f9e1b160f7ea819f172f7b6f9d2a97f992c38edeab82d4110")
-        let manager = KeystoreManager.init([keyStore])
+        let manager = KeystoreManager.init([credentials])
         self.eth.addKeystoreManager(manager)
         
         let l1ERC20Bridge = zkSync.web3.contract(Web3.Utils.IL1Bridge,

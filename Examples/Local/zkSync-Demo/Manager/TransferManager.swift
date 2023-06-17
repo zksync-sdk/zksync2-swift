@@ -61,13 +61,15 @@ class TransferManager: BaseManager {
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
         
-        var transaction = EthereumTransaction(type: .legacy,
-                                              to: estimate.to,
-                                              nonce: nonce,
-                                              chainID: chainId,
-                                              value: value,
-                                              data: estimate.data,
-                                              parameters: ethereumParameters)
+        var transaction = EthereumTransaction(
+            type: .eip712,
+            to: estimate.to,
+            nonce: nonce,
+            chainID: chainId,
+            value: value,
+            data: estimate.data,
+            parameters: ethereumParameters
+        )
         
         let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
         
@@ -77,6 +79,10 @@ class TransferManager: BaseManager {
         transaction.envelope.v = BigUInt(unmarshalledSignature.v)
         
         let result = try! zkSync.web3.eth.sendRawTransactionPromise(transaction).wait()
+        
+        let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
+        
+        assert(receipt?.status == .ok)
         
         callback()
     }

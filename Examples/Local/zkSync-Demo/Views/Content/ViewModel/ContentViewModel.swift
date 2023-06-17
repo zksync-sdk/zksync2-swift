@@ -9,6 +9,7 @@ import Foundation
 
 class ContentViewModel: ObservableObject {
     let baseManager = BaseManager()
+    let smartContractManager = SmartContractManager()
     let transferManager = TransferManager()
     let depositManager = DepositManager()
     let withdrawManager = WithdrawManager()
@@ -16,7 +17,7 @@ class ContentViewModel: ObservableObject {
     @Published var balance: Decimal = 0
     
     func check() {
-        baseManager.check(callback: {
+        smartContractManager.check(callback: {
             
         })
     }
@@ -32,19 +33,19 @@ class ContentViewModel: ObservableObject {
     }
     
     func accountAbstraction() {
-        baseManager.accountAbstraction(callback: {
+        smartContractManager.accountAbstraction(callback: {
             
         })
     }
     
     func deploySmartContract() {
-        baseManager.deploySmartContract(callback: {
+        smartContractManager.deploySmartContract(callback: {
             
         })
     }
     
     func deploySmartContractViaWallet() {
-        baseManager.deploySmartContractViaWallet(callback: {
+        smartContractManager.deploySmartContractViaWallet(callback: {
             
         })
     }

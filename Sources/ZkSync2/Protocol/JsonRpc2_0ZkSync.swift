@@ -216,26 +216,4 @@ class JsonRpc2_0ZkSync: ZkSync {
                        parameters: parameters,
                        completion: completion)
     }
-    
-    func get_l2_hash_from_priority_op(_ from: Int,
-                                      limit: Int,
-                                      completion: @escaping (Result<[Token]>) -> Void) -> String {
-//111        let parameters = [
-//            JRPC.Parameter(type: .int, value: from),
-//            JRPC.Parameter(type: .int, value: limit)
-//        ]
-//
-//        transport.send(method: "zks_getConfirmedTokens",
-//                       parameters: parameters,
-//                       completion: completion)
-        return ""//111
-    }
-    
-    func wait_for_transaction_receipt(_ from: Int,
-                                      limit: Int,
-                                      completion: @escaping (Result<[Token]>) -> Void) -> String {
-        let receipt = try! self.web3.eth.getTransactionReceipt(Data())
-        print("111", receipt)
-        return ""
-    }
 }

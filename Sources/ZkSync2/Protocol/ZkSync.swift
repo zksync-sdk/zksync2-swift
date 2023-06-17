@@ -145,12 +145,4 @@ public protocol ZkSync {
     func zksGetBlockDetails(_ blockNumber: BigUInt,
                             returnFullTransactionObjects: Bool,
                             completion: @escaping (Result<BlockDetails>) -> Void)
-    
-    func get_l2_hash_from_priority_op(_ from: Int,
-                                      limit: Int,
-                                      completion: @escaping (Result<[Token]>) -> Void) -> String
-    
-    func wait_for_transaction_receipt(_ from: Int,
-                                      limit: Int,
-                                      completion: @escaping (Result<[Token]>) -> Void) -> String
 }

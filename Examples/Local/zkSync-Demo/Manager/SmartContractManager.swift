@@ -187,15 +187,16 @@ class SmartContractManager: BaseManager {
                     
                     let elementFunction: ABI.Element = .function(function)
                     
-                    let address1 = EthereumAddress("0x834FF28392Ab0460f13286c389fEF4E3980e28F6")
+                    let address = EthereumAddress("0x834FF28392Ab0460f13286c389fEF4E3980e28F6")
                     let parameters: [AnyObject] = [
-                        address1 as AnyObject
+                        address as AnyObject
                     ]
                     
                     guard var encodedCallData = elementFunction.encodeParameters(parameters) else {
                         fatalError("Failed to encode function.")
                     }
                     //111
+                    // Removing signature prefix, which is first 4 bytes
                     encodedCallData = encodedCallData.dropFirst()
                     encodedCallData = encodedCallData.dropFirst()
                     encodedCallData = encodedCallData.dropFirst()
@@ -224,14 +225,14 @@ class SmartContractManager: BaseManager {
                     transactionOptions.nonce = .manual(nonce)
                     transactionOptions.to = contractTransaction.to
                     transactionOptions.value = contractTransaction.value
-                    //111transactionOptions.gasLimit = .manual(BigUInt(1073041))//.manual(fee.gasLimit)
+                    transactionOptions.gasLimit = .manual(BigUInt(1073041))//111.manual(fee.gasLimit)
                     transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
                     transactionOptions.maxFeePerGas = .manual(gasPrice)
                     transactionOptions.from = contractTransaction.parameters.from
                     
-                    let estimateGas = try! zkSync.web3.eth.estimateGas(estimate, transactionOptions: transactionOptions)
-                    print("estimateGas:", estimateGas)
-                    transactionOptions.gasLimit = .manual(estimateGas)
+//111                    let estimateGas = try! zkSync.web3.eth.estimateGas(estimate, transactionOptions: transactionOptions)
+//                    print("estimateGas:", estimateGas)
+//                    transactionOptions.gasLimit = .manual(estimateGas)
                     
                     var ethereumParameters = EthereumParameters(from: transactionOptions)
                     ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta

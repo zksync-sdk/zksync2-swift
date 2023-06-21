@@ -228,7 +228,6 @@ extension EthereumTransaction {
         var EIP712Meta = EIP712Meta()
         EIP712Meta.gasPerPubdata = BigUInt(160000)
         EIP712Meta.factoryDeps = [bytecode]
-        print("factoryDeps: \(EIP712Meta.factoryDeps!.first!.toHexString().addHexPrefix())")
         EIP712Meta.paymasterParams = nil
         EIP712Meta.customSignature = nil
         ethereumParameters.EIP712Meta = EIP712Meta
@@ -237,7 +236,7 @@ extension EthereumTransaction {
             type: .eip712,
             to: to,
             // nonce: ,
-            chainID: chainId,
+//            chainID: chainId,
             value: nil,
             data: calldataCreate,
             parameters: ethereumParameters
@@ -266,15 +265,14 @@ extension EthereumTransaction {
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.from = from
-        ethereumParameters.gasPrice = gasPrice
-        ethereumParameters.gasLimit = gasLimit
+//        ethereumParameters.gasPrice = gasPrice
+//        ethereumParameters.gasLimit = gasLimit
         
         let calldataCreate = ContractDeployer.encodeCreate2Account(bytecode, calldata: calldata, salt: salt, version: .version1)
         
         var EIP712Meta = EIP712Meta()
         EIP712Meta.gasPerPubdata = BigUInt(160000)
         EIP712Meta.factoryDeps = [bytecode]
-        print("factoryDeps: \(EIP712Meta.factoryDeps!.first!.toHexString().addHexPrefix())")
         EIP712Meta.paymasterParams = nil
         EIP712Meta.customSignature = nil
         ethereumParameters.EIP712Meta = EIP712Meta
@@ -283,7 +281,7 @@ extension EthereumTransaction {
             type: .eip712,
             to: to,
             // nonce: ,
-            chainID: chainId,
+//            chainID: chainId,
             value: nil,
             data: calldataCreate,
             parameters: ethereumParameters

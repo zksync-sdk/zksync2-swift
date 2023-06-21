@@ -25,8 +25,6 @@ class SmartContractManager: BaseManager {
         let contract = zkSync.web3.contract("[{\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_value\",\"type\":\"uint256\"}],\"name\":\"set\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}]", at: contractAddress)!
         //        let contract = try self.eth.Contract(json: contractJsonABI, abiKey: nil, address: contractAddress)
         
-        //------------
-        
         let value = BigUInt(500)
         
         let parameters1 = [
@@ -40,13 +38,11 @@ class SmartContractManager: BaseManager {
                                                     parameters: parameters1,
                                                     transactionOptions: transactionOptions1) else {
             return
-            //return Promise(error: EthereumProviderError.invalidParameter)
         }
         
         var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: writeTransaction.transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: writeTransaction.transaction.data)
         
         let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
-        //let nonce = BigUInt(12)
         
         let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
         
@@ -58,9 +54,9 @@ class SmartContractManager: BaseManager {
         transactionOptions.type = .eip712
         transactionOptions.from = EthereumAddress(signer.address)!
         transactionOptions.to = estimate.to
-        transactionOptions.gasLimit = .manual(BigUInt(144857))//111.manual(fee.gasLimit)
-        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
-        transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//111.manual(fee.maxFeePerGas)
+        transactionOptions.gasLimit = .manual(fee.gasLimit)
+        transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+        transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.chainID = chainId
         
@@ -195,44 +191,32 @@ class SmartContractManager: BaseManager {
                     guard var encodedCallData = elementFunction.encodeParameters(parameters) else {
                         fatalError("Failed to encode function.")
                     }
-                    //111
+                    
                     // Removing signature prefix, which is first 4 bytes
-                    encodedCallData = encodedCallData.dropFirst()
-                    encodedCallData = encodedCallData.dropFirst()
-                    encodedCallData = encodedCallData.dropFirst()
-                    encodedCallData = encodedCallData.dropFirst()
+                    for _ in 0..<4 {
+                        encodedCallData = encodedCallData.dropFirst()
+                    }
                     
                     let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
                     
-                    let contractTransaction = EthereumTransaction.create2AccountTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: encodedCallData, salt: Data(), chainId: signer.domain.chainId)
-                    
-                    let precomputedAddress = ContractDeployer.computeL2Create2Address(EthereumAddress(signer.address)!, bytecode: bytecodeData, constructor: Data(), salt: Data())
+                    let estimate = EthereumTransaction.create2AccountTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: encodedCallData, salt: Data(), chainId: signer.domain.chainId)
                     
                     let chainID = signer.domain.chainId
                     let gasPrice = try! zkSync.web3.eth.getGasPrice()
                     
-                    var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: contractTransaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: contractTransaction.data)
-                    
-//111                    let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
-//
-//                    print("1111 1", fee.gasLimit)
-//                    print("1111 2", fee.maxPriorityFeePerGas)
-//                    print("1111 3", fee.maxFeePerGas)
-                    
                     var transactionOptions = TransactionOptions.defaultOptions
+                    transactionOptions.gasPrice = .manual(BigUInt.zero)
                     transactionOptions.type = .eip712
                     transactionOptions.chainID = chainID
                     transactionOptions.nonce = .manual(nonce)
-                    transactionOptions.to = contractTransaction.to
-                    transactionOptions.value = contractTransaction.value
-                    transactionOptions.gasLimit = .manual(BigUInt(1073041))//111.manual(fee.gasLimit)
-                    transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
+                    transactionOptions.to = estimate.to
+                    transactionOptions.value = BigUInt.zero
+                    transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))
                     transactionOptions.maxFeePerGas = .manual(gasPrice)
-                    transactionOptions.from = contractTransaction.parameters.from
+                    transactionOptions.from = estimate.parameters.from
                     
-//111                    let estimateGas = try! zkSync.web3.eth.estimateGas(estimate, transactionOptions: transactionOptions)
-//                    print("estimateGas:", estimateGas)
-//                    transactionOptions.gasLimit = .manual(estimateGas)
+                    let estimateGas = try! zkSync.web3.eth.estimateGas(estimate, transactionOptions: transactionOptions)
+                    transactionOptions.gasLimit = .manual(estimateGas)
                     
                     var ethereumParameters = EthereumParameters(from: transactionOptions)
                     ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
@@ -256,7 +240,6 @@ class SmartContractManager: BaseManager {
                     let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
                     
                     assert(receipt?.status == .ok)
-                    assert(precomputedAddress == receipt?.contractAddress)
                     
                     callback()
                 }
@@ -281,7 +264,9 @@ class SmartContractManager: BaseManager {
         
         var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: contractTransaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: contractTransaction.data)
         
-        //let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
+        estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeBytes]
+        
+        let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
@@ -289,9 +274,9 @@ class SmartContractManager: BaseManager {
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.to = contractTransaction.to
         transactionOptions.value = contractTransaction.value
-        transactionOptions.gasLimit = .manual(BigUInt(486832))//111.manual(fee.gasLimit)
-        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))//111.manual(fee.maxPriorityFeePerGas)
-        transactionOptions.maxFeePerGas = .manual(BigUInt(250000000))//111.manual(fee.maxFeePerGas)
+        transactionOptions.gasLimit = .manual(fee.gasLimit)
+        transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
+        transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
         transactionOptions.from = contractTransaction.parameters.from
         
         var ethereumParameters = EthereumParameters(from: transactionOptions)

@@ -596,7 +596,7 @@ public class ZkSyncWallet {
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
         
         let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
-        
+        //111
         let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
         
         var transactionOptions = TransactionOptions.defaultOptions

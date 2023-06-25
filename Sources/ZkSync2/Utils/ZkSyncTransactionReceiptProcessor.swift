@@ -33,13 +33,13 @@ class ZkSyncTransactionReceiptProcessor {
         var receipt: TransactionReceipt?
         
         for _ in 0..<attempts {
+            Thread.sleep(forTimeInterval: sleepDuration)
+            
             receipt = try? zkSync.web3.eth.getTransactionReceipt(hash)
             
             if receipt != nil {
                 break
             }
-            
-            Thread.sleep(forTimeInterval: sleepDuration)
         }
         
         return receipt

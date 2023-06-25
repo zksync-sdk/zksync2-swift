@@ -14,9 +14,34 @@ import web3swift_zksync
 #endif
 
 class Paymaster {
-    
     static let GeneralFunction = "general"
     static let ApprovalBasedFunction = "approvalBased"
+    
+    static func encodeGeneral(_ input: Data) -> Data {
+        let inputs = [
+            ABI.Element.InOut(name: "input", type: .dynamicBytes),
+        ]
+        
+        let function = ABI.Element.Function(
+            name: Paymaster.GeneralFunction,
+            inputs: inputs,
+            outputs: [],
+            constant: false,
+            payable: false
+        )
+        
+        let elementFunction: ABI.Element = .function(function)
+        
+        let parameters: [AnyObject] = [
+            input as AnyObject
+        ]
+        
+        guard let encodedFunction = elementFunction.encodeParameters(parameters) else {
+            fatalError("Failed to encode function.")
+        }
+        
+        return encodedFunction
+    }
     
     static func encodeApprovalBased(_ tokenAddress: EthereumAddress,
                                     minimalAllowance: BigUInt,
@@ -27,11 +52,13 @@ class Paymaster {
             ABI.Element.InOut(name: "input", type: .bytes(length: 32)),
         ]
         
-        let function = ABI.Element.Function(name: Paymaster.ApprovalBasedFunction,
-                                            inputs: inputs,
-                                            outputs: [],
-                                            constant: false,
-                                            payable: false)
+        let function = ABI.Element.Function(
+            name: Paymaster.ApprovalBasedFunction,
+            inputs: inputs,
+            outputs: [],
+            constant: false,
+            payable: false
+        )
         
         let elementFunction: ABI.Element = .function(function)
         

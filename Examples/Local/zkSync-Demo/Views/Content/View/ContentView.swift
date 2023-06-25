@@ -11,9 +11,32 @@ struct ContentView: View {
     @StateObject var viewModel = ContentViewModel()
     
     var body: some View {
-        VStack(spacing: 20) {
+        VStack {
             Text("\(viewModel.balance.description)")
             
+            TabView {
+                basicView
+                    .tabItem {
+                        Label("Basic", systemImage: "list.dash")
+                    }
+                
+                paymasterView
+                    .tabItem {
+                        Label("Paymaster", systemImage: "square.and.pencil")
+                    }
+            }
+        }
+        .padding()
+        .onAppear {
+            DispatchQueue.global().async {
+                viewModel.refreshBalance()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var basicView: some View {
+        VStack(spacing: 20) {
             Button(action: {
                 DispatchQueue.global().async {
                     viewModel.check()
@@ -86,11 +109,50 @@ struct ContentView: View {
                 Text("Withdraw via Wallet")
             })
         }
-        .padding()
-        .onAppear {
-            DispatchQueue.global().async {
-                viewModel.refreshBalance()
-            }
+    }
+    
+    @ViewBuilder
+    var paymasterView: some View {
+        VStack(spacing: 20) {
+            Button(action: {
+                DispatchQueue.global().async {
+                    viewModel.deployToken()
+                }
+            }, label: {
+                Text("Deploy Token")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
+                    viewModel.deployPaymaster()
+                }
+            }, label: {
+                Text("Deploy Paymaster")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
+                    viewModel.mintToken()
+                }
+            }, label: {
+                Text("Mint Token")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
+                    viewModel.transferFundsToPaymaster()
+                }
+            }, label: {
+                Text("Transfer funds to Paymaster")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
+                    viewModel.approvalBasedPaymaster()
+                }
+            }, label: {
+                Text("Execute Paymaster")
+            })
         }
     }
 }

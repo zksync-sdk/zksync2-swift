@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8412AB908007CD12AD22A01D /* Pods_zkSync_Demo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 733BCEFC1510DADA690FB969 /* Pods_zkSync_Demo.framework */; };
-		FA55EF072A431674001D00C2 /* Paymaster.json in Resources */ = {isa = PBXBuildFile; fileRef = FA55EF062A43137F001D00C2 /* Paymaster.json */; };
 		FA7CBECD2A10F9EC005A7E58 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBE892A10F9EC005A7E58 /* Fee.swift */; };
 		FA7CBECE2A10F9EC005A7E58 /* DefaultTransactionFeeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBE8A2A10F9EC005A7E58 /* DefaultTransactionFeeProvider.swift */; };
 		FA7CBECF2A10F9EC005A7E58 /* ZkTransactionFeeProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBE8B2A10F9EC005A7E58 /* ZkTransactionFeeProvider.swift */; };
@@ -68,11 +67,27 @@
 		FA7CBF0F2A111150005A7E58 /* BaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBF0E2A111150005A7E58 /* BaseManager.swift */; };
 		FA7CBF112A11119D005A7E58 /* DepositManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBF102A11119D005A7E58 /* DepositManager.swift */; };
 		FA7CBF132A1111CE005A7E58 /* WithdrawManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBF122A1111CE005A7E58 /* WithdrawManager.swift */; };
-		FAC54D132A37502D0082FD3C /* Storage.zbin in Resources */ = {isa = PBXBuildFile; fileRef = FA72C6762A30870E00921613 /* Storage.zbin */; };
 		FADECD752A10F7F5004E419A /* zkSync_DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADECD742A10F7F5004E419A /* zkSync_DemoApp.swift */; };
 		FADECD772A10F7F5004E419A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADECD762A10F7F5004E419A /* ContentView.swift */; };
 		FADECD792A10F7F6004E419A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FADECD782A10F7F6004E419A /* Assets.xcassets */; };
 		FADECD7C2A10F7F6004E419A /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FADECD7B2A10F7F6004E419A /* Preview Assets.xcassets */; };
+		FAE9BB572A43A22D0080AEAA /* PaymasterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE9BB562A43A22D0080AEAA /* PaymasterManager.swift */; };
+		FAE9BB632A46F0D40080AEAA /* Token.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB5F2A46F0D40080AEAA /* Token.json */; };
+		FAE9BB642A46F0D40080AEAA /* PaymasterFlow.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB602A46F0D40080AEAA /* PaymasterFlow.json */; };
+		FAE9BB652A46F0D40080AEAA /* Paymaster.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB612A46F0D40080AEAA /* Paymaster.json */; };
+		FAE9BB662A46F0D40080AEAA /* Storage.zbin in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB622A46F0D40080AEAA /* Storage.zbin */; };
+		FAE9BB732A46F0FB0080AEAA /* IERC1271.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB682A46F0FB0080AEAA /* IERC1271.json */; };
+		FAE9BB742A46F0FB0080AEAA /* IAllowList.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB692A46F0FB0080AEAA /* IAllowList.json */; };
+		FAE9BB752A46F0FB0080AEAA /* update-abi.sh in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB6A2A46F0FB0080AEAA /* update-abi.sh */; };
+		FAE9BB762A46F0FB0080AEAA /* IL1Bridge.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB6B2A46F0FB0080AEAA /* IL1Bridge.json */; };
+		FAE9BB772A46F0FB0080AEAA /* ContractDeployer.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB6C2A46F0FB0080AEAA /* ContractDeployer.json */; };
+		FAE9BB782A46F0FB0080AEAA /* IEthToken.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB6D2A46F0FB0080AEAA /* IEthToken.json */; };
+		FAE9BB792A46F0FB0080AEAA /* IPaymasterFlow.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB6E2A46F0FB0080AEAA /* IPaymasterFlow.json */; };
+		FAE9BB7A2A46F0FB0080AEAA /* IZkSync.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB6F2A46F0FB0080AEAA /* IZkSync.json */; };
+		FAE9BB7B2A46F0FB0080AEAA /* IL1Messenger.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB702A46F0FB0080AEAA /* IL1Messenger.json */; };
+		FAE9BB7C2A46F0FB0080AEAA /* IL2Bridge.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB712A46F0FB0080AEAA /* IL2Bridge.json */; };
+		FAE9BB7D2A46F0FB0080AEAA /* IERC20.json in Resources */ = {isa = PBXBuildFile; fileRef = FAE9BB722A46F0FB0080AEAA /* IERC20.json */; };
+		FAE9BB7F2A48BA6F0080AEAA /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAE9BB7E2A48BA6F0080AEAA /* TokenManager.swift */; };
 		FAF7A9662A3C7AEF000B02E4 /* AccountAbstraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7A9652A3C7AEF000B02E4 /* AccountAbstraction.swift */; };
 		FAF7A96A2A3DD86C000B02E4 /* SmartContractManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7A9692A3DD86C000B02E4 /* SmartContractManager.swift */; };
 		FAF7A96C2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF7A96B2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift */; };
@@ -82,8 +97,6 @@
 		6DB940447B8DD4B43A8076F6 /* Pods-zkSync-Demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo.debug.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo/Pods-zkSync-Demo.debug.xcconfig"; sourceTree = "<group>"; };
 		733BCEFC1510DADA690FB969 /* Pods_zkSync_Demo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_zkSync_Demo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5BD129B0F73644A440158C4 /* Pods-zkSync-Demo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo.release.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo/Pods-zkSync-Demo.release.xcconfig"; sourceTree = "<group>"; };
-		FA55EF062A43137F001D00C2 /* Paymaster.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = Paymaster.json; sourceTree = "<group>"; };
-		FA72C6762A30870E00921613 /* Storage.zbin */ = {isa = PBXFileReference; lastKnownFileType = file; path = Storage.zbin; sourceTree = "<group>"; };
 		FA7CBE892A10F9EC005A7E58 /* Fee.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		FA7CBE8A2A10F9EC005A7E58 /* DefaultTransactionFeeProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultTransactionFeeProvider.swift; sourceTree = "<group>"; };
 		FA7CBE8B2A10F9EC005A7E58 /* ZkTransactionFeeProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkTransactionFeeProvider.swift; sourceTree = "<group>"; };
@@ -148,6 +161,23 @@
 		FADECD762A10F7F5004E419A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		FADECD782A10F7F6004E419A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FADECD7B2A10F7F6004E419A /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		FAE9BB562A43A22D0080AEAA /* PaymasterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymasterManager.swift; sourceTree = "<group>"; };
+		FAE9BB5F2A46F0D40080AEAA /* Token.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Token.json; sourceTree = "<group>"; };
+		FAE9BB602A46F0D40080AEAA /* PaymasterFlow.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = PaymasterFlow.json; sourceTree = "<group>"; };
+		FAE9BB612A46F0D40080AEAA /* Paymaster.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Paymaster.json; sourceTree = "<group>"; };
+		FAE9BB622A46F0D40080AEAA /* Storage.zbin */ = {isa = PBXFileReference; lastKnownFileType = file; path = Storage.zbin; sourceTree = "<group>"; };
+		FAE9BB682A46F0FB0080AEAA /* IERC1271.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IERC1271.json; sourceTree = "<group>"; };
+		FAE9BB692A46F0FB0080AEAA /* IAllowList.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IAllowList.json; sourceTree = "<group>"; };
+		FAE9BB6A2A46F0FB0080AEAA /* update-abi.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "update-abi.sh"; sourceTree = "<group>"; };
+		FAE9BB6B2A46F0FB0080AEAA /* IL1Bridge.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IL1Bridge.json; sourceTree = "<group>"; };
+		FAE9BB6C2A46F0FB0080AEAA /* ContractDeployer.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = ContractDeployer.json; sourceTree = "<group>"; };
+		FAE9BB6D2A46F0FB0080AEAA /* IEthToken.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IEthToken.json; sourceTree = "<group>"; };
+		FAE9BB6E2A46F0FB0080AEAA /* IPaymasterFlow.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IPaymasterFlow.json; sourceTree = "<group>"; };
+		FAE9BB6F2A46F0FB0080AEAA /* IZkSync.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IZkSync.json; sourceTree = "<group>"; };
+		FAE9BB702A46F0FB0080AEAA /* IL1Messenger.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IL1Messenger.json; sourceTree = "<group>"; };
+		FAE9BB712A46F0FB0080AEAA /* IL2Bridge.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IL2Bridge.json; sourceTree = "<group>"; };
+		FAE9BB722A46F0FB0080AEAA /* IERC20.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = IERC20.json; sourceTree = "<group>"; };
+		FAE9BB7E2A48BA6F0080AEAA /* TokenManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenManager.swift; sourceTree = "<group>"; };
 		FAF7A9652A3C7AEF000B02E4 /* AccountAbstraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountAbstraction.swift; sourceTree = "<group>"; };
 		FAF7A9692A3DD86C000B02E4 /* SmartContractManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmartContractManager.swift; sourceTree = "<group>"; };
 		FAF7A96B2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSyncTransactionReceiptProcessor.swift; sourceTree = "<group>"; };
@@ -415,6 +445,8 @@
 				FA7CBF0B2A111112005A7E58 /* TransferManager.swift */,
 				FA7CBF102A11119D005A7E58 /* DepositManager.swift */,
 				FA7CBF122A1111CE005A7E58 /* WithdrawManager.swift */,
+				FAE9BB562A43A22D0080AEAA /* PaymasterManager.swift */,
+				FAE9BB7E2A48BA6F0080AEAA /* TokenManager.swift */,
 			);
 			path = Manager;
 			sourceTree = "<group>";
@@ -422,9 +454,8 @@
 		FA7CBF0D2A111124005A7E58 /* App */ = {
 			isa = PBXGroup;
 			children = (
+				FAE9BB5E2A46F0D40080AEAA /* Resources */,
 				FADECD742A10F7F5004E419A /* zkSync_DemoApp.swift */,
-				FA72C6762A30870E00921613 /* Storage.zbin */,
-				FA55EF062A43137F001D00C2 /* Paymaster.json */,
 				FADECD782A10F7F6004E419A /* Assets.xcassets */,
 				FADECD7A2A10F7F6004E419A /* Preview Content */,
 			);
@@ -466,6 +497,36 @@
 				FADECD7B2A10F7F6004E419A /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		FAE9BB5E2A46F0D40080AEAA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FAE9BB672A46F0FB0080AEAA /* abi */,
+				FAE9BB5F2A46F0D40080AEAA /* Token.json */,
+				FAE9BB602A46F0D40080AEAA /* PaymasterFlow.json */,
+				FAE9BB612A46F0D40080AEAA /* Paymaster.json */,
+				FAE9BB622A46F0D40080AEAA /* Storage.zbin */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		FAE9BB672A46F0FB0080AEAA /* abi */ = {
+			isa = PBXGroup;
+			children = (
+				FAE9BB6A2A46F0FB0080AEAA /* update-abi.sh */,
+				FAE9BB682A46F0FB0080AEAA /* IERC1271.json */,
+				FAE9BB692A46F0FB0080AEAA /* IAllowList.json */,
+				FAE9BB6B2A46F0FB0080AEAA /* IL1Bridge.json */,
+				FAE9BB6C2A46F0FB0080AEAA /* ContractDeployer.json */,
+				FAE9BB6D2A46F0FB0080AEAA /* IEthToken.json */,
+				FAE9BB6E2A46F0FB0080AEAA /* IPaymasterFlow.json */,
+				FAE9BB6F2A46F0FB0080AEAA /* IZkSync.json */,
+				FAE9BB702A46F0FB0080AEAA /* IL1Messenger.json */,
+				FAE9BB712A46F0FB0080AEAA /* IL2Bridge.json */,
+				FAE9BB722A46F0FB0080AEAA /* IERC20.json */,
+			);
+			path = abi;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -528,10 +589,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FA55EF072A431674001D00C2 /* Paymaster.json in Resources */,
+				FAE9BB642A46F0D40080AEAA /* PaymasterFlow.json in Resources */,
+				FAE9BB762A46F0FB0080AEAA /* IL1Bridge.json in Resources */,
+				FAE9BB742A46F0FB0080AEAA /* IAllowList.json in Resources */,
+				FAE9BB782A46F0FB0080AEAA /* IEthToken.json in Resources */,
+				FAE9BB752A46F0FB0080AEAA /* update-abi.sh in Resources */,
 				FADECD7C2A10F7F6004E419A /* Preview Assets.xcassets in Resources */,
-				FAC54D132A37502D0082FD3C /* Storage.zbin in Resources */,
+				FAE9BB662A46F0D40080AEAA /* Storage.zbin in Resources */,
+				FAE9BB7D2A46F0FB0080AEAA /* IERC20.json in Resources */,
+				FAE9BB792A46F0FB0080AEAA /* IPaymasterFlow.json in Resources */,
+				FAE9BB772A46F0FB0080AEAA /* ContractDeployer.json in Resources */,
+				FAE9BB732A46F0FB0080AEAA /* IERC1271.json in Resources */,
+				FAE9BB7B2A46F0FB0080AEAA /* IL1Messenger.json in Resources */,
+				FAE9BB652A46F0D40080AEAA /* Paymaster.json in Resources */,
+				FAE9BB7C2A46F0FB0080AEAA /* IL2Bridge.json in Resources */,
 				FADECD792A10F7F6004E419A /* Assets.xcassets in Resources */,
+				FAE9BB632A46F0D40080AEAA /* Token.json in Resources */,
+				FAE9BB7A2A46F0FB0080AEAA /* IZkSync.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -629,6 +703,7 @@
 				FA7CBEE62A10F9EC005A7E58 /* JRPCRequest.swift in Sources */,
 				FADECD752A10F7F5004E419A /* zkSync_DemoApp.swift in Sources */,
 				FA7CBF0F2A111150005A7E58 /* BaseManager.swift in Sources */,
+				FAE9BB572A43A22D0080AEAA /* PaymasterManager.swift in Sources */,
 				FA7CBEF12A10F9EC005A7E58 /* Token.swift in Sources */,
 				FA7CBEEE2A10F9EC005A7E58 /* TokenId.swift in Sources */,
 				FA7CBEED2A10F9EC005A7E58 /* Paymaster.swift in Sources */,
@@ -638,6 +713,7 @@
 				FA7CBEF32A10F9EC005A7E58 /* EthereumProvider.swift in Sources */,
 				FA7CBED02A10F9EC005A7E58 /* EthereumTransaction+EIP712.swift in Sources */,
 				FA7CBEEA2A10F9EC005A7E58 /* ZkSyncABI.swift in Sources */,
+				FAE9BB7F2A48BA6F0080AEAA /* TokenManager.swift in Sources */,
 				FAF7A96C2A3DE929000B02E4 /* ZkSyncTransactionReceiptProcessor.swift in Sources */,
 				FA7CBEF82A10F9EC005A7E58 /* Web3Eth.swift in Sources */,
 				FA7CBED62A10F9EC005A7E58 /* PrivateKeyEthSigner.swift in Sources */,

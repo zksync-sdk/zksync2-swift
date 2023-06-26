@@ -25,16 +25,16 @@ class PaymasterManager: BaseManager {
         
         let nonce = try! zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
         
-        let contractTransaction = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: Data(), salt: Data(), chainId: signer.domain.chainId)
+        var estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecodeData, deps: [bytecodeData], calldata: Data(), salt: Data(), chainId: signer.domain.chainId)
         
-        let precomputedAddress = ContractDeployer.computeL2Create2Address(EthereumAddress(signer.address)!, bytecode: bytecodeData, constructor: Data(), salt: Data())
+        let gas = try! (zkSync as! JsonRpc2_0ZkSync).ethEstimateGas(estimate).wait()
+        
+        //let precomputedAddress = ContractDeployer.computeL2Create2Address(EthereumAddress(signer.address)!, bytecode: bytecodeData, constructor: Data(), salt: Data())
         
         let chainID = signer.domain.chainId
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
-        
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: contractTransaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: contractTransaction.data)
-        
-        estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeData]
+        //???
+//        estimate.parameters.EIP712Meta?.factoryDeps = [bytecodeData]
         
         let fee = try! (zkSync as! JsonRpc2_0ZkSync).zksEstimateFee(estimate).wait()
         
@@ -42,13 +42,13 @@ class PaymasterManager: BaseManager {
         transactionOptions.type = .eip712
         transactionOptions.chainID = chainID
         transactionOptions.nonce = .manual(nonce)
-        transactionOptions.to = contractTransaction.to
-        transactionOptions.value = contractTransaction.value
+        transactionOptions.to = estimate.to
+        transactionOptions.value = estimate.value
         transactionOptions.gasLimit = .manual(fee.gasLimit)
         transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
         transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
-        transactionOptions.from = contractTransaction.parameters.from
-        
+        transactionOptions.from = estimate.parameters.from
+
         var ethereumParameters = EthereumParameters(from: transactionOptions)
         ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
         ethereumParameters.EIP712Meta?.factoryDeps = [bytecodeData]
@@ -61,24 +61,24 @@ class PaymasterManager: BaseManager {
             data: estimate.data,
             parameters: ethereumParameters
         )
-        
+
         let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-        
+
         let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
         transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
         transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
         transaction.envelope.v = BigUInt(unmarshalledSignature.v)
-        
+
         guard let message = transaction.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
         }
-        
+
         let result = try! zkSync.web3.eth.sendRawTransactionPromise(message).wait()
-        
+
         let receipt = transactionReceiptProcessor.waitForTransactionReceipt(hash: result.hash)
-        
+
         assert(receipt?.status == .ok)
-        assert(precomputedAddress == receipt?.contractAddress)
+        //assert(precomputedAddress == receipt?.contractAddress)
         
         callback()
     }
@@ -108,7 +108,7 @@ class PaymasterManager: BaseManager {
                     input: Data()
                 )
                 
-                estimate.parameters.EIP712Meta?.paymasterParams = PaymasterParams(paymaster: paymasterAddress, paymasterInput: paymasterInput)
+                estimate.parameters.EIP712Meta?.paymasterParams = PaymasterParams(paymaster: EthereumAddress(paymasterAddress)!, paymasterInput: paymasterInput)
                 
                 let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(self.signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
                 
@@ -128,6 +128,8 @@ class PaymasterManager: BaseManager {
                 
                 var ethereumParameters = EthereumParameters(from: transactionOptions)
                 ethereumParameters.EIP712Meta = estimate.parameters.EIP712Meta
+                
+                // call mint and use paymaster
                 
                 var transaction = EthereumTransaction(
                     type: .eip712,

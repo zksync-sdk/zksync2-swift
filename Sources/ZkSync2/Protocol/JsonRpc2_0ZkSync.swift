@@ -86,6 +86,8 @@ class JsonRpc2_0ZkSync: ZkSync {
                        completion: completion)
     }
     
+    // TODO: implement l1 for l2 and l2 for l1
+    
     func zksGetBridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void) {
         transport.send(method: "zks_getBridgeContracts",
                        parameters: [],

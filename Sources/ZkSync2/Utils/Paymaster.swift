@@ -47,9 +47,9 @@ class Paymaster {
                                     minimalAllowance: BigUInt,
                                     input: Data) -> Data {
         let inputs = [
-            ABI.Element.InOut(name: "tokenAddress", type: .address),
-            ABI.Element.InOut(name: "minimalAllowance", type: .uint(bits: 256)),
-            ABI.Element.InOut(name: "input", type: .bytes(length: 32)),
+            ABI.Element.InOut(name: "_token", type: .address),
+            ABI.Element.InOut(name: "_minAllowance", type: .uint(bits: 256)),
+            ABI.Element.InOut(name: "_innerInput", type: .dynamicBytes),
         ]
         
         let function = ABI.Element.Function(

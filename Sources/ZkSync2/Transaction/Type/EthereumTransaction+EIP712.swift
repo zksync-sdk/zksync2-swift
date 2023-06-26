@@ -29,12 +29,12 @@ extension EthereumTransaction: Structurable {
             ("gasPerPubdataByteLimit", envelope.EIP712Meta!.gasPerPubdata as Any),
             ("maxFeePerGas", envelope.parameters.maxFeePerGas as Any),
             ("maxPriorityFeePerGas", envelope.parameters.maxPriorityFeePerGas as Any),
-            ("paymaster", envelope.EIP712Meta?.paymasterParams?.paymaster ?? BigUInt.zero),
+            ("paymaster", BigUInt(envelope.EIP712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
             ("nonce", envelope.nonce),
             ("value", envelope.parameters.value as Any),
             ("data", data),
             ("factoryDeps", envelope.EIP712Meta?.factoryDeps ?? []),
-            ("paymasterInput", envelope.parameters.EIP712Meta?.paymasterParams?.paymasterInput ?? Data())
+            ("paymasterInput", envelope.parameters.EIP712Meta?.paymasterParams?.paymasterInput as Any)
         ]
     }
 }

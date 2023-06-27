@@ -230,17 +230,9 @@ class TokenManager: BaseManager {
     }
     
     func transfer(callback: (() -> Void)) {
-        zkSync.zksGetAllAccountBalances("0x49720d21525025522040f73da5b3992112bbec00") { result in
-            print(result)
-        }
-//        let amount = BigUInt(1000000000000000000)
-//
-//        let token = Token(l1Address: "0xbc6b677377598a79fa1885e02df1894b05bc8b33", l2Address: "0xbc6b677377598a79fa1885e02df1894b05bc8b33", symbol: "USDC", decimals: 18)
-//        let transactionSendingResult = try! wallet.transfer("0x49720d21525025522040f73da5b3992112bbec00", amount: amount).wait()
-//
-//        let balance = try! wallet.getBalance(token).wait()
-//
-//        let decimalBalance = token.intoDecimal(balance)
+        let amount = BigUInt(1000000000000000000)
+
+        let transactionSendingResult = try! wallet.transfer("0x49720d21525025522040f73da5b3992112bbec00", amount: amount).wait()
         
         callback()
     }

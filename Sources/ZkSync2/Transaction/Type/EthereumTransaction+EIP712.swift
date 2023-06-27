@@ -34,7 +34,7 @@ extension EthereumTransaction: Structurable {
             ("value", envelope.parameters.value as Any),
             ("data", data),
             ("factoryDeps", envelope.EIP712Meta?.factoryDeps ?? []),
-            ("paymasterInput", envelope.parameters.EIP712Meta?.paymasterParams?.paymasterInput as Any)
+            ("paymasterInput", envelope.parameters.EIP712Meta?.paymasterParams?.paymasterInput ?? Data())
         ]
     }
 }

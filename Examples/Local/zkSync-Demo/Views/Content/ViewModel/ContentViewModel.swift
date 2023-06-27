@@ -40,12 +40,6 @@ class ContentViewModel: ObservableObject {
         })
     }
     
-    func approvalBasedPaymaster() {
-        paymasterManager.approvalBasedPaymaster(callback: {
-            
-        })
-    }
-    
     func accountAbstraction() {
         smartContractManager.accountAbstraction(callback: {
             
@@ -96,6 +90,12 @@ class ContentViewModel: ObservableObject {
     
     func mintToken() {
         tokenManager.mintToken(callback: {
+            
+        })
+    }
+    
+    func tokenBalance() {
+        tokenManager.tokenBalance(callback: {
             
         })
     }

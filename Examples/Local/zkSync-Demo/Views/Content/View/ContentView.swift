@@ -140,18 +140,18 @@ struct ContentView: View {
             
             Button(action: {
                 DispatchQueue.global().async {
-                    viewModel.transferFundsToPaymaster()
+                    viewModel.tokenBalance()
                 }
             }, label: {
-                Text("Transfer funds to Paymaster")
+                Text("Token Balance")
             })
             
             Button(action: {
                 DispatchQueue.global().async {
-                    viewModel.approvalBasedPaymaster()
+                    viewModel.transferFundsToPaymaster()
                 }
             }, label: {
-                Text("Execute Paymaster")
+                Text("Transfer funds to Paymaster")
             })
         }
     }

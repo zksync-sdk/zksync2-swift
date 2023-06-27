@@ -131,7 +131,7 @@ class TokenManager: BaseManager {
         
         let contract = zkSync.web3.contract(abiString, at: contractAddress)!
         
-        let value = BigUInt(1000)
+        let value = BigUInt(1)
         
         let parameters1 = [
             contractAddress.address as AnyObject,
@@ -159,11 +159,9 @@ class TokenManager: BaseManager {
         
         let estimateGas = try! self.zkSync.web3.eth.estimateGas(estimate, transactionOptions: transactionOptions1)
         
-        let fee1 = gasPrice.multiplied(by: estimateGas)
-        
         let to = EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!
         
-        let paymasterAddress = EthereumAddress("0x3c6241fe58caa18385331b7cc5bfdda8ccddaef5")!
+        let paymasterAddress = EthereumAddress("0x49720d21525025522040f73da5b3992112bbec00")!//000 0x49720d21525025522040f73da5b3992112bbec00
         let paymasterInput = Paymaster.encodeApprovalBased(
             to,
             minimalAllowance: BigUInt(1),
@@ -223,11 +221,51 @@ class TokenManager: BaseManager {
         callback()
     }
     
+    func tokenBalance(callback: (() -> Void)) {
+        let manager = KeystoreManager.init([credentials])
+        zkSync.web3.eth.web3.addKeystoreManager(manager)
+        self.eth.addKeystoreManager(manager)
+        
+        guard let path = Bundle.main.path(forResource: "Token", ofType: "json") else { return }
+        
+        let data = try! Data(contentsOf: URL(fileURLWithPath: path), options: .mappedIfSafe)
+        let jsonResult = try! JSONSerialization.jsonObject(with: data, options: .mutableLeaves)
+        guard let json = jsonResult as? [String: Any], let abi = json["abi"] as? [[String: Any]] else { return }
+        
+        guard let abiData = try? JSONSerialization.data(withJSONObject: abi, options: []) else { return }
+        let abiString = String(data: abiData, encoding: .utf8)!
+        
+        let contractAddress = EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")!
+        
+        let contract = zkSync.web3.contract(abiString, at: contractAddress)!
+        
+        let parameters2 = [
+            contractAddress.address as AnyObject,
+        ] as [AnyObject]
+        
+        guard let readTransaction = contract.read("balanceOf",
+                                                  parameters: parameters2,
+                                                  transactionOptions: nil) else {
+            return
+            //return Promise(error: EthereumProviderError.invalidParameter)
+        }
+        
+        //        guard let encodedTransaction = readTransaction.transaction.encode(for: .transaction) else {
+        //            fatalError("Failed to encode transaction.")
+        //        }
+        
+        let result2 = try! readTransaction.callPromise().wait()
+        
+        print("result:", result2)
+        
+        callback()
+    }
+    
     func transfer(callback: (() -> Void)) {
         let amount = BigUInt(1000000000000000000)
         
         let token = Token(l1Address: "0xbc6b677377598a79fa1885e02df1894b05bc8b33", l2Address: "0xbc6b677377598a79fa1885e02df1894b05bc8b33", symbol: "USDC", decimals: 18)
-        let transactionSendingResult = try! wallet.transfer("0x3c6241fe58caa18385331b7cc5bfdda8ccddaef5", amount: amount).wait()
+        let transactionSendingResult = try! wallet.transfer("0x49720d21525025522040f73da5b3992112bbec00", amount: amount).wait()
 
         let balance = try! wallet.getBalance(token).wait()
 

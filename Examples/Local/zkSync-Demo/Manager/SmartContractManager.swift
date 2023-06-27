@@ -183,7 +183,7 @@ class SmartContractManager: BaseManager {
                     
                     let elementFunction: ABI.Element = .function(function)
                     
-                    let address = EthereumAddress("0x834FF28392Ab0460f13286c389fEF4E3980e28F6")
+                    let address = EthereumAddress("0xbc6b677377598a79fa1885e02df1894b05bc8b33")//000 0x834FF28392Ab0460f13286c389fEF4E3980e28F6
                     let parameters: [AnyObject] = [
                         address as AnyObject
                     ]

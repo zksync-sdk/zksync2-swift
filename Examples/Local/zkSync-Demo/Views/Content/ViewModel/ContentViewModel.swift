@@ -76,6 +76,12 @@ class ContentViewModel: ObservableObject {
         })
     }
     
+    func withdraw() {
+        withdrawManager.withdraw(callback: {
+            self.refreshBalance()
+        })
+    }
+    
     func withdrawViaWallet() {
         withdrawManager.withdrawViaWallet(callback: {
             refreshBalance()

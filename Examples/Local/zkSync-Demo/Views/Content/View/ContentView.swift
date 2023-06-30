@@ -103,6 +103,14 @@ struct ContentView: View {
             
             Button(action: {
                 DispatchQueue.global().async {
+                    viewModel.withdraw()
+                }
+            }, label: {
+                Text("Withdraw")
+            })
+            
+            Button(action: {
+                DispatchQueue.global().async {
                     viewModel.withdrawViaWallet()
                 }
             }, label: {

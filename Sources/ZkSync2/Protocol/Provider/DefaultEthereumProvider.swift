@@ -407,9 +407,12 @@ class DefaultEthereumProvider: EthereumProvider {
             proof
         ] as [AnyObject]
         
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.from = EthereumAddress(l1ERC20BridgeAddress)
+        
         guard let transaction = zkSyncContract.write("finalizeEthWithdrawal",
                                                      parameters: parameters,
-                                                     transactionOptions: nil) else {
+                                                     transactionOptions: transactionOptions) else {
             return Promise(error: EthereumProviderError.invalidParameter)
         }
         
@@ -466,9 +469,12 @@ class DefaultEthereumProvider: EthereumProvider {
             proof
         ] as [AnyObject]
         
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.from = EthereumAddress(l1ERC20BridgeAddress)
+        
         guard let writeTransaction = l1Bridge.write("finalizeWithdrawal",
                                                     parameters: parameters,
-                                                    transactionOptions: nil) else {
+                                                    transactionOptions: transactionOptions) else {
             return Promise(error: EthereumProviderError.invalidParameter)
         }
         

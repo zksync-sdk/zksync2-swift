@@ -1,5 +1,9 @@
 # zksync2-swift
 
+## Using examples
+
+The complete examples with various use cases are available [here](https://github.com/zksync-sdk/zksync2-examples/tree/main/swift).
+
 ## EthSigner
 
 ```swift

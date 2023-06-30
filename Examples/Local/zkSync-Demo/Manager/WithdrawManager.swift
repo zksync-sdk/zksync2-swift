@@ -107,11 +107,13 @@ class WithdrawManager: BaseManager {
             fatalError("Transaction failed.")
         }
         
+        print("txHash:", txHash)
+        
         assert(receipt.status == .ok)
         
         let l1ERC20Bridge = zkSync.web3.contract(
             Web3.Utils.IL1Bridge,
-            at: EthereumAddress("0x4ee775658259028d399f4cf9d637b14773472988")
+            at: EthereumAddress("0x36615cf349d7f6344891b1e7ca7c72883f5dc049")
         )!
         
         zkSync.zksMainContract { result in
@@ -126,16 +128,23 @@ class WithdrawManager: BaseManager {
                     let defaultEthereumProvider = DefaultEthereumProvider(self.eth, l1ERC20Bridge: l1ERC20Bridge, zkSyncContract: zkSyncContract, gasProvider: DefaultGasProvider())
                     
                     let topic = "L1MessageSent(address,bytes32,bytes)"
-                    guard let log = receipt.logs.first(where: {
+                    let log = receipt.logs.filter({
                         if $0.address.address == ZkSyncAddresses.MessengerAddress && $0.topics.first == EIP712.keccak256(topic) {
                             return true
                         }
                         return false
-                    }) else {
-                        fatalError("Topic not found.")
+                    })[index]
+                    
+                    guard let l2tol1log = receipt.l2ToL1Logs?.filter({
+                        if $0.sender.address == ZkSyncAddresses.MessengerAddress {
+                            return true
+                        }
+                        return false
+                    })[index] else {
+                        fatalError("No l2 to l1 log found.")
                     }
                     
-                    (self.zkSync as! JsonRpc2_0ZkSync).zksGetL2ToL1LogProof(txHash, logIndex: index) { result in
+                    (self.zkSync as! JsonRpc2_0ZkSync).zksGetL2ToL1LogProof(txHash, logIndex: Int(l2tol1log.logIndex)) { result in
                         DispatchQueue.global().async {
                             switch result {
                             case .success(let proof):
@@ -153,12 +162,15 @@ class WithdrawManager: BaseManager {
                                 let eventData = contract.parseEvent(log).eventData
                                 let message = eventData?["_message"] as? Data ?? Data()
                                 
+                                let nonce = try! self.zkSync.web3.eth.getTransactionCountPromise(address: EthereumAddress(self.signer.address)!, onBlock: ZkBlockParameterName.committed.rawValue).wait()
+                                
                                 let result = try! defaultEthereumProvider.finalizeEthWithdrawal(
                                     receipt.l1BatchNumber,
-                                    l2MessageIndex: BigUInt(proof.id),
+                                    l2MessageIndex: receipt.l1BatchNumber,//111BigUInt(proof.id)
                                     l2TxNumberInBlock: receipt.l1BatchTxIndex,
                                     message: message,
-                                    proof: proof.proof.compactMap({ Data(fromHex: $0) })
+                                    proof: proof.proof,//111.compactMap({ Data(fromHex: $0) })
+                                    nonce: nonce
                                 ).wait()
                                 
                                 print(result.hash)

@@ -398,7 +398,7 @@ class DefaultEthereumProvider: EthereumProvider {
                                       l2MessageIndex: BigUInt,
                                       l2TxNumberInBlock: UInt,
                                       message: Data,
-                                      proof: [Data]) -> Promise<TransactionSendingResult> {
+                                      proof: [String], nonce: BigUInt) -> Promise<TransactionSendingResult> {
         let parameters = [
             l2BlockNumber,
             l2MessageIndex,
@@ -406,9 +406,14 @@ class DefaultEthereumProvider: EthereumProvider {
             message,
             proof
         ] as [AnyObject]
-        
+        //111
         var transactionOptions = TransactionOptions.defaultOptions
-        transactionOptions.from = EthereumAddress(l1ERC20BridgeAddress)
+        //111transactionOptions.type = .eip712
+        transactionOptions.from = EthereumAddress("0x36615Cf349d7F6344891B1e7CA7C72883F5dc049")//111
+        transactionOptions.nonce = .manual(nonce)
+        transactionOptions.value = nil
+        transactionOptions.gasLimit = .manual(1000000)
+        transactionOptions.gasPrice = .manual(BigUInt(1000000007))
         
         guard let transaction = zkSyncContract.write("finalizeEthWithdrawal",
                                                      parameters: parameters,

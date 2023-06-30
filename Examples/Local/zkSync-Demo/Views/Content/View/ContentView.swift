@@ -39,14 +39,6 @@ struct ContentView: View {
         VStack(spacing: 20) {
             Button(action: {
                 DispatchQueue.global().async {
-                    viewModel.check()
-                }
-            }, label: {
-                Text("Check")
-            })
-            
-            Button(action: {
-                DispatchQueue.global().async {
                     viewModel.refreshBalance()
                 }
             }, label: {
@@ -55,10 +47,10 @@ struct ContentView: View {
             
             Button(action: {
                 DispatchQueue.global().async {
-                    viewModel.accountAbstraction()
+                    viewModel.deploySmartAccount()
                 }
             }, label: {
-                Text("Account Abstraction")
+                Text("Deploy Smart Account")
             })
             
             Button(action: {
@@ -152,14 +144,6 @@ struct ContentView: View {
                 }
             }, label: {
                 Text("Token Balance")
-            })
-            
-            Button(action: {
-                DispatchQueue.global().async {
-                    viewModel.transferFundsToPaymaster()
-                }
-            }, label: {
-                Text("Transfer funds to Paymaster")
             })
         }
     }

@@ -10,6 +10,7 @@ import Foundation
 class ContentViewModel: ObservableObject {
     let baseManager = BaseManager()
     let smartContractManager = SmartContractManager()
+    let smartAccountManager = SmartAccountManager()
     let paymasterManager = PaymasterManager()
     let transferManager = TransferManager()
     let depositManager = DepositManager()
@@ -17,12 +18,6 @@ class ContentViewModel: ObservableObject {
     let tokenManager = TokenManager()
     
     @Published var balance: Decimal = 0
-    
-    func check() {
-        smartContractManager.check(callback: {
-            
-        })
-    }
     
     func refreshBalance() {
         let balance = try! baseManager.wallet.getBalance().wait()
@@ -40,8 +35,8 @@ class ContentViewModel: ObservableObject {
         })
     }
     
-    func accountAbstraction() {
-        smartContractManager.accountAbstraction(callback: {
+    func deploySmartAccount() {
+        smartAccountManager.deploySmartAccount(callback: {
             
         })
     }
@@ -84,7 +79,7 @@ class ContentViewModel: ObservableObject {
     
     func withdrawViaWallet() {
         withdrawManager.withdrawViaWallet(callback: {
-            refreshBalance()
+            self.refreshBalance()
         })
     }
     
@@ -102,12 +97,6 @@ class ContentViewModel: ObservableObject {
     
     func tokenBalance() {
         tokenManager.tokenBalance(callback: {
-            
-        })
-    }
-    
-    func transferFundsToPaymaster() {
-        tokenManager.transfer(callback: {
             
         })
     }

@@ -206,7 +206,7 @@ extension EthereumTransaction {
                                            bytecode: Data,
                                            deps: [Data],
                                            calldata: Data = Data(),
-                                           salt: Data,
+                                           salt: Data = Data(capacity: 32),
                                            chainId: BigUInt) -> EthereumTransaction {
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
@@ -223,7 +223,9 @@ extension EthereumTransaction {
         ethereumParameters.gasPrice = gasPrice
         ethereumParameters.gasLimit = gasLimit
         
-        let calldataCreate = ContractDeployer.encodeCreate2(bytecode, calldata: calldata)
+        let calldataCreate = ContractDeployer.encodeCreate2(bytecode,
+                                                            calldata: calldata,
+                                                            salt: salt)
         
         var EIP712Meta = EIP712Meta()
         EIP712Meta.gasPerPubdata = BigUInt(160000)

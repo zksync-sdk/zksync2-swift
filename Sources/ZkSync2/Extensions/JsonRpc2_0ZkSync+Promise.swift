@@ -80,4 +80,12 @@ extension JsonRpc2_0ZkSync {
             }
         }
     }
+    
+    func zksGetTestnetPaymaster() -> Promise<String> {
+        Promise { seal in
+            zksGetTestnetPaymaster() {
+                seal.resolve($0)
+            }
+        }
+    }
 }

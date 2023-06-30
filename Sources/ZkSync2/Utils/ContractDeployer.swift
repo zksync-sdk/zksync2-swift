@@ -99,7 +99,7 @@ public class ContractDeployer {
         return encodedCallData
     }
     
-    public static func encodeCreate2(_ bytecode: Data, calldata: Data = Data()) -> Data {
+    public static func encodeCreate2(_ bytecode: Data, calldata: Data = Data(), salt: Data = Data(capacity: 32)) -> Data {
         let inputs = [
             ABI.Element.InOut(name: "salt", type: .bytes(length: 32)),
             ABI.Element.InOut(name: "bytecodeHash", type: .bytes(length: 32)),
@@ -113,8 +113,6 @@ public class ContractDeployer {
                                             payable: false)
         
         let elementFunction: ABI.Element = .function(function)
-        
-        let salt = Data(capacity: 32)
         
         let bytecodeHash = ContractDeployer.hashBytecode(bytecode)
         

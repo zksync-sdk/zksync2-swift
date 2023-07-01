@@ -206,7 +206,7 @@ extension EthereumTransaction {
                                            bytecode: Data,
                                            deps: [Data],
                                            calldata: Data = Data(),
-                                           salt: Data = Data(capacity: 32),
+                                           salt: Data,
                                            chainId: BigUInt) -> EthereumTransaction {
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712

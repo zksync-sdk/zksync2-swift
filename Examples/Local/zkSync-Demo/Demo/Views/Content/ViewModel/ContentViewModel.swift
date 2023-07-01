@@ -27,6 +27,10 @@ class ContentViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.balance = decimalBalance
         }
+        
+        baseManager.zkSync.zksGetAllAccountBalances(baseManager.signer.address) { result in
+            print("result:", result)
+        }
     }
     
     func deployPaymaster() {
@@ -67,6 +71,12 @@ class ContentViewModel: ObservableObject {
     
     func deposit() {
         depositManager.deposit(callback: {
+            self.refreshBalance()
+        })
+    }
+    
+    func depositViaWallet() {
+        depositManager.depositViaWallet(callback: {
             self.refreshBalance()
         })
     }

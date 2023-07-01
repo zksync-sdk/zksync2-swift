@@ -6,6 +6,7 @@ import SwiftUI
 
 public struct PrimaryButtonStyle: SwiftUI.ButtonStyle {
     public static let primary: ButtonStyle = .init(background: UIColor(named: "4e529a")!, foreground: UIColor.white)
+    public static let error: ButtonStyle = .init(background: UIColor(named: "d04a4a")!, foreground: UIColor.white)
     
     @SwiftUI.Environment(\.isEnabled) var isEnabled
     

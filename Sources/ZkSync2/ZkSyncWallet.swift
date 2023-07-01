@@ -206,20 +206,20 @@ public class ZkSyncWallet {
                 ABI.Element.InOut(name: "_l1Receiver", type: .address)
             ]
             
-            let function = ABI.Element.Function(name: "withdraw",
+            let function = ABI.Element.Function(name: "deposit",
                                                 inputs: inputs,
                                                 outputs: [],
                                                 constant: false,
                                                 payable: true)
             
-            let withdrawFunction: ABI.Element = .function(function)
+            let depositFunction: ABI.Element = .function(function)
             
             let parameters: [AnyObject] = [
                 EthereumAddress(from) as AnyObject,
             ]
             
             // TODO: Verify calldata.
-            let calldata = withdrawFunction.encodeParameters(parameters)!
+            let calldata = depositFunction.encodeParameters(parameters)!
             
             var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
             
@@ -234,13 +234,13 @@ public class ZkSyncWallet {
                 ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
             ]
             
-            let function = ABI.Element.Function(name: "withdraw",
+            let function = ABI.Element.Function(name: "deposit",
                                                 inputs: inputs,
                                                 outputs: [],
                                                 constant: false,
                                                 payable: true)
             
-            let withdrawFunction: ABI.Element = .function(function)
+            let depositFunction: ABI.Element = .function(function)
             
             let parameters: [AnyObject] = [
                 EthereumAddress(from) as AnyObject,
@@ -249,7 +249,7 @@ public class ZkSyncWallet {
             ]
             
             // TODO: Verify calldata.
-            let calldata = withdrawFunction.encodeParameters(parameters)!
+            let calldata = depositFunction.encodeParameters(parameters)!
             
             var l2Bridge: String = ""
             

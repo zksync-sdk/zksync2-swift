@@ -9,7 +9,7 @@ class ButtonViewBuilder {
     static func button(viewModel: ButtonViewModel) -> some View {
         Button(action: viewModel.action, label: {
             ZStack {
-                HStack(spacing: viewModel.size.padding) {
+                HStack(spacing: viewModel.size.interitemSpacing) {
                     if let leftImage = viewModel.leftImage {
                         SwiftUI.Image(uiImage: leftImage)
                             .resizable()
@@ -17,7 +17,8 @@ class ButtonViewBuilder {
                     }
                     if let title = viewModel.title {
                         Text(title)
-                            .font(Font.headline)
+                            .font(viewModel.size.font)
+                            .bold()
                     }
                     if let rightImage = viewModel.rightImage {
                         SwiftUI.Image(uiImage: rightImage)
@@ -28,7 +29,7 @@ class ButtonViewBuilder {
                 .isHidden(viewModel.isLoading)
                 
                 LoadingView(isLoading: .constant(viewModel.isLoading), color: viewModel.style.foreground, size: DefaultActivityIndicatorView.Size.medium)
-                    .frame(maxHeight: 30)
+                    .frame(maxWidth: 30, maxHeight: 30)
                     .isHidden(!viewModel.isLoading)
             }
             .frame(minWidth: viewModel.size.imageSize, minHeight: viewModel.size.imageSize)

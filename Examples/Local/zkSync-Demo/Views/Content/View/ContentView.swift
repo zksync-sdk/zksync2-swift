@@ -18,8 +18,15 @@ struct ContentView: View {
                     .bold()
                 
                 Text("\(viewModel.balance.description)")
-                    .font(Font.title3)
+                    .font(Font.callout)
                     .bold()
+                    .lineLimit(1)
+                
+                PrimaryButton(viewModel: ButtonViewModel(size: .small, style: PrimaryButtonStyle.primary, title: "Refresh", leftImage: UIImage(systemName: "flag.slash.circle")?.withRenderingMode(.alwaysTemplate).withTintColor(.white), action: {
+                    DispatchQueue.global().async {
+                        viewModel.refreshBalance()
+                    }
+                }))
             }
             
             Divider()
@@ -59,12 +66,6 @@ struct ContentView: View {
     @ViewBuilder
     var basicView: some View {
         VStack(spacing: 15) {
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Refresh Balance", action: {
-                DispatchQueue.global().async {
-                    viewModel.refreshBalance()
-                }
-            }))
-            
             PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Transfer via Wallet", action: {
                 DispatchQueue.global().async {
                     viewModel.transferViaWallet()

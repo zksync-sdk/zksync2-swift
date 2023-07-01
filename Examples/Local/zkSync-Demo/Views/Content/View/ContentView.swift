@@ -12,7 +12,17 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Text("\(viewModel.balance.description)")
+            VStack(spacing: 10) {
+                Text("Total Balance:")
+                    .font(Font.subheadline)
+                    .bold()
+                
+                Text("\(viewModel.balance.description)")
+                    .font(Font.title3)
+                    .bold()
+            }
+            
+            Divider()
             
             TabView {
                 basicView
@@ -20,13 +30,25 @@ struct ContentView: View {
                         Label("Basic", systemImage: "list.dash")
                     }
                 
+                contractsView
+                    .tabItem {
+                        Label("Contracts", systemImage: "square.and.pencil")
+                    }
+                
                 paymasterView
                     .tabItem {
-                        Label("Paymaster", systemImage: "square.and.pencil")
+                        Label("Paymaster", systemImage: "list.dash.header.rectangle")
                     }
+                    .tint(Color.green)
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(UIColor(named: "11142b")!))
+            .padding(.horizontal, 20)
+            .tint(Color(UIColor(named: "4e529a")!))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding()
+        .background(Color(UIColor(named: "11142b")!))
         .onAppear {
             DispatchQueue.global().async {
                 viewModel.refreshBalance()
@@ -36,115 +58,100 @@ struct ContentView: View {
     
     @ViewBuilder
     var basicView: some View {
-        VStack(spacing: 20) {
-            Button(action: {
+        VStack(spacing: 15) {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Refresh Balance", action: {
                 DispatchQueue.global().async {
                     viewModel.refreshBalance()
                 }
-            }, label: {
-                Text("Refresh Balance")
-            })
+            }))
             
-            Button(action: {
-                DispatchQueue.global().async {
-                    viewModel.deploySmartAccount()
-                }
-            }, label: {
-                Text("Deploy Smart Account")
-            })
-            
-            Button(action: {
-                DispatchQueue.global().async {
-                    viewModel.deploySmartContract()
-                }
-            }, label: {
-                Text("Deploy Smart Contract")
-            })
-            
-            Button(action: {
-                DispatchQueue.global().async {
-                    viewModel.deploySmartContractViaWallet()
-                }
-            }, label: {
-                Text("Deploy Smart Contract via Wallet")
-            })
-            
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Transfer via Wallet", action: {
                 DispatchQueue.global().async {
                     viewModel.transferViaWallet()
                 }
-            }, label: {
-                Text("Transfer via Wallet")
-            })
+            }))
             
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Transfer", action: {
                 DispatchQueue.global().async {
                     viewModel.transfer()
                 }
-            }, label: {
-                Text("Transfer")
-            })
+            }))
             
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deposit", action: {
                 DispatchQueue.global().async {
                     viewModel.deposit()
                 }
-            }, label: {
-                Text("Deposit")
-            })
+            }))
             
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Withdraw", action: {
                 DispatchQueue.global().async {
                     viewModel.withdraw()
                 }
-            }, label: {
-                Text("Withdraw")
-            })
+            }))
             
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Withdraw via Wallet", action: {
                 DispatchQueue.global().async {
                     viewModel.withdrawViaWallet()
                 }
-            }, label: {
-                Text("Withdraw via Wallet")
-            })
+            }))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(UIColor(named: "11142b")!))
+    }
+    
+    @ViewBuilder
+    var contractsView: some View {
+        VStack(spacing: 15) {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deploy Smart Contract", action: {
+                DispatchQueue.global().async {
+                    viewModel.deploySmartContract()
+                }
+            }))
+            
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deploy Smart Contract via Wallet", action: {
+                DispatchQueue.global().async {
+                    viewModel.deploySmartContractViaWallet()
+                }
+            }))
+            
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deploy Smart Account", action: {
+                DispatchQueue.global().async {
+                    viewModel.deploySmartAccount()
+                }
+            }))
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(UIColor(named: "11142b")!))
     }
     
     @ViewBuilder
     var paymasterView: some View {
-        VStack(spacing: 20) {
-            Button(action: {
+        VStack(spacing: 15) {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deploy Token", action: {
                 DispatchQueue.global().async {
                     viewModel.deployToken()
                 }
-            }, label: {
-                Text("Deploy Token")
-            })
+            }))
             
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deploy Paymaster", action: {
                 DispatchQueue.global().async {
                     viewModel.deployPaymaster()
                 }
-            }, label: {
-                Text("Deploy Paymaster")
-            })
+            }))
             
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Mint Token", action: {
                 DispatchQueue.global().async {
                     viewModel.mintToken()
                 }
-            }, label: {
-                Text("Mint Token")
-            })
+            }))
             
-            Button(action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Token Balance", action: {
                 DispatchQueue.global().async {
                     viewModel.tokenBalance()
                 }
-            }, label: {
-                Text("Token Balance")
-            })
+            }))
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(UIColor(named: "11142b")!))
     }
 }

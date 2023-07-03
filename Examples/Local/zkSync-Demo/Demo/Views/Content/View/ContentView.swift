@@ -44,7 +44,7 @@ struct ContentView: View {
                 
                 paymasterView
                     .tabItem {
-                        Label("Paymaster", systemImage: "list.dash.header.rectangle")
+                        Label("Token", systemImage: "list.dash.header.rectangle")
                     }
                     .tint(Color.green)
             }
@@ -66,13 +66,13 @@ struct ContentView: View {
     @ViewBuilder
     var basicView: some View {
         VStack(spacing: 15) {
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.error, fullWidth: true, title: "Deposit", action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deposit", action: {
                 DispatchQueue.global().async {
                     viewModel.deposit()
                 }
             }))
             
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.error, fullWidth: true, title: "Deposit via Wallet", action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deposit via Wallet", action: {
                 DispatchQueue.global().async {
                     viewModel.depositViaWallet()
                 }
@@ -90,7 +90,7 @@ struct ContentView: View {
                 }
             }))
             
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.error, fullWidth: true, title: "Withdraw", action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Withdraw", action: {
                 DispatchQueue.global().async {
                     viewModel.withdraw()
                 }
@@ -137,12 +137,6 @@ struct ContentView: View {
             PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deploy Token", action: {
                 DispatchQueue.global().async {
                     viewModel.deployToken()
-                }
-            }))
-            
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.error, fullWidth: true, title: "Deploy Paymaster", action: {
-                DispatchQueue.global().async {
-                    viewModel.deployPaymaster()
                 }
             }))
             

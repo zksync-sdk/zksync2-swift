@@ -151,9 +151,11 @@ public class ZkSyncWallet {
     ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
     ///   - amount: Amount of the funds to be withdrawn.
     /// - Returns: Prepared remote call of transaction.
-    public func deposit(_ from: String,
+    public func deposit(_ to: String,
+                        zkSyncAddress: EthereumAddress,
                          amount: BigUInt) -> Promise<TransactionSendingResult> {
-        deposit(from,
+        deposit(to,
+                zkSyncAddress: zkSyncAddress,
                  amount: amount,
                  token: nil,
                  nonce: nil)
@@ -166,16 +168,18 @@ public class ZkSyncWallet {
     ///   - amount: Amount of the funds to be withdrawn.
     ///   - token: Token object supported by ZkSync.
     /// - Returns: Prepared remote call of transaction.
-    public func deposit(_ from: String,
+    public func deposit(_ to: String,
+                        zkSyncAddress: EthereumAddress,
                          amount: BigUInt,
                          token: Token) -> Promise<TransactionSendingResult> {
-        deposit(from,
+        deposit(to,
+                zkSyncAddress: zkSyncAddress,
                  amount: amount,
                  token: token,
                  nonce: nil)
     }
     
-    /// Withdraw native coins to L1 chain.
+    /// Deposit native coins from L1 chain.
     ///
     /// - Parameters:
     ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
@@ -183,7 +187,8 @@ public class ZkSyncWallet {
     ///   - token: Token object supported by ZkSync.
     ///   - nonce: Custom nonce value of the wallet.
     /// - Returns: Prepared remote call of transaction.
-    public func deposit(_ from: String,
+    public func deposit(_ to: String,
+                        zkSyncAddress: EthereumAddress,
                          amount: BigUInt,
                          token: Token?,
                          nonce: BigUInt?) -> Promise<TransactionSendingResult> {
@@ -203,10 +208,16 @@ public class ZkSyncWallet {
         
         if tokenToUse.isETH {
             let inputs = [
-                ABI.Element.InOut(name: "_l1Receiver", type: .address)
+                ABI.Element.InOut(name: "_contractL2", type: .address),
+                ABI.Element.InOut(name: "_l2Value", type: .uint(bits: 256)),
+                ABI.Element.InOut(name: "_calldata", type: .dynamicBytes),
+                ABI.Element.InOut(name: "_l2GasLimit", type: .uint(bits: 256)),
+                ABI.Element.InOut(name: "_l2GasPerPubdataByteLimit", type: .uint(bits: 256)),
+                ABI.Element.InOut(name: "_factoryDeps", type: .array(type: .dynamicBytes, length: 0)),
+                ABI.Element.InOut(name: "_refundRecipient", type: .address)
             ]
             
-            let function = ABI.Element.Function(name: "deposit",
+            let function = ABI.Element.Function(name: "requestL2Transaction",
                                                 inputs: inputs,
                                                 outputs: [],
                                                 constant: false,
@@ -215,13 +226,19 @@ public class ZkSyncWallet {
             let depositFunction: ABI.Element = .function(function)
             
             let parameters: [AnyObject] = [
-                EthereumAddress(from) as AnyObject,
+                zkSyncAddress as AnyObject,
+                amount as AnyObject,
+                Data() as AnyObject,
+                BigUInt(10000000) as AnyObject,
+                BigUInt(800) as AnyObject,
+                []  as AnyObject,
+                EthereumAddress(signer.address) as AnyObject
             ]
             
             // TODO: Verify calldata.
             let calldata = depositFunction.encodeParameters(parameters)!
             
-            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
+            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(to)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
             
             // TODO: Verify chainID value.
             estimate.envelope.parameters.chainID = signer.domain.chainId
@@ -243,8 +260,8 @@ public class ZkSyncWallet {
             let depositFunction: ABI.Element = .function(function)
             
             let parameters: [AnyObject] = [
-                EthereumAddress(from) as AnyObject,
-                EthereumAddress(tokenToUse.l2Address) as AnyObject,
+                //000EthereumAddress(from) as AnyObject,
+                EthereumAddress(tokenToUse.l1Address) as AnyObject,
                 amount as AnyObject
             ]
             
@@ -276,7 +293,6 @@ public class ZkSyncWallet {
             return estimateAndSend(estimate, nonce: nonceToUse)
         }
     }
-    //----------------------
     
     /// Withdraw native coins to L1 chain.
     ///

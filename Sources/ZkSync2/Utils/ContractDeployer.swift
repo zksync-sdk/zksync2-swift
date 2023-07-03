@@ -226,7 +226,7 @@ public class ContractDeployer {
     }
     
     public static func hashBytecode(_ bytecode: Data) -> Data {
-        var bytecodeHash = SHA256.hash(data: bytecode).data//Web3.Utils.sha256(bytecode)
+        var bytecodeHash = Web3.Utils.sha256(bytecode)
         
         if bytecode.count % 32 != 0 {
             fatalError("Bytecode length in bytes must be divisible by 32")
@@ -240,11 +240,11 @@ public class ContractDeployer {
         let codeHashVersion = Data(fromHex: "0x0100")!
         let bytecodeLength = length.data2
         
-        bytecodeHash.replaceSubrange(0...3, with: Data(codeHashVersion + bytecodeLength))
+        bytecodeHash?.replaceSubrange(0...3, with: Data(codeHashVersion + bytecodeLength))
         
-//        guard let bytecodeHash = bytecodeHash else {
-//            fatalError("Bytecode hash should be valid.")
-//        }
+        guard let bytecodeHash = bytecodeHash else {
+            fatalError("Bytecode hash should be valid.")
+        }
         
         return bytecodeHash
     }

@@ -33,12 +33,6 @@ class ContentViewModel: ObservableObject {
         }
     }
     
-    func deployPaymaster() {
-        paymasterManager.deployPaymaster(callback: {
-            
-        })
-    }
-    
     func deploySmartAccount() {
         smartAccountManager.deploySmartAccount(callback: {
             

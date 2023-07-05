@@ -6,6 +6,9 @@
 //
 
 import Foundation
+#if canImport(ZkSync2)
+import ZkSync2
+#endif
 
 class ContentViewModel: ObservableObject {
     let baseManager = BaseManager()

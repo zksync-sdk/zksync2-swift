@@ -152,10 +152,8 @@ public class ZkSyncWallet {
     ///   - amount: Amount of the funds to be withdrawn.
     /// - Returns: Prepared remote call of transaction.
     public func deposit(_ to: String,
-                        zkSyncAddress: EthereumAddress,
                          amount: BigUInt) -> Promise<TransactionSendingResult> {
         deposit(to,
-                zkSyncAddress: zkSyncAddress,
                  amount: amount,
                  token: nil,
                  nonce: nil)
@@ -169,11 +167,9 @@ public class ZkSyncWallet {
     ///   - token: Token object supported by ZkSync.
     /// - Returns: Prepared remote call of transaction.
     public func deposit(_ to: String,
-                        zkSyncAddress: EthereumAddress,
                          amount: BigUInt,
                          token: Token) -> Promise<TransactionSendingResult> {
         deposit(to,
-                zkSyncAddress: zkSyncAddress,
                  amount: amount,
                  token: token,
                  nonce: nil)
@@ -188,7 +184,6 @@ public class ZkSyncWallet {
     ///   - nonce: Custom nonce value of the wallet.
     /// - Returns: Prepared remote call of transaction.
     public func deposit(_ to: String,
-                        zkSyncAddress: EthereumAddress,
                          amount: BigUInt,
                          token: Token?,
                          nonce: BigUInt?) -> Promise<TransactionSendingResult> {
@@ -207,6 +202,23 @@ public class ZkSyncWallet {
         }
         
         if tokenToUse.isETH {
+            let semaphore = DispatchSemaphore(value: 0)
+            
+            var zkSyncAddress: String = ""
+            
+            zkSync.zksMainContract { result in
+                switch result {
+                case .success(let address):
+                    zkSyncAddress = address
+                case .failure(let error):
+                    fatalError("Failed with error: \(error.localizedDescription)")
+                }
+                
+                semaphore.signal()
+            }
+            
+            semaphore.wait()
+            
             let inputs = [
                 ABI.Element.InOut(name: "_contractL2", type: .address),
                 ABI.Element.InOut(name: "_l2Value", type: .uint(bits: 256)),
@@ -246,9 +258,12 @@ public class ZkSyncWallet {
             return estimateAndSend(estimate, nonce: nonceToUse)
         } else {
             let inputs = [
-                ABI.Element.InOut(name: "_l1Receiver", type: .address),
-                ABI.Element.InOut(name: "_l2Token", type: .address),
-                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
+                ABI.Element.InOut(name: "_l2Receiver", type: .address),
+                ABI.Element.InOut(name: "_l1Token", type: .address),
+                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256)),
+                ABI.Element.InOut(name: "_l2TxGasLimit", type: .uint(bits: 256)),
+                ABI.Element.InOut(name: "_l2TxGasPerPubdataByte", type: .uint(bits: 256)),
+                ABI.Element.InOut(name: "_refundRecipient", type: .address)
             ]
             
             let function = ABI.Element.Function(name: "deposit",
@@ -260,9 +275,12 @@ public class ZkSyncWallet {
             let depositFunction: ABI.Element = .function(function)
             
             let parameters: [AnyObject] = [
-                //000EthereumAddress(from) as AnyObject,
+                EthereumAddress(to) as AnyObject,
                 EthereumAddress(tokenToUse.l1Address) as AnyObject,
-                amount as AnyObject
+                amount as AnyObject,
+                BigUInt(10000000) as AnyObject,
+                BigUInt(800) as AnyObject,
+                EthereumAddress(signer.address) as AnyObject
             ]
             
             // TODO: Verify calldata.

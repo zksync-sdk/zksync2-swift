@@ -27,10 +27,6 @@ class ContentViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.balance = decimalBalance
         }
-        
-        baseManager.zkSync.zksGetAllAccountBalances(baseManager.signer.address) { result in
-            print("result:", result)
-        }
     }
     
     func deploySmartAccount() {

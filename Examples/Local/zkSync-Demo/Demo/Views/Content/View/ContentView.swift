@@ -146,6 +146,12 @@ struct ContentView: View {
                 }
             }))
             
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "All Tokens", action: {
+                DispatchQueue.global().async {
+                    viewModel.getAllTokens()
+                }
+            }))
+            
             PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Token Balance", action: {
                 DispatchQueue.global().async {
                     viewModel.tokenBalance()

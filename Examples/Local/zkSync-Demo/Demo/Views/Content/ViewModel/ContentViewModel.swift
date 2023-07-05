@@ -63,7 +63,7 @@ class ContentViewModel: ObservableObject {
     }
     
     func deposit() {
-        depositManager.deposit(callback: {
+        depositManager.deposit(callback: { 
             self.refreshBalance()
         })
     }
@@ -94,6 +94,12 @@ class ContentViewModel: ObservableObject {
     
     func mintToken() {
         tokenManager.mintToken(callback: {
+            
+        })
+    }
+    
+    func getAllTokens() {
+        tokenManager.getAllTokens(callback: {
             
         })
     }

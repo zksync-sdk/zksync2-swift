@@ -72,7 +72,7 @@ struct ContentView: View {
                 }
             }))
             
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deposit via Wallet", action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.error, fullWidth: true, title: "Deposit via Wallet", action: {
                 DispatchQueue.global().async {
                     viewModel.depositViaWallet()
                 }
@@ -118,6 +118,12 @@ struct ContentView: View {
             PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deploy Smart Contract via Wallet", action: {
                 DispatchQueue.global().async {
                     viewModel.deploySmartContractViaWallet()
+                }
+            }))
+            
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Test Smart Contract", action: {
+                DispatchQueue.global().async {
+                    viewModel.testSmartContract()
                 }
             }))
             

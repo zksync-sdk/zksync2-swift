@@ -14,7 +14,7 @@ import web3swift
 import web3swift_zksync
 #endif
 
-extension DefaultEthereumProvider {
+public extension DefaultEthereumProvider {
     
     enum EthereumProviderError: Error {
         case invalidAddress

@@ -50,6 +50,12 @@ class ContentViewModel: ObservableObject {
         })
     }
     
+    func testSmartContract() {
+        smartContractManager.testSmartContract(callback: {
+            
+        })
+    }
+    
     func transferViaWallet() {
         transferManager.transferViaWallet(callback: {
             refreshBalance()

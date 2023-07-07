@@ -144,13 +144,6 @@ public class ZkSyncWallet {
         return estimateAndSend(estimate, nonce: nonceToUse)
     }
     
-    //----------------------
-    /// Withdraw native coins to L1 chain.
-    ///
-    /// - Parameters:
-    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
-    ///   - amount: Amount of the funds to be withdrawn.
-    /// - Returns: Prepared remote call of transaction.
     public func deposit(_ to: String,
                          amount: BigUInt) -> Promise<TransactionSendingResult> {
         deposit(to,
@@ -159,13 +152,6 @@ public class ZkSyncWallet {
                  nonce: nil)
     }
     
-    /// Withdraw native coins or tokens to L1 chain.
-    ///
-    /// - Parameters:
-    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
-    ///   - amount: Amount of the funds to be withdrawn.
-    ///   - token: Token object supported by ZkSync.
-    /// - Returns: Prepared remote call of transaction.
     public func deposit(_ to: String,
                          amount: BigUInt,
                          token: Token) -> Promise<TransactionSendingResult> {
@@ -175,14 +161,6 @@ public class ZkSyncWallet {
                  nonce: nil)
     }
     
-    /// Deposit native coins from L1 chain.
-    ///
-    /// - Parameters:
-    ///   - to: Address of the wallet in L1 to that funds will be withdrawn.
-    ///   - amount: Amount of the funds to be withdrawn.
-    ///   - token: Token object supported by ZkSync.
-    ///   - nonce: Custom nonce value of the wallet.
-    /// - Returns: Prepared remote call of transaction.
     public func deposit(_ to: String,
                          amount: BigUInt,
                          token: Token?,
@@ -238,7 +216,7 @@ public class ZkSyncWallet {
             let depositFunction: ABI.Element = .function(function)
             
             let parameters: [AnyObject] = [
-                zkSyncAddress as AnyObject,
+                EthereumAddress(zkSyncAddress)! as AnyObject,
                 amount as AnyObject,
                 Data() as AnyObject,
                 BigUInt(10000000) as AnyObject,
@@ -637,12 +615,12 @@ public class ZkSyncWallet {
         transactionOptions.type = .eip712
         transactionOptions.chainID = chainID
         transactionOptions.nonce = .manual(nonce)
+        transactionOptions.from = transaction.parameters.from
         transactionOptions.to = transaction.to
         transactionOptions.value = transaction.value
         transactionOptions.gasLimit = .manual(fee.gasLimit)
         transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
         transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
-        transactionOptions.from = transaction.parameters.from
         
         let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
         transactionOptions.gasLimit = .manual(gas)
@@ -672,7 +650,7 @@ public class ZkSyncWallet {
         prepared.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
         prepared.envelope.v = BigUInt(unmarshalledSignature.v)
         
-        guard let message = transaction.encode(for: .transaction) else {
+        guard let message = prepared.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
         }
         

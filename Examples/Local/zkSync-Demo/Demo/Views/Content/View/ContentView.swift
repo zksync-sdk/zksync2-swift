@@ -90,7 +90,7 @@ struct ContentView: View {
                 }
             }))
             
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Withdraw", action: {
+            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.error, fullWidth: true, title: "Withdraw", action: {
                 DispatchQueue.global().async {
                     viewModel.withdraw()
                 }

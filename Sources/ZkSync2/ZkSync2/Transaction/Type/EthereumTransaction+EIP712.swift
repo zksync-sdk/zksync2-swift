@@ -10,7 +10,7 @@ import BigInt
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 extension EthereumTransaction: Structurable {
@@ -29,7 +29,7 @@ extension EthereumTransaction: Structurable {
             ("gasPerPubdataByteLimit", envelope.EIP712Meta!.gasPerPubdata as Any),
             ("maxFeePerGas", envelope.parameters.maxFeePerGas as Any),
             ("maxPriorityFeePerGas", envelope.parameters.maxPriorityFeePerGas as Any),
-            ("paymaster", BigUInt(envelope.EIP712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
+            //111("paymaster", BigUInt(envelope.EIP712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
             ("nonce", envelope.nonce),
             ("value", envelope.parameters.value as Any),
             ("data", data),

@@ -8,7 +8,7 @@
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 public extension EthereumAddress {

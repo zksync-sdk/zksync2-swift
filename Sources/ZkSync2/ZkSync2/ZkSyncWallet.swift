@@ -17,20 +17,23 @@ import web3swift_zksync
 public class ZkSyncWallet {
     
     public let zkSync: ZkSync
+    public let ethereum: web3
     
     public let signer: EthSigner
     
     // FIXME: Is fee provider still needed?
     let feeProvider: ZkTransactionFeeProvider
     
-    public init(_ zkSync: ZkSync, ethSigner: EthSigner, feeToken: Token) {
+    public init(_ zkSync: ZkSync, ethereum: web3, ethSigner: EthSigner, feeToken: Token) {
         self.zkSync = zkSync
+        self.ethereum = ethereum
         self.signer = ethSigner
         self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: feeToken)
     }
     
-    public init(_ zkSync: ZkSync, ethSigner: EthSigner, feeProvider: ZkTransactionFeeProvider) {
+    public init(_ zkSync: ZkSync, ethereum: web3, ethSigner: EthSigner, feeProvider: ZkTransactionFeeProvider) {
         self.zkSync = zkSync
+        self.ethereum = ethereum
         self.signer = ethSigner
         self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: Token.ETH)
     }
@@ -165,129 +168,46 @@ public class ZkSyncWallet {
                          amount: BigUInt,
                          token: Token?,
                          nonce: BigUInt?) -> Promise<TransactionSendingResult> {
-        let tokenToUse: Token
-        if let token = token {
-            tokenToUse = token
-        } else {
-            tokenToUse = Token.ETH
-        }
+        let semaphore = DispatchSemaphore(value: 0)
         
-        let nonceToUse: BigUInt
-        if let nonce = nonce {
-            nonceToUse = nonce
-        } else {
-            nonceToUse = try! getNonce()
-        }
+        var zkSyncAddress: String = ""
         
-        if tokenToUse.isETH {
-            let semaphore = DispatchSemaphore(value: 0)
-            
-            var zkSyncAddress: String = ""
-            
-            zkSync.zksMainContract { result in
-                switch result {
-                case .success(let address):
-                    zkSyncAddress = address
-                case .failure(let error):
-                    fatalError("Failed with error: \(error.localizedDescription)")
-                }
-                
-                semaphore.signal()
+        zkSync.zksMainContract { result in
+            switch result {
+            case .success(let address):
+                zkSyncAddress = address
+            case .failure(let error):
+                fatalError("Failed with error: \(error.localizedDescription)")
             }
             
-            semaphore.wait()
-            
-            let inputs = [
-                ABI.Element.InOut(name: "_contractL2", type: .address),
-                ABI.Element.InOut(name: "_l2Value", type: .uint(bits: 256)),
-                ABI.Element.InOut(name: "_calldata", type: .dynamicBytes),
-                ABI.Element.InOut(name: "_l2GasLimit", type: .uint(bits: 256)),
-                ABI.Element.InOut(name: "_l2GasPerPubdataByteLimit", type: .uint(bits: 256)),
-                ABI.Element.InOut(name: "_factoryDeps", type: .array(type: .dynamicBytes, length: 0)),
-                ABI.Element.InOut(name: "_refundRecipient", type: .address)
-            ]
-            
-            let function = ABI.Element.Function(name: "requestL2Transaction",
-                                                inputs: inputs,
-                                                outputs: [],
-                                                constant: false,
-                                                payable: true)
-            
-            let depositFunction: ABI.Element = .function(function)
-            
-            let parameters: [AnyObject] = [
-                EthereumAddress(zkSyncAddress)! as AnyObject,
-                amount as AnyObject,
-                Data() as AnyObject,
-                BigUInt(10000000) as AnyObject,
-                BigUInt(800) as AnyObject,
-                []  as AnyObject,
-                EthereumAddress(signer.address) as AnyObject
-            ]
-            
-            // TODO: Verify calldata.
-            let calldata = depositFunction.encodeParameters(parameters)!
-            
-            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(to)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
-            
-            // TODO: Verify chainID value.
-            estimate.envelope.parameters.chainID = signer.domain.chainId
-            
-            return estimateAndSend(estimate, nonce: nonceToUse)
-        } else {
-            let inputs = [
-                ABI.Element.InOut(name: "_l2Receiver", type: .address),
-                ABI.Element.InOut(name: "_l1Token", type: .address),
-                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256)),
-                ABI.Element.InOut(name: "_l2TxGasLimit", type: .uint(bits: 256)),
-                ABI.Element.InOut(name: "_l2TxGasPerPubdataByte", type: .uint(bits: 256)),
-                ABI.Element.InOut(name: "_refundRecipient", type: .address)
-            ]
-            
-            let function = ABI.Element.Function(name: "deposit",
-                                                inputs: inputs,
-                                                outputs: [],
-                                                constant: false,
-                                                payable: true)
-            
-            let depositFunction: ABI.Element = .function(function)
-            
-            let parameters: [AnyObject] = [
-                EthereumAddress(to) as AnyObject,
-                EthereumAddress(tokenToUse.l1Address) as AnyObject,
-                amount as AnyObject,
-                BigUInt(10000000) as AnyObject,
-                BigUInt(800) as AnyObject,
-                EthereumAddress(signer.address) as AnyObject
-            ]
-            
-            // TODO: Verify calldata.
-            let calldata = depositFunction.encodeParameters(parameters)!
-            
-            var l2Bridge: String = ""
-            
-            let semaphore = DispatchSemaphore(value: 0)
-            
-            zkSync.zksGetBridgeContracts { result in
-                switch result {
-                case .success(let bridgeAddresses):
-                    l2Bridge = bridgeAddresses.l2Erc20DefaultBridge
-                case .failure(let error):
-                    fatalError("Failed with error: \(error.localizedDescription)")
-                }
-                
-                semaphore.signal()
-            }
-            
-            semaphore.wait()
-            
-            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
-            
-            // TODO: Verify chainID value.
-            estimate.envelope.parameters.chainID = signer.domain.chainId
-            
-            return estimateAndSend(estimate, nonce: nonceToUse)
+            semaphore.signal()
         }
+        
+        semaphore.wait()
+        
+        let zkSyncContract = ethereum.contract(
+            Web3.Utils.IZkSync,
+            at: EthereumAddress(zkSyncAddress)
+        )!
+        
+        let l1ERC20Bridge = zkSync.web3.contract(
+            Web3.Utils.IL1Bridge,
+            at: EthereumAddress(signer.address)
+        )!
+        
+        let defaultEthereumProvider = DefaultEthereumProvider(
+            ethereum,
+            l1ERC20Bridge: l1ERC20Bridge,
+            zkSyncContract: zkSyncContract,
+            gasProvider: DefaultGasProvider()
+        )
+        
+        return try! defaultEthereumProvider.deposit(
+            with: token ?? Token.ETH,
+            amount: amount,
+            operatorTips: BigUInt(0),
+            to: to
+        )
     }
     
     /// Withdraw native coins to L1 chain.

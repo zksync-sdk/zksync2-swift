@@ -276,7 +276,7 @@ public class DefaultEthereumProvider: EthereumProvider {
         
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .legacy
-        transactionOptions.from = EthereumAddress(contractAddress)!
+        transactionOptions.from = EthereumAddress(l1ERC20BridgeAddress)!
         transactionOptions.to = zkSyncContract.contract.address
         transactionOptions.nonce = .manual(nonce)
         transactionOptions.gasLimit = .manual(gasLimit)

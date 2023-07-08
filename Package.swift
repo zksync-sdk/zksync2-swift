@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "ZkSync2",
+    name: "zkSync2-swift",
     platforms: [
         .iOS(.v13)
     ],

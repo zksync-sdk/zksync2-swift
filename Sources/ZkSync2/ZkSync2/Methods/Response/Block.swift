@@ -6,11 +6,11 @@
 //
 
 import Foundation
-//111#if canImport(web3swift)
-//import web3swift
-//#else
-//import web3swift_zksync2
-//#endif
+#if canImport(web3swift)
+import web3swift
+#else
+import web3swift_zksync2
+#endif
 import BigInt
 
 public struct Block: Decodable {
@@ -25,7 +25,7 @@ public struct Block: Decodable {
     
     let sha3Uncles: Data
     
-//    var logsBloom: EthereumBloomFilter? = nil
+    var logsBloom: EthereumBloomFilter? = nil
     
     let transactionsRoot: Data
     
@@ -33,7 +33,7 @@ public struct Block: Decodable {
     
     let receiptsRoot: Data
     
-//    var miner: EthereumAddress? = nil
+    var miner: EthereumAddress? = nil
     
     let difficulty: BigUInt
     
@@ -51,9 +51,9 @@ public struct Block: Decodable {
     
     let timestamp: Date
     
-//    let transactions: [TransactionInBlock]
+    let transactions: [TransactionInBlock]
     
-//    let uncles: [Data]
+    let uncles: [Data]
     
     let l1BatchNumber: BigUInt
     
@@ -95,7 +95,7 @@ public struct Block: Decodable {
         sha3Uncles = try container.decodeHex(Data.self, forKey: .sha3Uncles)
         
         if let logsBloomData = try? container.decodeHex(Data.self, forKey: .logsBloom) {
-//            logsBloom = EthereumBloomFilter(logsBloomData)
+            logsBloom = EthereumBloomFilter(logsBloomData)
         }
         
         transactionsRoot = try container.decodeHex(Data.self, forKey: .transactionsRoot)
@@ -103,7 +103,7 @@ public struct Block: Decodable {
         receiptsRoot = try container.decodeHex(Data.self, forKey: .receiptsRoot)
         
         if let minerAddress = try? container.decode(String.self, forKey: .miner) {
-//            miner = EthereumAddress(minerAddress)
+            miner = EthereumAddress(minerAddress)
         }
         
         difficulty = try container.decodeHex(BigUInt.self, forKey: .difficulty)
@@ -114,12 +114,12 @@ public struct Block: Decodable {
         gasUsed = try container.decodeHex(BigUInt.self, forKey: .gasUsed)
         baseFeePerGas = try? container.decodeHex(BigUInt.self, forKey: .baseFeePerGas)
         timestamp = try container.decodeHex(Date.self, forKey: .timestamp)
-//        transactions = try container.decode([TransactionInBlock].self, forKey: .transactions)
+        transactions = try container.decode([TransactionInBlock].self, forKey: .transactions)
         
-//        uncles = try container.decode([String].self, forKey: .uncles).map {
-//            guard let data = Data.fromHex($0) else { throw Web3Error.dataError }
-//            return data
-//        }
+        uncles = try container.decode([String].self, forKey: .uncles).map {
+            guard let data = Data.fromHex($0) else { throw Web3Error.dataError }
+            return data
+        }
         
         l1BatchNumber = try container.decodeHex(BigUInt.self, forKey: .l1BatchNumber)
         l1BatchTimestamp = try container.decodeHex(BigUInt.self, forKey: .l1BatchTimestamp)

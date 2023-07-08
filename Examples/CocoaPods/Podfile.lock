@@ -19,15 +19,12 @@ PODS:
     - PromiseKit (= 6.15.3)
     - secp256k1.c (~> 0.1)
     - Starscream (= 4.0.4)
+  - zkSync2-swift (0.0.2-alpha.3):
+    - Alamofire (~> 5.0)
+    - web3swift-zksync2 (= 2.6.5-zksync)
 
 DEPENDENCIES:
-  - Alamofire (= 5.7.1)
-  - BigInt (= 5.2.0)
-  - CryptoSwift (= 1.4.3)
-  - PromiseKit (= 6.15.3)
-  - secp256k1.c (= 0.1.2)
-  - Starscream (= 4.0.4)
-  - web3swift-zksync2 (from `https://github.com/zksync-sdk/web3swift.git`, branch `v2.6.5-zksync`)
+  - zkSync2-swift (~> 0.0.2-alpha.3)
 
 SPEC REPOS:
   trunk:
@@ -37,16 +34,8 @@ SPEC REPOS:
     - PromiseKit
     - secp256k1.c
     - Starscream
-
-EXTERNAL SOURCES:
-  web3swift-zksync2:
-    :branch: v2.6.5-zksync
-    :git: https://github.com/zksync-sdk/web3swift.git
-
-CHECKOUT OPTIONS:
-  web3swift-zksync2:
-    :commit: e2fd80c79826fac9b05a9b1263fb025e7a31fd44
-    :git: https://github.com/zksync-sdk/web3swift.git
+    - web3swift-zksync2
+    - zkSync2-swift
 
 SPEC CHECKSUMS:
   Alamofire: 0123a34370cb170936ae79a8df46cc62b2edeb88
@@ -56,7 +45,8 @@ SPEC CHECKSUMS:
   secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   web3swift-zksync2: c973c2a6951c780c7df6e8a8d12797eaa88ed19d
+  zkSync2-swift: 3d1626ba4950e29cf2d1040496f2656c446fa309
 
-PODFILE CHECKSUM: f7bcaf64f3c2fde1b3e071f21cd3b019cb07e184
+PODFILE CHECKSUM: f32efaad3e27cf2cb9f8518c57330841059812b8
 
 COCOAPODS: 1.12.0

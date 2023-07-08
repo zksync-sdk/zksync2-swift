@@ -38,6 +38,8 @@
 		FA8FD8FC2A4F986C00D0EB17 /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8FB2A4F986C00D0EB17 /* View+Ext.swift */; };
 		FA8FD9002A4F9FC700D0EB17 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8FF2A4F9FC700D0EB17 /* LoadingView.swift */; };
 		FA8FD9022A4FA08400D0EB17 /* UIControl+ActivityIndicatorView .swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD9012A4FA08400D0EB17 /* UIControl+ActivityIndicatorView .swift */; };
+		FAC997462A59FB9F0067AA49 /* zkSync2_swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAC997452A59FB9F0067AA49 /* zkSync2_swift.framework */; };
+		FAC997472A59FB9F0067AA49 /* zkSync2_swift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FAC997452A59FB9F0067AA49 /* zkSync2_swift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FACC39562A501C7500DDE38D /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FACC394F2A501C7500DDE38D /* Colors.xcassets */; };
 		FACC39572A501C7500DDE38D /* zkSync_DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39502A501C7500DDE38D /* zkSync_DemoApp.swift */; };
 		FACC39582A501C7500DDE38D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FACC39512A501C7500DDE38D /* Assets.xcassets */; };
@@ -50,19 +52,17 @@
 		FACC396A2A501CAC00DDE38D /* SmartContractManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39622A501CAC00DDE38D /* SmartContractManager.swift */; };
 		FACC396B2A501CAC00DDE38D /* SmartAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39632A501CAC00DDE38D /* SmartAccountManager.swift */; };
 		FACC396C2A501CAC00DDE38D /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39642A501CAC00DDE38D /* TransferManager.swift */; };
-		FACC3A2A2A557D5500DDE38D /* ZkSync2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACC3A292A557D5500DDE38D /* ZkSync2.framework */; };
-		FACC3A2B2A557D5500DDE38D /* ZkSync2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FACC3A292A557D5500DDE38D /* ZkSync2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FADECD772A10F7F5004E419A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADECD762A10F7F5004E419A /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		FACC3A2C2A557D5500DDE38D /* Embed Frameworks */ = {
+		FAC997482A59FB9F0067AA49 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				FACC3A2B2A557D5500DDE38D /* ZkSync2.framework in Embed Frameworks */,
+				FAC997472A59FB9F0067AA49 /* zkSync2_swift.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -103,6 +103,8 @@
 		FA8FD8FB2A4F986C00D0EB17 /* View+Ext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "View+Ext.swift"; sourceTree = "<group>"; };
 		FA8FD8FF2A4F9FC700D0EB17 /* LoadingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		FA8FD9012A4FA08400D0EB17 /* UIControl+ActivityIndicatorView .swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIControl+ActivityIndicatorView .swift"; sourceTree = "<group>"; };
+		FAC997422A59FB340067AA49 /* zkSync2_swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = zkSync2_swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		FAC997452A59FB9F0067AA49 /* zkSync2_swift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = zkSync2_swift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FACC394F2A501C7500DDE38D /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		FACC39502A501C7500DDE38D /* zkSync_DemoApp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = zkSync_DemoApp.swift; sourceTree = "<group>"; };
 		FACC39512A501C7500DDE38D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -127,7 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8412AB908007CD12AD22A01D /* Pods_zkSync_Demo.framework in Frameworks */,
-				FACC3A2A2A557D5500DDE38D /* ZkSync2.framework in Frameworks */,
+				FAC997462A59FB9F0067AA49 /* zkSync2_swift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +139,8 @@
 		631A0F863415E3845F25905A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FAC997452A59FB9F0067AA49 /* zkSync2_swift.framework */,
+				FAC997422A59FB340067AA49 /* zkSync2_swift.framework */,
 				FACC3A292A557D5500DDE38D /* ZkSync2.framework */,
 				733BCEFC1510DADA690FB969 /* Pods_zkSync_Demo.framework */,
 			);
@@ -386,7 +390,7 @@
 				FADECD6E2A10F7F5004E419A /* Frameworks */,
 				FADECD6F2A10F7F5004E419A /* Resources */,
 				EE85483595BF1AE962A5B789 /* [CP] Embed Pods Frameworks */,
-				FACC3A2C2A557D5500DDE38D /* Embed Frameworks */,
+				FAC997482A59FB9F0067AA49 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

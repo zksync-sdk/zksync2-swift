@@ -8,7 +8,7 @@ workspace 'zkSync-Demo'
 project 'zkSync-Demo.xcodeproj'
 project '../../Sources/ZkSync2/ZkSync2.xcodeproj'
 
-target 'ZkSync2' do
+target 'zkSync2-swift' do
   project '../../Sources/ZkSync2/ZkSync2.xcodeproj'
   
   pod 'BigInt', '5.2.0'

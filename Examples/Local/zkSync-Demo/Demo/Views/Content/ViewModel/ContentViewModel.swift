@@ -6,8 +6,8 @@
 //
 
 import Foundation
-#if canImport(ZkSync2)
-import ZkSync2
+#if canImport(zkSync2_swift)
+import zkSync2_swift
 #endif
 
 class ContentViewModel: ObservableObject {

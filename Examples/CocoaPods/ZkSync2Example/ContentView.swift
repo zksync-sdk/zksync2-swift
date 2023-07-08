@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import web3swift_zksync
-import ZkSync2
+import web3swift_zksync2
+import zkSync2_swift
 
 struct ContentView: View {
     

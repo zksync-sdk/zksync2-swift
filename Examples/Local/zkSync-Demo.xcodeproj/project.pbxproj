@@ -38,8 +38,6 @@
 		FA8FD8FC2A4F986C00D0EB17 /* View+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8FB2A4F986C00D0EB17 /* View+Ext.swift */; };
 		FA8FD9002A4F9FC700D0EB17 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8FF2A4F9FC700D0EB17 /* LoadingView.swift */; };
 		FA8FD9022A4FA08400D0EB17 /* UIControl+ActivityIndicatorView .swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD9012A4FA08400D0EB17 /* UIControl+ActivityIndicatorView .swift */; };
-		FAC997462A59FB9F0067AA49 /* zkSync2_swift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FAC997452A59FB9F0067AA49 /* zkSync2_swift.framework */; };
-		FAC997472A59FB9F0067AA49 /* zkSync2_swift.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = FAC997452A59FB9F0067AA49 /* zkSync2_swift.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		FACC39562A501C7500DDE38D /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FACC394F2A501C7500DDE38D /* Colors.xcassets */; };
 		FACC39572A501C7500DDE38D /* zkSync_DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39502A501C7500DDE38D /* zkSync_DemoApp.swift */; };
 		FACC39582A501C7500DDE38D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FACC39512A501C7500DDE38D /* Assets.xcassets */; };
@@ -54,20 +52,6 @@
 		FACC396C2A501CAC00DDE38D /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39642A501CAC00DDE38D /* TransferManager.swift */; };
 		FADECD772A10F7F5004E419A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADECD762A10F7F5004E419A /* ContentView.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		FAC997482A59FB9F0067AA49 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				FAC997472A59FB9F0067AA49 /* zkSync2_swift.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		6DB940447B8DD4B43A8076F6 /* Pods-zkSync-Demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo.debug.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo/Pods-zkSync-Demo.debug.xcconfig"; sourceTree = "<group>"; };
@@ -129,7 +113,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8412AB908007CD12AD22A01D /* Pods_zkSync_Demo.framework in Frameworks */,
-				FAC997462A59FB9F0067AA49 /* zkSync2_swift.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -390,7 +373,6 @@
 				FADECD6E2A10F7F5004E419A /* Frameworks */,
 				FADECD6F2A10F7F5004E419A /* Resources */,
 				EE85483595BF1AE962A5B789 /* [CP] Embed Pods Frameworks */,
-				FAC997482A59FB9F0067AA49 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

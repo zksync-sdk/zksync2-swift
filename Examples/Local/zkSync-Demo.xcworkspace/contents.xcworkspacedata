@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../../Sources/ZkSync2/ZkSync2.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:zkSync-Demo.xcodeproj">
    </FileRef>
    <FileRef

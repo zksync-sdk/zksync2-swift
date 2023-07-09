@@ -19,12 +19,12 @@ PODS:
     - PromiseKit (= 6.15.3)
     - secp256k1.c (~> 0.1)
     - Starscream (= 4.0.4)
-  - zkSync2-swift (0.0.2-alpha.6):
+  - zkSync2-swift (0.0.2-beta.2):
     - Alamofire (~> 5.0)
     - web3swift-zksync2 (= 2.6.5-zksync2)
 
 DEPENDENCIES:
-  - zkSync2-swift (~> 0.0.2-alpha.6)
+  - zkSync2-swift (~> 0.0.2-beta.2)
 
 SPEC REPOS:
   trunk:
@@ -45,8 +45,8 @@ SPEC CHECKSUMS:
   secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   web3swift-zksync2: 6471ef28140592e65099748068ebf3437f46af50
-  zkSync2-swift: 0a470cfb63919f4e5a0e24c6a1aff90ee132968b
+  zkSync2-swift: 7c9779ca7c96c36d80a80b1ebdb1ae90df301b8d
 
-PODFILE CHECKSUM: 1a8c6778833b7be28dc99a1f913857da3bff82fe
+PODFILE CHECKSUM: 8ff08cfd9fa0ad912d473c8606c0c0eba42b6576
 
 COCOAPODS: 1.12.0

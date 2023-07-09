@@ -16,7 +16,7 @@ let package = Package(
     dependencies: [
         .package(
             url: "https://github.com/zksync-sdk/web3swift.git",
-            .branch("v2.6.5-zksync")
+            .branch("2.6.5-zksync2")
         ),
         .package(
             url: "https://github.com/Alamofire/Alamofire.git",

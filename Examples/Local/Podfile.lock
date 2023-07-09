@@ -45,7 +45,7 @@ EXTERNAL SOURCES:
 
 CHECKOUT OPTIONS:
   web3swift-zksync2:
-    :commit: d18f523e6d121979ce7d83fa74f83bbc3ac84d54
+    :commit: e08de937ced3ecd635f18a4f9ad2dae0520ab31b
     :git: https://github.com/zksync-sdk/web3swift.git
 
 SPEC CHECKSUMS:

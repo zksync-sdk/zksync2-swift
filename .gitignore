@@ -41,3 +41,4 @@ Pods/
 .swiftpm/
 
 # Project
+Examples/Local/zkSync-Demo/Demo/App/Config/Testnet/Config.swift

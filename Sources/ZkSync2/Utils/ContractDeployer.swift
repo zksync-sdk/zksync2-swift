@@ -6,22 +6,13 @@
 //
 
 import Foundation
-import CryptoKit
 import BigInt
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
-
-extension Digest {
-    var bytes: [UInt8] { Array(makeIterator()) }
-    var data: Data { Data(bytes) }
-    
-    var hexStr: String {
-        bytes.map { String(format: "%02X", $0) }.joined()
-    }
-}
 
 public class ContractDeployer {
     
@@ -226,26 +217,21 @@ public class ContractDeployer {
     }
     
     public static func hashBytecode(_ bytecode: Data) -> Data {
-        var bytecodeHash = Web3.Utils.sha256(bytecode)
-        
         if bytecode.count % 32 != 0 {
             fatalError("Bytecode length in bytes must be divisible by 32")
         }
-        
+
         let length = BigUInt(bytecode.count / 32)
         if length > ContractDeployer.MaxBytecodeSize {
             fatalError("Bytecode length must be less than 2^16 bytes")
         }
-        
-        let codeHashVersion = Data(fromHex: "0x0100")!
+
+        let codeHashVersion = Data(hex: "0x0100")
         let bytecodeLength = length.data2
-        
-        bytecodeHash?.replaceSubrange(0...3, with: Data(codeHashVersion + bytecodeLength))
-        
-        guard let bytecodeHash = bytecodeHash else {
-            fatalError("Bytecode hash should be valid.")
-        }
-        
+
+        var bytecodeHash = bytecode.sha256()
+        bytecodeHash.replaceSubrange(0...3, with: Data(codeHashVersion + bytecodeLength))
+
         return bytecodeHash
     }
 }

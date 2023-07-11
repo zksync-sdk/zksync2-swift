@@ -9,6 +9,7 @@ import Foundation
 import BigInt
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -106,7 +107,7 @@ public class PrivateKeyEthSigner: EthSigner {
             guard let personalMessageHash = Web3.Utils.hashPersonalMessage(message) else {
                 fatalError("Unable to hash message.")
             }
-            
+
             messageHash = personalMessageHash
         } else {
             messageHash = message
@@ -117,12 +118,12 @@ public class PrivateKeyEthSigner: EthSigner {
         }
         
         let address = Web3.Utils.hashECRecover(hash: messageHash, signature: signatureData)
-        
+
 #if DEBUG
         print("EthereumAddress: \(ethereumAddress)")
         print("Address: \(String(describing: address))")
 #endif
-        
+
         return ethereumAddress == address
     }
     

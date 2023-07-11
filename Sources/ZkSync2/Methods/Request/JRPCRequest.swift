@@ -8,6 +8,7 @@
 import Foundation
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif

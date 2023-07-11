@@ -10,7 +10,7 @@ import BigInt
 
 public protocol ContractGasProvider {
     
-    var gasPrice: BigUInt { get }
+    func getGasPrice() async -> BigUInt
     
     var gasLimit: BigUInt { get }
 }
@@ -25,6 +25,10 @@ public struct DefaultGasProvider: ContractGasProvider {
         self.gasPrice = gasPrice
         self.gasLimit = gasLimit
     }
+    
+    public func getGasPrice() async -> BigUInt {
+        return gasPrice
+    }
 }
 
 struct StaticGasProvider: ContractGasProvider {
@@ -32,4 +36,8 @@ struct StaticGasProvider: ContractGasProvider {
     var gasPrice: BigUInt
     
     var gasLimit: BigUInt
+    
+    func getGasPrice() async -> BigUInt {
+        return gasPrice
+    }
 }

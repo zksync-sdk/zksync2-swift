@@ -10,6 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -21,7 +22,7 @@ protocol EthereumProvider {
     ///   - token: Token object supported by ZkSync.
     ///   - limit: Maximum amount to approve for ZkSync contract.
     func approveDeposits(with token: Token,
-                         limit: BigUInt?) throws -> Promise<TransactionSendingResult>
+                         limit: BigUInt?) async throws -> CodableTransaction
     
     /// Send transfer transaction. This is the regular transfer of ERC20 token.
     /// - Parameters:
@@ -30,7 +31,7 @@ protocol EthereumProvider {
     ///   - address: Tokens receiver address.
     func transfer(with token: Token,
                   amount: BigUInt,
-                  to address: String) throws -> Promise<TransactionSendingResult>
+                  to address: String) async throws -> [String: Any]
     
     /// Get base cost for L2 transaction.
     /// - Parameters:
@@ -39,7 +40,7 @@ protocol EthereumProvider {
     ///   - gasPrice: Gas price for L2 transaction.
     func getBaseCost(_ gasLimit: BigUInt,
                      gasPerPubdataByte: BigUInt,
-                     gasPrice: BigUInt?) throws -> Promise<[String: Any]>
+                     gasPrice: BigUInt?) async throws -> [String: Any]
     
     /// Send request execute transaction to ZkSync contract.
     /// - Parameters:
@@ -58,7 +59,7 @@ protocol EthereumProvider {
                         factoryDeps: [Data]?,
                         operatorTips: BigUInt?,
                         gasPrice: BigUInt?,
-                        refundRecipient: String) throws -> Promise<TransactionSendingResult>
+                        refundRecipient: String) async throws -> [String: Any]
     
     /// Send deposit transaction to ZkSync contract. For ERC20 token must be approved beforehand
     /// using `EthereumProvider.approveDeposits()`.
@@ -70,7 +71,7 @@ protocol EthereumProvider {
     func deposit(with token: Token,
                  amount: BigUInt,
                  operatorTips: BigUInt,
-                 to userAddress: String) throws -> Promise<TransactionSendingResult>
+                 to userAddress: String) async throws -> [String: Any]
     
     /// Send withdraw transaction to ZkSync contract.
     /// - Parameters:
@@ -80,16 +81,6 @@ protocol EthereumProvider {
     func withdraw(with token: Token,
                   amount: BigUInt,
                   from userAddress: String) throws -> Promise<TransactionSendingResult>
-    
-    /// Check if deposit is approved.
-    /// - Parameters:
-    ///   - token: Token object supported by ZkSync.
-    ///   - address: Address of the account who can deposit tokens from yours.
-    ///   - threshold: Minimum threshold of approved tokens.
-    ///   - returns: Boolean value that denotes whether deposit was approved or not.
-    func isDepositApproved(with token: Token,
-                           address: String,
-                           threshold: BigUInt?) throws -> Bool
     
     /// ZkSync Bridge for ERC20 smart-contract address in Ethereum blockchain.
     var l1ERC20BridgeAddress: String { get }

@@ -29,15 +29,15 @@ public struct Fee: Decodable {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         
         let gasLimit = try values.decode(String.self, forKey: .gasLimit)
-        self.gasLimit = BigUInt(fromHex: gasLimit)!
+        self.gasLimit = BigUInt(gasLimit, radix: 16)!
         
         let gasPerPubdataLimit = try values.decode(String.self, forKey: .gasPerPubdataLimit)
-        self.gasPerPubdataLimit = BigUInt(fromHex: gasPerPubdataLimit)!
+        self.gasPerPubdataLimit = BigUInt(gasPerPubdataLimit, radix: 16)!
         
         let maxFeePerGas = try values.decode(String.self, forKey: .maxFeePerGas)
-        self.maxFeePerGas = BigUInt(fromHex: maxFeePerGas)!
+        self.maxFeePerGas = BigUInt(maxFeePerGas, radix: 16)!
         
         let maxPriorityFeePerGas = try values.decode(String.self, forKey: .maxPriorityFeePerGas)
-        self.maxPriorityFeePerGas = BigUInt(fromHex: maxPriorityFeePerGas)!
+        self.maxPriorityFeePerGas = BigUInt(maxPriorityFeePerGas, radix: 16)!
     }
 }

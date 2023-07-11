@@ -10,6 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -31,7 +32,7 @@ class NonceHolder {
         self.credentials = credentials
     }
     
-    func getDeploymentNonce(_ address: EthereumAddress) -> Promise<Data> {
+    func getDeploymentNonce(_ address: EthereumAddress) async -> Data {
         let inputs = [
             ABI.Element.InOut(name: "_address", type: .address),
         ]
@@ -52,23 +53,16 @@ class NonceHolder {
             fatalError("Failed to encode function.")
         }
         
-        var transactionOptions = TransactionOptions.defaultOptions
-        transactionOptions.from = address
-        transactionOptions.to = contractAddress
-        
         // TODO: Is gasLimit and gasPrice are needed?
         // transactionOptions.gasLimit = .manual(contractGasProvider.gasLimit)
         // transactionOptions.gasPrice = .manual(contractGasProvider.gasPrice)
         
-        let ethereumParameters = EthereumParameters(from: transactionOptions)
-        let transaction = EthereumTransaction(// type: ,
-                                              to: contractAddress,
-                                              // nonce: ,
-                                              // chainID: ,
-                                              // value: ,
-                                              data: encodedFunction,
-                                              parameters: ethereumParameters)
+        var transaction = CodableTransaction(
+            to: contractAddress,
+            data: encodedFunction
+        )
+        transaction.from = address
 
-        return zkSync.web3.eth.callPromise(transaction, transactionOptions: transactionOptions)
+        return try! await zkSync.web3.eth.callTransaction(transaction)
     }
 }

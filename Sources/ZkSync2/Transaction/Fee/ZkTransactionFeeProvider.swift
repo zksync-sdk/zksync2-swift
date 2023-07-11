@@ -10,15 +10,16 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
 
 public protocol ZkTransactionFeeProvider: ContractGasProvider {
     
-    func getFee(for transaction: EthereumTransaction) -> Promise<Fee>
+    func getFee(for transaction: CodableTransaction) -> Promise<Fee>
     
-    func getGasLimit(for transaction: EthereumTransaction) -> Promise<BigUInt>
+    func getGasLimit(for transaction: CodableTransaction) -> Promise<BigUInt>
     
     func getFeeToken() -> Token
 }

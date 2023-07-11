@@ -10,25 +10,26 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
 
 public class ZkSyncImpl: ZkSync {
     
-    public var web3: web3
+    public var web3: Web3
     
     let transport: Transport
     
-    public init(_ providerURL: URL) {
-        self.web3 = try! Web3.new(providerURL)
+    public init(_ providerURL: URL) async {
+        self.web3 = try! await Web3.new(providerURL)
         self.transport = HTTPTransport(self.web3.provider.url)
     }
     
-    public func zksEstimateFee(_ transaction: EthereumTransaction,
+    public func zksEstimateFee(_ transaction: CodableTransaction,
                         completion: @escaping (Result<Fee>) -> Void) {
-        let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
+        let parameters: [JRPC.Parameter] = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
         ]
         
         transport.send(method: "zks_estimateFee",
@@ -36,7 +37,7 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    public func zksEstimateFeePromise(_ transaction: EthereumTransaction) -> Promise<Fee> {
+    public func zksEstimateFeePromise(_ transaction: CodableTransaction) -> Promise<Fee> {
         Promise { seal in
             zksEstimateFee(transaction) { fee in
                 seal.resolve(fee)
@@ -132,12 +133,12 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    public func ethEstimateGas(_ transaction: EthereumTransaction,
+    public func ethEstimateGas(_ transaction: CodableTransaction,
                         completion: @escaping (Result<BigUInt>) -> Void) {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
         ]
-        
+
         transport.send(method: "eth_estimateGas",
                        parameters: parameters,
                        completion: { (result: Result<String>) in

@@ -9,32 +9,31 @@ import Foundation
 import BigInt
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
 
-extension EthereumTransaction: Structurable {
+extension CodableTransaction: Structurable {
     public func getTypeName() -> String {
         "Transaction"
     }
     
     public func eip712types() -> [EIP712.`Type`] {
-        let envelope = envelope as! EIP712Envelope
-        
         return [
-            ("txType", EIP712.UInt256(envelope.type.rawValue)),
-            ("from", BigUInt(envelope.from!.addressData)),
-            ("to", BigUInt(envelope.to.addressData)),
-            ("gasLimit", envelope.parameters.gasLimit!),
-            ("gasPerPubdataByteLimit", envelope.EIP712Meta!.gasPerPubdata as Any),
-            ("maxFeePerGas", envelope.parameters.maxFeePerGas as Any),
-            ("maxPriorityFeePerGas", envelope.parameters.maxPriorityFeePerGas as Any),
-            ("paymaster", BigUInt(envelope.EIP712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
-            ("nonce", envelope.nonce),
-            ("value", envelope.parameters.value as Any),
+            ("txType", EIP712.UInt256(type.rawValue)),
+            ("from", BigUInt(from!.addressData)),
+            ("to", BigUInt(to.addressData)),
+            ("gasLimit", gasLimit),
+//333            ("gasPerPubdataByteLimit", EIP712Meta!.gasPerPubdata as Any),
+            ("maxFeePerGas", maxFeePerGas as Any),
+            ("maxPriorityFeePerGas", maxPriorityFeePerGas as Any),
+//333            ("paymaster", BigUInt(EIP712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
+            ("nonce", nonce),
+            ("value", value as Any),
             ("data", data),
-            ("factoryDeps", envelope.EIP712Meta?.factoryDeps ?? []),
-            ("paymasterInput", envelope.parameters.EIP712Meta?.paymasterParams?.paymasterInput ?? Data())
+//333            ("factoryDeps", EIP712Meta?.factoryDeps ?? []),
+//            ("paymasterInput", EIP712Meta?.paymasterParams?.paymasterInput ?? Data())
         ]
     }
 }

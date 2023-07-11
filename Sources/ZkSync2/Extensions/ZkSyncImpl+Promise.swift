@@ -10,6 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -57,7 +58,7 @@ public extension ZkSyncImpl {
         }
     }
     
-    func zksEstimateFee(_ transaction: EthereumTransaction) -> Promise<Fee> {
+    func zksEstimateFee(_ transaction: CodableTransaction) -> Promise<Fee> {
         Promise { seal in
             zksEstimateFee(transaction) {
                 seal.resolve($0)
@@ -73,7 +74,7 @@ public extension ZkSyncImpl {
         }
     }
     
-    func ethEstimateGas(_ transaction: EthereumTransaction) -> Promise<BigUInt> {
+    func ethEstimateGas(_ transaction: CodableTransaction) -> Promise<BigUInt> {
         Promise { seal in
             ethEstimateGas(transaction) {
                 seal.resolve($0)

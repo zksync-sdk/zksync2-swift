@@ -12,14 +12,14 @@ import zkSync2_swift
 #endif
 
 class ContentViewModel: ObservableObject {
-    let baseManager = BaseManager()
-    let smartContractManager = SmartContractManager()
-    let smartAccountManager = SmartAccountManager()
-    let paymasterManager = PaymasterManager()
-    let transferManager = TransferManager()
-    let depositManager = DepositManager()
-    let withdrawManager = WithdrawManager()
-    let tokenManager = TokenManager()
+//222    let baseManager = BaseManager()
+//    let smartContractManager = SmartContractManager()
+//    let smartAccountManager = SmartAccountManager()
+//    let paymasterManager = PaymasterManager()
+//    let transferManager = TransferManager()
+//    let depositManager = DepositManager()
+//    let withdrawManager = WithdrawManager()
+//    let tokenManager = TokenManager()
     
     @Published var balance: Decimal = 0
     
@@ -30,96 +30,96 @@ class ContentViewModel: ObservableObject {
     let tokenAddress = "0xbc6b677377598a79fa1885e02df1894b05bc8b33"
     
     func refreshBalance() {
-        let balance = try! baseManager.wallet.getBalance().wait()
-        
-        let decimalBalance = Token.ETH.intoDecimal(balance)
-        
-        DispatchQueue.main.async {
-            self.balance = decimalBalance
-        }
+//222        let balance = try! baseManager.wallet.getBalance().wait()
+//
+//        let decimalBalance = Token.ETH.intoDecimal(balance)
+//
+//        DispatchQueue.main.async {
+//            self.balance = decimalBalance
+//        }
     }
     
     func deploySmartAccount() {
-        smartAccountManager.deploySmartAccount(tokenAddress: tokenAddress, callback: {
-            
-        })
+//222        smartAccountManager.deploySmartAccount(tokenAddress: tokenAddress, callback: {
+//
+//        })
     }
     
     func deploySmartContract() {
-        smartContractManager.deploySmartContract(callback: {
-            
-        })
+//222        smartContractManager.deploySmartContract(callback: {
+//
+//        })
     }
     
     func deploySmartContractViaWallet() {
-        smartContractManager.deploySmartContractViaWallet(callback: {
-            
-        })
+//222        smartContractManager.deploySmartContractViaWallet(callback: {
+//
+//        })
     }
     
     func testSmartContract() {
-        smartContractManager.testSmartContract(smartContractAddress: smartContractAddress, callback: {
-            
-        })
+//222        smartContractManager.testSmartContract(smartContractAddress: smartContractAddress, callback: {
+//
+//        })
     }
     
     func transfer() {
-        transferManager.transfer(toAddress: transferToAddress, value: value, callback: {
-            refreshBalance()
-        })
+//222        transferManager.transfer(toAddress: transferToAddress, value: value, callback: {
+//            refreshBalance()
+//        })
     }
     
     func transferViaWallet() {
-        transferManager.transferViaWallet(toAddress: transferToAddress, value: value, callback: {
-            refreshBalance()
-        })
+//222        transferManager.transferViaWallet(toAddress: transferToAddress, value: value, callback: {
+//            refreshBalance()
+//        })
     }
     
     func deposit() {
-        depositManager.deposit(callback: { 
-            self.refreshBalance()
-        })
+//222        depositManager.deposit(callback: {
+//            self.refreshBalance()
+//        })
     }
     
     func depositViaWallet() {
-        depositManager.depositViaWallet(callback: {
-            self.refreshBalance()
-        })
+//222        depositManager.depositViaWallet(callback: {
+//            self.refreshBalance()
+//        })
     }
     
     func withdraw() {
-        withdrawManager.withdraw(callback: {
-            self.refreshBalance()
-        })
+//222        withdrawManager.withdraw(callback: {
+//            self.refreshBalance()
+//        })
     }
     
     func withdrawViaWallet() {
-        withdrawManager.withdrawViaWallet(callback: {
-            self.refreshBalance()
-        })
+//222        withdrawManager.withdrawViaWallet(callback: {
+//            self.refreshBalance()
+//        })
     }
     
     func deployToken() {
-        tokenManager.deployToken(callback: {
-
-        })
+//222        tokenManager.deployToken(callback: {
+//
+//        })
     }
     
     func mintToken() {
-        tokenManager.mintToken(tokenAddress: tokenAddress, callback: {
-            
-        })
+//222        tokenManager.mintToken(tokenAddress: tokenAddress, callback: {
+//
+//        })
     }
     
     func getAllTokens() {
-        tokenManager.getAllTokens(callback: {
-            
-        })
+//222        tokenManager.getAllTokens(callback: {
+//
+//        })
     }
     
     func tokenBalance() {
-        tokenManager.tokenBalance(tokenAddress: tokenAddress, callback: {
-            
-        })
+//222        tokenManager.tokenBalance(tokenAddress: tokenAddress, callback: {
+//
+//        })
     }
 }

@@ -10,6 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -25,11 +26,11 @@ class DefaultTransactionFeeProvider: ZkTransactionFeeProvider {
         self.feeToken = feeToken
     }
     
-    func getFee(for transaction: EthereumTransaction) -> Promise<Fee> {
+    func getFee(for transaction: CodableTransaction) -> Promise<Fee> {
         return zkSync.zksEstimateFee(transaction)
     }
     
-    func getGasLimit(for transaction: EthereumTransaction) -> Promise<BigUInt> {
+    func getGasLimit(for transaction: CodableTransaction) -> Promise<BigUInt> {
         Promise { seal in
             zkSync.ethEstimateGas(transaction) {
                 seal.resolve($0)
@@ -41,8 +42,8 @@ class DefaultTransactionFeeProvider: ZkTransactionFeeProvider {
         return feeToken
     }
     
-    var gasPrice: BigUInt {
-        return try! zkSync.web3.eth.getGasPricePromise().wait()
+    func getGasPrice() async -> BigUInt {
+        return try! await zkSync.web3.eth.gasPrice()
     }
     
     var gasLimit: BigUInt {

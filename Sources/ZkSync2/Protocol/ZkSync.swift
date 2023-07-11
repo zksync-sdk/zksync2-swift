@@ -10,6 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -18,9 +19,9 @@ public typealias Result<T> = Swift.Result<T, Error>
 
 public protocol ZkSync {
     
-    var web3: web3 { get set }
+    var web3: Web3 { get set }
     
-    func zksEstimateFee(_ transaction: EthereumTransaction) -> Promise<Fee>
+    func zksEstimateFee(_ transaction: CodableTransaction) -> Promise<Fee>
     
     func zksMainContract(_ completion: @escaping (Result<String>) -> Void)
     
@@ -34,7 +35,7 @@ public protocol ZkSync {
     
     func zksGetBridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void)
     
-    func ethEstimateGas(_ transaction: EthereumTransaction, completion: @escaping (Result<BigUInt>) -> Void)
+    func ethEstimateGas(_ transaction: CodableTransaction, completion: @escaping (Result<BigUInt>) -> Void)
     
     func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void)
     

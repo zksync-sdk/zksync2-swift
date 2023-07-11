@@ -9,6 +9,7 @@ import Foundation
 import BigInt
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -38,13 +39,13 @@ public extension EthereumKeystoreV3 {
     }
     
     convenience init(_ privateKey: Data) {
-        try! self.init(privateKey: privateKey)!
+        try! self.init(privateKey: privateKey, password: "web3swift")!
     }
     
     convenience init(_ privateKey: String) {
         let privatKeyData = Data(hex: privateKey)
         
-        try! self.init(privateKey: privatKeyData)!
+        try! self.init(privateKey: privatKeyData, password: "web3swift")!
     }
     
     convenience init(_ privateKey: BigUInt) {

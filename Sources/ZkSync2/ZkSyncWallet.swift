@@ -10,6 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -17,21 +18,21 @@ import web3swift_zksync2
 public class ZkSyncWallet {
     
     public let zkSync: ZkSync
-    public let ethereum: web3
+    public let ethereum: Web3
     
     public let signer: EthSigner
     
     // FIXME: Is fee provider still needed?
     let feeProvider: ZkTransactionFeeProvider
     
-    public init(_ zkSync: ZkSync, ethereum: web3, ethSigner: EthSigner, feeToken: Token) {
+    public init(_ zkSync: ZkSync, ethereum: Web3, ethSigner: EthSigner, feeToken: Token) {
         self.zkSync = zkSync
         self.ethereum = ethereum
         self.signer = ethSigner
         self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: feeToken)
     }
     
-    public init(_ zkSync: ZkSync, ethereum: web3, ethSigner: EthSigner, feeProvider: ZkTransactionFeeProvider) {
+    public init(_ zkSync: ZkSync, ethereum: Web3, ethSigner: EthSigner, feeProvider: ZkTransactionFeeProvider) {
         self.zkSync = zkSync
         self.ethereum = ethereum
         self.signer = ethSigner
@@ -45,8 +46,8 @@ public class ZkSyncWallet {
     ///   - amount: Amount of funds to be transferred in minimal denomination (in Wei).
     /// - Returns: Prepared remote call of transaction.
     public func transfer(_ to: String,
-                         amount: BigUInt) -> Promise<TransactionSendingResult> {
-        transfer(to,
+                         amount: BigUInt) async -> TransactionSendingResult {
+        await transfer(to,
                  amount: amount,
                  token: nil,
                  nonce: nil)
@@ -61,8 +62,8 @@ public class ZkSyncWallet {
     /// - Returns: Prepared remote call of transaction.
     public func transfer(_ to: String,
                          amount: BigUInt,
-                         token: Token) -> Promise<TransactionSendingResult> {
-        transfer(to,
+                         token: Token) async -> TransactionSendingResult {
+        await transfer(to,
                  amount: amount,
                  token: token,
                  nonce: nil)
@@ -79,7 +80,7 @@ public class ZkSyncWallet {
     public func transfer(_ to: String,
                          amount: BigUInt,
                          token: Token?,
-                         nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+                         nonce: BigUInt?) async -> TransactionSendingResult {
         let tokenToUse: Token
         if let token = token {
             tokenToUse = token
@@ -136,20 +137,20 @@ public class ZkSyncWallet {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
-        var estimate = EthereumTransaction.createFunctionCallTransaction(from: from, to: to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: txAmount, data: calldata)
-        
+        var estimate = CodableTransaction.createFunctionCallTransaction(from: from, to: to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: txAmount, data: calldata)
+
         // TODO: Verify chainID value.
-        estimate.envelope.parameters.chainID = signer.domain.chainId
-        
-        return estimateAndSend(estimate, nonce: nonceToUse)
+        estimate.chainID = signer.domain.chainId
+
+        return await estimateAndSend(estimate, nonce: nonceToUse)
     }
     
     public func deposit(_ to: String,
-                         amount: BigUInt) -> Promise<TransactionSendingResult> {
-        deposit(to,
+                        amount: BigUInt) async -> [String: Any] {
+        try! await deposit(to,
                  amount: amount,
                  token: nil,
                  nonce: nil)
@@ -157,8 +158,8 @@ public class ZkSyncWallet {
     
     public func deposit(_ to: String,
                          amount: BigUInt,
-                         token: Token) -> Promise<TransactionSendingResult> {
-        deposit(to,
+                        token: Token) async -> [String: Any] {
+        try! await deposit(to,
                  amount: amount,
                  token: token,
                  nonce: nil)
@@ -167,7 +168,7 @@ public class ZkSyncWallet {
     public func deposit(_ to: String,
                          amount: BigUInt,
                          token: Token?,
-                         nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+                        nonce: BigUInt?) async throws -> [String: Any] {
         let semaphore = DispatchSemaphore(value: 0)
         
         var zkSyncAddress: String = ""
@@ -202,7 +203,7 @@ public class ZkSyncWallet {
             gasProvider: DefaultGasProvider()
         )
         
-        return try! defaultEthereumProvider.deposit(
+        return try! await defaultEthereumProvider.deposit(
             with: token ?? Token.ETH,
             amount: amount,
             operatorTips: BigUInt(0),
@@ -217,8 +218,8 @@ public class ZkSyncWallet {
     ///   - amount: Amount of the funds to be withdrawn.
     /// - Returns: Prepared remote call of transaction.
     public func withdraw(_ to: String,
-                         amount: BigUInt) -> Promise<TransactionSendingResult> {
-        withdraw(to,
+                         amount: BigUInt) async -> TransactionSendingResult {
+        await withdraw(to,
                  amount: amount,
                  token: nil,
                  nonce: nil)
@@ -233,8 +234,8 @@ public class ZkSyncWallet {
     /// - Returns: Prepared remote call of transaction.
     public func withdraw(_ to: String,
                          amount: BigUInt,
-                         token: Token) -> Promise<TransactionSendingResult> {
-        withdraw(to,
+                         token: Token) async -> TransactionSendingResult {
+        await withdraw(to,
                  amount: amount,
                  token: token,
                  nonce: nil)
@@ -251,7 +252,7 @@ public class ZkSyncWallet {
     public func withdraw(_ to: String,
                          amount: BigUInt,
                          token: Token?,
-                         nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+                         nonce: BigUInt?) async -> TransactionSendingResult {
         let tokenToUse: Token
         if let token = token {
             tokenToUse = token
@@ -263,7 +264,7 @@ public class ZkSyncWallet {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         if tokenToUse.isETH {
@@ -286,12 +287,12 @@ public class ZkSyncWallet {
             // TODO: Verify calldata.
             let calldata = withdrawFunction.encodeParameters(parameters)!
             
-            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
-            
+            var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
+
             // TODO: Verify chainID value.
-            estimate.envelope.parameters.chainID = signer.domain.chainId
-            
-            return estimateAndSend(estimate, nonce: nonceToUse)
+            estimate.chainID = signer.domain.chainId
+
+            return await estimateAndSend(estimate, nonce: nonceToUse)
         } else {
             let inputs = [
                 ABI.Element.InOut(name: "_l1Receiver", type: .address),
@@ -333,12 +334,12 @@ public class ZkSyncWallet {
             
             semaphore.wait()
             
-            var estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
-            
+            var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
+
             // TODO: Verify chainID value.
-            estimate.envelope.parameters.chainID = signer.domain.chainId
-            
-            return estimateAndSend(estimate, nonce: nonceToUse)
+            estimate.chainID = signer.domain.chainId
+
+            return await estimateAndSend(estimate, nonce: nonceToUse)
         }
     }
     
@@ -346,8 +347,8 @@ public class ZkSyncWallet {
     ///
     /// - Parameter bytecode: Compiled bytecode of the contract.
     /// - Returns: Prepared remote call of transaction.
-    public func deploy(_ bytecode: Data) -> Promise<TransactionSendingResult> {
-        deploy(bytecode,
+    public func deploy(_ bytecode: Data) async -> TransactionSendingResult {
+        await deploy(bytecode,
                calldata: nil,
                nonce: nil)
     }
@@ -359,8 +360,8 @@ public class ZkSyncWallet {
     ///   - calldata: Encoded constructor parameter of contract.
     /// - Returns: Prepared remote call of transaction.
     public func deploy(_ bytecode: Data,
-                       calldata: Data?) -> Promise<TransactionSendingResult> {
-        deploy(bytecode,
+                       calldata: Data?) async -> TransactionSendingResult {
+        await deploy(bytecode,
                calldata: calldata,
                nonce: nil)
     }
@@ -374,12 +375,12 @@ public class ZkSyncWallet {
     /// - Returns: Prepared remote call of transaction.
     public func deploy(_ bytecode: Data,
                        calldata: Data?,
-                       nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+                       nonce: BigUInt?) async -> TransactionSendingResult {
         let nonceToUse: BigUInt
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         let validCalldata: Data
@@ -389,9 +390,9 @@ public class ZkSyncWallet {
             validCalldata = Data(hex: "0x")
         }
         
-        let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, deps: [bytecode], calldata: validCalldata, salt: Data(), chainId: signer.domain.chainId)
-        
-        return estimateAndSend(estimate, nonce: nonceToUse)
+        let estimate = CodableTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, deps: [bytecode], calldata: validCalldata, salt: Data(), chainId: signer.domain.chainId)
+
+        return await estimateAndSend(estimate, nonce: nonceToUse)
     }
     
     /// Execute function of deployed contract.
@@ -401,8 +402,8 @@ public class ZkSyncWallet {
     ///   - encodedFunction: Prepared function call with or without parameters.
     /// - Returns: Prepared remote call of transaction.
     public func execute(_ contractAddress: String,
-                        encodedFunction: Data) -> Promise<TransactionSendingResult> {
-        execute(contractAddress,
+                        encodedFunction: Data) async -> TransactionSendingResult {
+        await execute(contractAddress,
                 encodedFunction: encodedFunction,
                 nonce: nil)
     }
@@ -416,26 +417,26 @@ public class ZkSyncWallet {
     /// - Returns: Prepared remote call of transaction.
     public func execute(_ contractAddress: String,
                         encodedFunction: Data,
-                        nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+                        nonce: BigUInt?) async -> TransactionSendingResult {
         let nonceToUse: BigUInt
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         // TODO: Validate calldata.
         
-        let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(contractAddress)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: encodedFunction)
-        
-        return estimateAndSend(estimate, nonce: nonceToUse)
+        let estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(contractAddress)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: encodedFunction)
+
+        return await estimateAndSend(estimate, nonce: nonceToUse)
     }
     
     /// Get balance of wallet in native coin (wallet address gets from `EthSigner`).
     ///
     /// - Returns: Prepared get balance call.
-    public func getBalance() -> Promise<BigUInt> {
-        getBalance(signer.address,
+    public func getBalance() async -> BigUInt {
+        await getBalance(signer.address,
                    token: Token.ETH,
                    at: .committed)
     }
@@ -444,8 +445,8 @@ public class ZkSyncWallet {
     ///
     /// - Parameter token: Token object supported by ZkSync.
     /// - Returns: Prepared get balance call.
-    public func getBalance(_ token: Token) -> Promise<BigUInt> {
-        getBalance(signer.address,
+    public func getBalance(_ token: Token) async -> BigUInt {
+        await getBalance(signer.address,
                    token: token,
                    at: .committed)
     }
@@ -454,8 +455,8 @@ public class ZkSyncWallet {
     ///
     /// - Parameter address: Address of the wallet.
     /// - Returns: Prepared get balance call.
-    public func getBalance(_ address: String) -> Promise<BigUInt> {
-        getBalance(address,
+    public func getBalance(_ address: String) async -> BigUInt {
+        await getBalance(address,
                    token: Token.ETH,
                    at: .committed)
     }
@@ -467,8 +468,8 @@ public class ZkSyncWallet {
     ///   - token: Token object supported by ZkSync.
     /// - Returns: Prepared get balance call.
     public func getBalance(_ address: String,
-                           token: Token) -> Promise<BigUInt> {
-        getBalance(address,
+                           token: Token) async -> BigUInt {
+        await getBalance(address,
                    token: token,
                    at: .committed)
     }
@@ -481,104 +482,88 @@ public class ZkSyncWallet {
     /// - Returns: Prepared get balance call.
     public func getBalance(_ address: String,
                            token: Token,
-                           at: ZkBlockParameterName) -> Promise<BigUInt> {
+                           at: ZkBlockParameterName) async -> BigUInt {
         guard let ethereumAddress = EthereumAddress(address),
               let l2EthereumAddress = EthereumAddress(token.l2Address) else {
             fatalError("Tokens are not valid.")
         }
-        
+
         if token.isETH {
-            return zkSync.web3.eth.getBalancePromise(address: ethereumAddress,
-                                                     onBlock: at.rawValue)
+            return try! await zkSync.web3.eth.getBalance(for: ethereumAddress, onBlock: at == .committed ? .pending : .latest)
         } else {
             let erc20 = ERC20(web3: zkSync.web3,
                               provider: zkSync.web3.provider,
                               address: l2EthereumAddress)
-            
-            let balance = try! erc20.getBalance(account: ethereumAddress)
-            
-            return Promise {
-                $0.fulfill(balance)
-            }
+
+            return try! await erc20.getBalance(account: ethereumAddress)
         }
     }
     
     /// Get nonce for wallet at block `DefaultBlockParameter` (wallet address gets from `EthSigner`).
     /// - Parameter at: Block variant.
     /// - Returns: Prepared get nonce call.
-    public func getNonce(_ at: ZkBlockParameterName) -> Promise<BigUInt> {
-        zkSync.web3.eth.getTransactionCountPromise(address: signer.address,
-                                                   onBlock: at.rawValue)
+    public func getNonce(_ at: ZkBlockParameterName) async -> BigUInt {
+        try! await zkSync.web3.eth.getTransactionCount(for: EthereumAddress(signer.address)!, onBlock: at == .committed ? .pending : .latest)
     }
     
     /// Get nonce for wallet at block `.committed`.
     /// - Returns: Nonce for wallet.
-    public func getNonce() throws -> BigUInt {
-        try getNonce(.committed).wait()
+    public func getNonce() async throws -> BigUInt {
+        await getNonce(.committed)
     }
     
-    /// Get nonce for wallet at block `.committed`.
-    /// - Returns: Prepared get nonce call.
-    public func getNonce() -> Promise<BigUInt> {
-        getNonce(.committed)
-    }
-    
-    func estimateAndSend(_ transaction: EthereumTransaction, nonce: BigUInt) -> Promise<TransactionSendingResult> {
+    func estimateAndSend(_ transaction: CodableTransaction, nonce: BigUInt) async -> TransactionSendingResult {
         let chainID = signer.domain.chainId
-        let gasPrice = try! zkSync.web3.eth.getGasPrice()
-        
-        let estimate = EthereumTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
-        
+        let gasPrice = try! await zkSync.web3.eth.gasPrice()
+
+        let estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
+
         let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
-        var transactionOptions = TransactionOptions.defaultOptions
-        transactionOptions.type = .eip712
-        transactionOptions.chainID = chainID
-        transactionOptions.nonce = .manual(nonce)
-        transactionOptions.from = transaction.parameters.from
-        transactionOptions.to = transaction.to
-        transactionOptions.value = transaction.value
-        transactionOptions.gasLimit = .manual(fee.gasLimit)
-        transactionOptions.maxPriorityFeePerGas = .manual(fee.maxPriorityFeePerGas)
-        transactionOptions.maxFeePerGas = .manual(fee.maxFeePerGas)
-        
-        let gas = try! zkSync.web3.eth.estimateGas(transaction, transactionOptions: transactionOptions)
-        transactionOptions.gasLimit = .manual(gas)
-        
+        var transaction = transaction
+        //transaction.type = .legacy//333.eip712
+        transaction.chainID = chainID
+        transaction.nonce = nonce
+        transaction.to = transaction.to
+        transaction.value = transaction.value
+        transaction.gasLimit = fee.gasLimit
+        transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
+        transaction.maxFeePerGas = fee.maxFeePerGas
+
+        let gas = try! await zkSync.web3.eth.estimateGas(for: transaction)
+        transaction.gasLimit = gas
+
 #if DEBUG
         print("chainID: \(chainID)")
         print("gas: \(gas)")
         print("gasPrice: \(gasPrice)")
 #endif
-        
-        var ethereumParameters = EthereumParameters(from: transactionOptions)
-        
-        ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
-        
-        var prepared = EthereumTransaction(type: .eip712,
+
+        //333ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
+
+        var prepared = CodableTransaction(type: .legacy,//333.eip712,
                                            to: transaction.to,
                                            nonce: nonce,
                                            chainID: chainID,
                                            value: transaction.value,
-                                           data: transaction.data,
-                                           parameters: ethereumParameters)
-        
+                                           data: transaction.data)
+
         let domain = signer.domain
         let signature = signer.signTypedData(domain, typedData: prepared)
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-        prepared.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        prepared.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        prepared.envelope.v = BigUInt(unmarshalledSignature.v)
-        
+//222        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(hex: signature))!
+//        prepared.r = BigUInt(unmarshalledSignature.r.toHexString().addHexPrefix(), radix: 16)!
+//        prepared.s = BigUInt(unmarshalledSignature.s.toHexString().addHexPrefix(), radix: 16)!
+//        prepared.v = BigUInt(unmarshalledSignature.v)
+
         guard let message = prepared.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
         }
-        
+
 #if DEBUG
         print("Transaction hash: \(String(describing: prepared.hash?.toHexString().addHexPrefix()))")
         print("Signature: \(signature))")
         print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
 #endif
-        return zkSync.web3.eth.sendRawTransactionPromise(prepared)
+        return try! await zkSync.web3.eth.send(prepared)
     }
 }

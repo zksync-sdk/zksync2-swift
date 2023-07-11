@@ -7,9 +7,7 @@ workspace 'zkSync-Demo'
 
 project 'zkSync-Demo.xcodeproj'
 
-target 'zkSync-Demo' do
-  project 'zkSync-Demo.xcodeproj'
-  
+def project_pods
   pod 'BigInt', '5.2.0'
   pod 'Alamofire', '5.7.1'
   pod 'CryptoSwift', '1.4.3'
@@ -17,4 +15,16 @@ target 'zkSync-Demo' do
   pod 'Starscream', '4.0.4'
   pod 'secp256k1.c', '0.1.2'
   pod 'web3swift-zksync2', :git => 'https://github.com/zksync-sdk/web3swift.git', :branch => '2.6.5-zksync2'
+end
+
+target 'zkSync-Demo-Localhost' do
+  project 'zkSync-Demo.xcodeproj'
+  
+  project_pods
+end
+
+target 'zkSync-Demo-Testnet' do
+  project 'zkSync-Demo.xcodeproj'
+  
+  project_pods
 end

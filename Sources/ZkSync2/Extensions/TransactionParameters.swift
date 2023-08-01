@@ -33,7 +33,7 @@ public struct TransactionParameters: Codable {
     public var accessList: [AccessListEntry]? // EIP-1559 & EIP-2930
     public var to: String?
     public var value: String? = "0x0"
-    //333public var eip712Meta: EIP712Meta?
+    public var eip712Meta: EIP712Meta?
     
     public init(from _from: String?, to _to: String?) {
         from = _from
@@ -55,12 +55,17 @@ extension CodableTransaction {
         params.type = typeEncoding
         let chainEncoding = self.chainID?.abiEncode(bits: 256)
         params.chainID = chainEncoding?.toHexString().addHexPrefix().stripLeadingZeroes()
-        var accessEncoding: [TransactionParameters.AccessListEntry] = []
-        for listEntry in self.accessList ?? [] {
-//333            guard let encoded = listEntry.encodeAsDictionary() else { return nil }
-//            accessEncoding.append(encoded)
-        }
-        params.accessList = accessEncoding
+        params.accessList = self.accessList?.compactMap({
+            guard
+                let list = $0.encodeAsList(),
+                let address = list.first as? String,
+                let storage = list.last as? [Data]
+            else { return nil }
+            
+            return TransactionParameters.AccessListEntry.init(address: address, storageKeys: storage.compactMap({ data in
+                BigUInt(data).toHexString()
+            }))
+        })
         let gasEncoding = self.gasLimit.abiEncode(bits: 256)
         params.gas = gasEncoding?.toHexString().addHexPrefix().stripLeadingZeroes()
         let maxFeeEncoding = self.maxFeePerGas?.abiEncode(bits: 256)
@@ -70,7 +75,7 @@ extension CodableTransaction {
         let valueEncoding = self.value.abiEncode(bits: 256)
         params.value = valueEncoding?.toHexString().addHexPrefix().stripLeadingZeroes()
         params.data = self.data.toHexString().addHexPrefix()
-        //333params.eip712Meta = self.EIP712Meta
+        params.eip712Meta = self.eip712Meta
         return params
     }
 }
@@ -89,12 +94,17 @@ extension EIP2930Envelope {
         params.type = typeEncoding
         let chainEncoding = self.chainID?.abiEncode(bits: 256)
         params.chainID = chainEncoding?.toHexString().addHexPrefix().stripLeadingZeroes()
-        var accessEncoding: [TransactionParameters.AccessListEntry] = []
-        for listEntry in self.accessList {
-//333            guard let encoded = listEntry.encodeAsDictionary() else { return nil }
-//            accessEncoding.append(encoded)
-        }
-        params.accessList = accessEncoding
+        params.accessList = self.accessList.compactMap({
+            guard
+                let list = $0.encodeAsList(),
+                let address = list.first as? String,
+                let storage = list.last as? [Data]
+            else { return nil }
+            
+            return TransactionParameters.AccessListEntry.init(address: address, storageKeys: storage.compactMap({ data in
+                BigUInt(data).toHexString()
+            }))
+        })
         let gasEncoding = self.gasLimit.abiEncode(bits: 256)
         params.gas = gasEncoding?.toHexString().addHexPrefix().stripLeadingZeroes()
         let gasPriceEncoding = self.gasPrice?.abiEncode(bits: 256)

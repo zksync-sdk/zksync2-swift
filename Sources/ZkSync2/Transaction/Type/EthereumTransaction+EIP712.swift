@@ -25,15 +25,15 @@ extension CodableTransaction: Structurable {
             ("from", BigUInt(from!.addressData)),
             ("to", BigUInt(to.addressData)),
             ("gasLimit", gasLimit),
-//333            ("gasPerPubdataByteLimit", EIP712Meta!.gasPerPubdata as Any),
+            ("gasPerPubdataByteLimit", eip712Meta!.gasPerPubdata as Any),
             ("maxFeePerGas", maxFeePerGas as Any),
             ("maxPriorityFeePerGas", maxPriorityFeePerGas as Any),
-//333            ("paymaster", BigUInt(EIP712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
+            ("paymaster", BigUInt(eip712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
             ("nonce", nonce),
             ("value", value as Any),
             ("data", data),
-//333            ("factoryDeps", EIP712Meta?.factoryDeps ?? []),
-//            ("paymasterInput", EIP712Meta?.paymasterParams?.paymasterInput ?? Data())
+            ("factoryDeps", eip712Meta?.factoryDeps ?? []),
+            ("paymasterInput", eip712Meta?.paymasterParams?.paymasterInput ?? Data())
         ]
     }
 }

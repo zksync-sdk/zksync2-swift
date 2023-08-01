@@ -521,7 +521,6 @@ public class ZkSyncWallet {
         let fee = try! zkSync.zksEstimateFee(estimate).wait()
         
         var transaction = transaction
-        //transaction.type = .legacy//333.eip712
         transaction.chainID = chainID
         transaction.nonce = nonce
         transaction.to = transaction.to
@@ -539,21 +538,18 @@ public class ZkSyncWallet {
         print("gasPrice: \(gasPrice)")
 #endif
 
-        //333ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
-
-        var prepared = CodableTransaction(type: .legacy,//333.eip712,
+        var prepared = CodableTransaction(type: .eip712,
                                            to: transaction.to,
                                            nonce: nonce,
                                            chainID: chainID,
                                            value: transaction.value,
                                            data: transaction.data)
+        prepared.eip712Meta = transaction.eip712Meta
 
         let domain = signer.domain
         let signature = signer.signTypedData(domain, typedData: prepared)
-//222        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(hex: signature))!
-//        prepared.r = BigUInt(unmarshalledSignature.r.toHexString().addHexPrefix(), radix: 16)!
-//        prepared.s = BigUInt(unmarshalledSignature.s.toHexString().addHexPrefix(), radix: 16)!
-//        prepared.v = BigUInt(unmarshalledSignature.v)
+        
+        try! prepared.sign(privateKey: (signer as! PrivateKeyEthSigner).credentials.privateKey)
 
         guard let message = prepared.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")

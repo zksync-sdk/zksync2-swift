@@ -21,8 +21,8 @@ public class ZkSyncImpl: ZkSync {
     
     let transport: Transport
     
-    public init(_ providerURL: URL) async {
-        self.web3 = try! await Web3.new(providerURL)
+    public init(_ providerURL: URL) {
+        self.web3 = Web3(provider: Web3HttpProvider(url: providerURL, network: .Mainnet))
         self.transport = HTTPTransport(self.web3.provider.url)
     }
     

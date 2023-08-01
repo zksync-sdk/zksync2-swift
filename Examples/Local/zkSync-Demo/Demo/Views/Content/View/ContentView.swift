@@ -86,7 +86,7 @@ struct ContentView: View {
             
             PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Transfer via Wallet", action: {
                 DispatchQueue.global().async {
-                    viewModel.transferViaWallet()
+                    self.viewModel.transferViaWallet()
                 }
             }))
             

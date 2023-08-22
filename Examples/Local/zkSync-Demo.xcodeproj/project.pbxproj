@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		96D042453E179996ED2A9C36 /* Pods_zkSync_Demo_Testnet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40267A43B454E97309AA50B8 /* Pods_zkSync_Demo_Testnet.framework */; };
-		BD92076D1263BA62677E2821 /* Pods_zkSync_Demo_Localhost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D5753550C68D4C7FF62F0956 /* Pods_zkSync_Demo_Localhost.framework */; };
+		A66949224E6E70C647DF04F4 /* Pods_zkSync_Demo_Localhost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD7B3724AB6769779A9BFF1 /* Pods_zkSync_Demo_Localhost.framework */; };
+		BD92076D1263BA62677E2821 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		FA7CBF072A110E3D005A7E58 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBF062A110E3D005A7E58 /* ContentViewModel.swift */; };
 		FA8FD8862A4F83D100D0EB17 /* Token.json in Resources */ = {isa = PBXBuildFile; fileRef = FA8FD8762A4F83D100D0EB17 /* Token.json */; };
 		FA8FD8872A4F83D100D0EB17 /* PaymasterFlow.json in Resources */ = {isa = PBXBuildFile; fileRef = FA8FD8772A4F83D100D0EB17 /* PaymasterFlow.json */; };
@@ -224,6 +225,7 @@
 		5344DE4B5D0C572B710F1D94 /* Pods-zkSync-Demo-Testnet.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo-Testnet.release.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo-Testnet/Pods-zkSync-Demo-Testnet.release.xcconfig"; sourceTree = "<group>"; };
 		6DB940447B8DD4B43A8076F6 /* Pods-zkSync-Demo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo.debug.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo/Pods-zkSync-Demo.debug.xcconfig"; sourceTree = "<group>"; };
 		A8FE77E00501FECA1B718FC6 /* Pods-zkSync-Demo-Testnet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo-Testnet.debug.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo-Testnet/Pods-zkSync-Demo-Testnet.debug.xcconfig"; sourceTree = "<group>"; };
+		CDD7B3724AB6769779A9BFF1 /* Pods_zkSync_Demo_Localhost.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_zkSync_Demo_Localhost.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5BD129B0F73644A440158C4 /* Pods-zkSync-Demo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo.release.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo/Pods-zkSync-Demo.release.xcconfig"; sourceTree = "<group>"; };
 		FA7CBF062A110E3D005A7E58 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		FA8FD8762A4F83D100D0EB17 /* Token.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Token.json; sourceTree = "<group>"; };
@@ -351,7 +353,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD92076D1263BA62677E2821 /* Pods_zkSync_Demo_Localhost.framework in Frameworks */,
+				BD92076D1263BA62677E2821 /* BuildFile in Frameworks */,
+				A66949224E6E70C647DF04F4 /* Pods_zkSync_Demo_Localhost.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -365,6 +368,7 @@
 				FAC997422A59FB340067AA49 /* zkSync2_swift.framework */,
 				FACC3A292A557D5500DDE38D /* ZkSync2.framework */,
 				40267A43B454E97309AA50B8 /* Pods_zkSync_Demo_Testnet.framework */,
+				CDD7B3724AB6769779A9BFF1 /* Pods_zkSync_Demo_Localhost.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

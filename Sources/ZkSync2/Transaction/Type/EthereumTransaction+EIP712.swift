@@ -10,16 +10,15 @@ import BigInt
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 extension EthereumTransaction: Structurable {
-    
     public func getTypeName() -> String {
         "Transaction"
     }
     
-    public func eip712types() -> [ZkSync2.EIP712.`Type`] {
+    public func eip712types() -> [EIP712.`Type`] {
         let envelope = envelope as! EIP712Envelope
         
         return [
@@ -30,7 +29,7 @@ extension EthereumTransaction: Structurable {
             ("gasPerPubdataByteLimit", envelope.EIP712Meta!.gasPerPubdata as Any),
             ("maxFeePerGas", envelope.parameters.maxFeePerGas as Any),
             ("maxPriorityFeePerGas", envelope.parameters.maxPriorityFeePerGas as Any),
-            ("paymaster", envelope.EIP712Meta?.paymasterParams?.paymaster ?? BigUInt.zero),
+            ("paymaster", BigUInt(envelope.EIP712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
             ("nonce", envelope.nonce),
             ("value", envelope.parameters.value as Any),
             ("data", data),

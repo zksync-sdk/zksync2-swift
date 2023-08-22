@@ -10,35 +10,60 @@ import BigInt
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
-class Paymaster {
+public class Paymaster {
+    public static let ApprovalBasedFunction = "approvalBased"
+    public static let GeneralFunction = "general"
     
-    static let GeneralFunction = "general"
-    static let ApprovalBasedFunction = "approvalBased"
-    
-    static func encodeApprovalBased(_ tokenAddress: EthereumAddress,
-                                    minimalAllowance: BigUInt,
-                                    input: Data) -> Data {
+    public static func encodeApprovalBased(_ tokenAddress: EthereumAddress, minimalAllowance: BigUInt, paymasterInput: Data) -> Data {
         let inputs = [
-            ABI.Element.InOut(name: "tokenAddress", type: .address),
-            ABI.Element.InOut(name: "minimalAllowance", type: .uint(bits: 256)),
-            ABI.Element.InOut(name: "input", type: .bytes(length: 32)),
+            ABI.Element.InOut(name: "_token", type: .address),
+            ABI.Element.InOut(name: "_minAllowance", type: .uint(bits: 256)),
+            ABI.Element.InOut(name: "_innerInput", type: .dynamicBytes),
         ]
         
-        let function = ABI.Element.Function(name: Paymaster.ApprovalBasedFunction,
-                                            inputs: inputs,
-                                            outputs: [],
-                                            constant: false,
-                                            payable: false)
+        let function = ABI.Element.Function(
+            name: Paymaster.ApprovalBasedFunction,
+            inputs: inputs,
+            outputs: [],
+            constant: false,
+            payable: false
+        )
         
         let elementFunction: ABI.Element = .function(function)
         
         let parameters: [AnyObject] = [
             tokenAddress as AnyObject,
             minimalAllowance as AnyObject,
-            input as AnyObject
+            paymasterInput as AnyObject
+        ]
+        
+        guard let encodedFunction = elementFunction.encodeParameters(parameters) else {
+            fatalError("Failed to encode function.")
+        }
+        
+        return encodedFunction
+    }
+    
+    public static func encodeGeneral(_ paymasterInput: Data) -> Data {
+        let inputs = [
+            ABI.Element.InOut(name: "input", type: .dynamicBytes),
+        ]
+        
+        let function = ABI.Element.Function(
+            name: Paymaster.GeneralFunction,
+            inputs: inputs,
+            outputs: [],
+            constant: false,
+            payable: false
+        )
+        
+        let elementFunction: ABI.Element = .function(function)
+        
+        let parameters: [AnyObject] = [
+            paymasterInput as AnyObject
         ]
         
         guard let encodedFunction = elementFunction.encodeParameters(parameters) else {

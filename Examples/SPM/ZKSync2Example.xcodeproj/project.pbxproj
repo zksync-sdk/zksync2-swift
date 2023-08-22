@@ -136,6 +136,8 @@
 				Base,
 			);
 			mainGroup = 8A6DB48B287B987E00B926C0;
+			packageReferences = (
+			);
 			productRefGroup = 8A6DB495287B987E00B926C0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -292,7 +294,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ZKSync2Example/Preview Content\"";
-				DEVELOPMENT_TEAM = B2TXDJTSQ4;
+				DEVELOPMENT_TEAM = P4RNZKZ54K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZKSync2Example/Info.plist;
@@ -323,7 +325,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ZKSync2Example/Preview Content\"";
-				DEVELOPMENT_TEAM = B2TXDJTSQ4;
+				DEVELOPMENT_TEAM = P4RNZKZ54K;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ZKSync2Example/Info.plist;

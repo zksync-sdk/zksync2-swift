@@ -1,0 +1,52 @@
+PODS:
+  - Alamofire (5.7.1)
+  - BigInt (5.2.0)
+  - CryptoSwift (1.4.3)
+  - PromiseKit (6.15.3):
+    - PromiseKit/CorePromise (= 6.15.3)
+    - PromiseKit/Foundation (= 6.15.3)
+    - PromiseKit/UIKit (= 6.15.3)
+  - PromiseKit/CorePromise (6.15.3)
+  - PromiseKit/Foundation (6.15.3):
+    - PromiseKit/CorePromise
+  - PromiseKit/UIKit (6.15.3):
+    - PromiseKit/CorePromise
+  - secp256k1.c (0.1.2)
+  - Starscream (4.0.4)
+  - web3swift-zksync2 (2.6.5-zksync2):
+    - BigInt (= 5.2.0)
+    - CryptoSwift (= 1.4.3)
+    - PromiseKit (= 6.15.3)
+    - secp256k1.c (~> 0.1)
+    - Starscream (= 4.0.4)
+  - zkSync2-swift (0.0.2-beta.4):
+    - Alamofire (~> 5.0)
+    - web3swift-zksync2 (= 2.6.5-zksync2)
+
+DEPENDENCIES:
+  - zkSync2-swift (~> 0.0.2-beta.4)
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - BigInt
+    - CryptoSwift
+    - PromiseKit
+    - secp256k1.c
+    - Starscream
+    - web3swift-zksync2
+    - zkSync2-swift
+
+SPEC CHECKSUMS:
+  Alamofire: 0123a34370cb170936ae79a8df46cc62b2edeb88
+  BigInt: f668a80089607f521586bbe29513d708491ef2f7
+  CryptoSwift: a0799ee936271bd2253a006f1e4523df21845000
+  PromiseKit: 3b2b6995e51a954c46dbc550ce3da44fbfb563c5
+  secp256k1.c: db47b726585d80f027423682eb369729e61b3b20
+  Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
+  web3swift-zksync2: 6471ef28140592e65099748068ebf3437f46af50
+  zkSync2-swift: 949b7ad5b52ce93408c73529511cc3af9bc09bb8
+
+PODFILE CHECKSUM: 847fbafa84d823f673c3000bad094218fb5a9733
+
+COCOAPODS: 1.12.0

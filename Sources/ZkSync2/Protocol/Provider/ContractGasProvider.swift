@@ -8,18 +8,23 @@
 import Foundation
 import BigInt
 
-protocol ContractGasProvider {
+public protocol ContractGasProvider {
     
     var gasPrice: BigUInt { get }
     
     var gasLimit: BigUInt { get }
 }
 
-struct DefaultGasProvider: ContractGasProvider {
+public struct DefaultGasProvider: ContractGasProvider {
     
-    var gasPrice = BigUInt(4_100_000_000)
+    public var gasPrice: BigUInt
     
-    var gasLimit = BigUInt(9_000_000)
+    public var gasLimit: BigUInt
+    
+    public init(gasPrice: BigUInt = BigUInt(4_100_000_000), gasLimit: BigUInt = BigUInt(9_000_000)) {
+        self.gasPrice = gasPrice
+        self.gasLimit = gasLimit
+    }
 }
 
 struct StaticGasProvider: ContractGasProvider {

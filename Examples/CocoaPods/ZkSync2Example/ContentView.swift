@@ -6,8 +6,8 @@
 //
 
 import SwiftUI
-import web3swift_zksync
-import ZkSync2
+import web3swift_zksync2
+import zkSync2_swift
 
 struct ContentView: View {
     
@@ -17,11 +17,5 @@ struct ContentView: View {
     var body: some View {
         Text("Hello, world!")
             .padding()
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }

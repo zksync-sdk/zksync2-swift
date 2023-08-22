@@ -10,6 +10,7 @@ import ZkSync2
 
 @main
 struct ZkSync2ExampleApp: App {
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

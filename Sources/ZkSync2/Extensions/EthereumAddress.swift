@@ -8,10 +8,11 @@
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
-extension EthereumAddress {
+public extension EthereumAddress {
     
     static let Default = EthereumAddress("0x0000000000000000000000000000000000000000")!
+    static let L2EthTokenAddress = EthereumAddress("0x000000000000000000000000000000000000800a")!
 }

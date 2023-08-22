@@ -11,7 +11,7 @@ import CryptoSwift
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 class EIP712Encoder {
@@ -45,6 +45,8 @@ class EIP712Encoder {
         outputData.append(EIP712Encoder.encodeValue(domain))
         outputData.append(EIP712Encoder.encodeValue(typedData))
         
-        return Data(SHA3(variant: .keccak256).calculate(for: outputData.bytes))
+        let data = Data(SHA3(variant: .keccak256).calculate(for: outputData.bytes))
+        
+        return data
     }
 }

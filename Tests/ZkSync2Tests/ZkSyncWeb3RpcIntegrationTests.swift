@@ -11,9 +11,9 @@ import BigInt
 import PromiseKit
 @testable import ZkSync2
 
-class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
+class ZKSyncWeb3RpcIntegrationTests: BaseIntegrationEnv {
     
-    static let L1NodeUrl = URL(string: "https://goerli.infura.io/v3/fc6f2c1e05b447969453c194a0326020")!
+    static let L1NodeUrl = URL(string: "https://rpc.ankr.com/eth_goerli")!
     static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
     
     let ethToken = Token.ETH
@@ -31,27 +31,7 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
     var l1Web3: web3!
     
     override func setUpWithError() throws {
-        let expectation = expectation(description: "Expectation.")
         
-        DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            
-            self.zkSync = JsonRpc2_0ZkSync(ZKSyncWeb3RpcIntegrationTests.L2NodeUrl)
-            
-            self.chainId = try! self.zkSync.web3.eth.getChainIdPromise().wait()
-            
-            self.signer = PrivateKeyEthSigner(self.credentials,
-                                              chainId: self.chainId)
-            
-            self.feeProvider = DefaultTransactionFeeProvider(zkSync: self.zkSync,
-                                                             feeToken: self.ethToken)
-            
-            self.l1Web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
-            
-            expectation.fulfill()
-        }
-        
-        wait(for: [expectation], timeout: 10.0)
     }
     
     override func tearDownWithError() throws {
@@ -1173,6 +1153,90 @@ class ZKSyncWeb3RpcIntegrationTests: XCTestCase {
             switch result {
             case .success(let transactionDetails):
                 print(transactionDetails)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testGetTransactionByHash() {
+        let expectation = expectation(description: "Expectation.")
+        
+        zkSync.zksGetTransactionByHash("0x0898f4b225276625e1d5d2cc4dc5b7a1acb896daece7e46c8202a47da9a13a27",
+                                       completion: { result in
+            switch result {
+            case .success(let transactionResponse):
+                print(transactionResponse)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testGetLogs() {
+        let expectation = expectation(description: "Expectation.")
+        
+        zkSync.zksGetLogs { result in
+            switch result {
+            case .success(let logs):
+                print(logs)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        }
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testGetBlockByHash() {
+        let expectation = expectation(description: "Expectation.")
+        
+        zkSync.zksGetBlockByHash("0x0898f4b225276625e1d5d2cc4dc5b7a1acb896daece7e46c8202a47da9a13a27",
+                                 returnFullTransactionObjects: true,
+                                 completion: { result in
+            switch result {
+            case .success(let block):
+                print(block)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testGetBlockByNumber() {
+        let expectation = expectation(description: "Expectation.")
+        zkSync.zksGetBlockByNumber(.finalized,
+                                   returnFullTransactionObjects: true,
+                                   completion: { result in
+            switch result {
+            case .success(let block):
+                print(block)
+            case .failure(let error):
+                XCTFail("Failed with error: \(error)")
+            }
+            expectation.fulfill()
+        })
+        
+        wait(for: [expectation], timeout: 5.0)
+    }
+    
+    func testGetBlockDetails() {
+        let expectation = expectation(description: "Expectation.")
+        zkSync.zksGetBlockDetails(0,
+                                  completion: { result in
+            switch result {
+            case .success(let blockDetails):
+                print(blockDetails)
             case .failure(let error):
                 XCTFail("Failed with error: \(error)")
             }

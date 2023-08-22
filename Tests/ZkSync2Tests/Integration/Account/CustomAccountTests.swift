@@ -7,7 +7,7 @@
 
 import XCTest
 
-class CustomAccountTests: XCTestCase {
+class CustomAccountTests: BaseIntegrationEnv {
     
     override func setUpWithError() throws {
         

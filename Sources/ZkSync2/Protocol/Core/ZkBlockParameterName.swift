@@ -12,6 +12,9 @@ public enum DefaultBlockParameterName: String {
     case earliest = "earliest"
     case latest = "latest"
     case pending = "pending"
+    case finalized = "finalized"
+    case safe = "safe"
+    case accepted = "accepted"
 }
 
 public enum ZkBlockParameterName: String {

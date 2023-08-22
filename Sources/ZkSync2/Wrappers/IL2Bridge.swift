@@ -9,13 +9,75 @@ import Foundation
 #if canImport(web3swift)
 import web3swift
 #else
-import web3swift_zksync
+import web3swift_zksync2
 #endif
 
 extension Web3.Utils {
     
     static var IL2Bridge = """
 [
+{
+    "anonymous": false,
+    "inputs": [
+        {
+            "indexed": true,
+            "internalType": "address",
+            "name": "l1Sender",
+            "type": "address"
+        },
+        {
+            "indexed": true,
+            "internalType": "address",
+            "name": "l2Receiver",
+            "type": "address"
+        },
+        {
+            "indexed": true,
+            "internalType": "address",
+            "name": "l2Token",
+            "type": "address"
+        },
+        {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+        }
+    ],
+    "name": "FinalizeDeposit",
+    "type": "event"
+},
+{
+    "anonymous": false,
+    "inputs": [
+        {
+            "indexed": true,
+            "internalType": "address",
+            "name": "l2Sender",
+            "type": "address"
+        },
+        {
+            "indexed": true,
+            "internalType": "address",
+            "name": "l1Receiver",
+            "type": "address"
+        },
+        {
+            "indexed": true,
+            "internalType": "address",
+            "name": "l2Token",
+            "type": "address"
+        },
+        {
+            "indexed": false,
+            "internalType": "uint256",
+            "name": "amount",
+            "type": "uint256"
+        }
+    ],
+    "name": "WithdrawalInitiated",
+    "type": "event"
+},
 {
     "inputs": [
         {
@@ -49,7 +111,7 @@ extension Web3.Utils {
     "stateMutability": "nonpayable",
     "type": "function"
 },
-    {
+{
     "inputs": [],
     "name": "l1Bridge",
     "outputs": [
@@ -62,7 +124,7 @@ extension Web3.Utils {
     "stateMutability": "view",
     "type": "function"
 },
-    {
+{
     "inputs": [
         {
             "internalType": "address",
@@ -81,7 +143,7 @@ extension Web3.Utils {
     "stateMutability": "view",
     "type": "function"
 },
-    {
+{
     "inputs": [
         {
             "internalType": "address",
@@ -100,7 +162,7 @@ extension Web3.Utils {
     "stateMutability": "view",
     "type": "function"
 },
-    {
+{
     "inputs": [
         {
             "internalType": "address",

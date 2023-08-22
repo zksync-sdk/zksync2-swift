@@ -1,4 +1,4 @@
-## [0.0.2-beta.4](https://github.com/zksync-sdk/zksync2-swift/compare/0.0.1...0.0.2-beta.4) (2023-07-10)  
+## [0.0.2](https://github.com/zksync-sdk/zksync2-swift/compare/0.0.1...0.0.2) (2023-08-22)  
 
 ### Features
 

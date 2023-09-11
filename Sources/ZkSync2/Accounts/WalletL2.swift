@@ -20,21 +20,10 @@ public class WalletL2: AdapterL2 {
     
     public let signer: EthSigner
     
-    // FIXME: Is fee provider still needed?
-    let feeProvider: ZkTransactionFeeProvider
-    
-    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: EthSigner, feeToken: Token) {
+    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: EthSigner) {
         self.zkSync = zkSync
         self.web = web3
         self.signer = ethSigner
-        self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: feeToken)
-    }
-    
-    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: EthSigner, feeProvider: ZkTransactionFeeProvider) {
-        self.zkSync = zkSync
-        self.web = web3
-        self.signer = ethSigner
-        self.feeProvider = DefaultTransactionFeeProvider(zkSync: zkSync, feeToken: Token.ETH)
     }
 }
 

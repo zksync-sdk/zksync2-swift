@@ -16,74 +16,57 @@ import web3swift_zksync2
 
 public extension ZkSyncImpl {
     
-    func zksMainContract() -> Promise<String> {
+    func mainContract() -> Promise<String> {
         Promise { seal in
-            zksMainContract {
+            mainContract {
                 seal.resolve($0)
             }
         }
     }
     
-    func zksGetTokenPrice(_ tokenAddress: String) -> Promise<Decimal> {
+    func getTokenPrice(_ tokenAddress: String) -> Promise<Decimal> {
         Promise { seal in
-            zksGetTokenPrice(tokenAddress) {
+            getTokenPrice(tokenAddress) {
                 seal.resolve($0)
             }
         }
     }
     
-    func zksL1ChainId() -> Promise<BigUInt> {
+    func L1ChainId() -> Promise<BigUInt> {
         Promise { seal in
-            zksL1ChainId {
+            L1ChainId {
                 seal.resolve($0)
             }
         }
     }
     
-    func zksGetAllAccountBalances(_ address: String) -> Promise<Dictionary<String, String>> {
+    func getBridgeContracts() -> Promise<BridgeAddresses> {
         Promise { seal in
-            zksGetAllAccountBalances(address,
-                                     completion: {
-                seal.resolve($0)
-            })
-        }
-    }
-    
-    func zksGetBridgeContracts() -> Promise<BridgeAddresses> {
-        Promise { seal in
-            zksGetBridgeContracts {
+            getBridgeContracts {
                 seal.resolve($0)
             }
         }
     }
     
-    func zksEstimateFee(_ transaction: EthereumTransaction) -> Promise<Fee> {
+    func estimateFee(_ transaction: EthereumTransaction) -> Promise<Fee> {
         Promise { seal in
-            zksEstimateFee(transaction) {
+            estimateFee(transaction) {
                 seal.resolve($0)
             }
         }
     }
     
-    func zksGetConfirmedTokens(_ from: Int, limit: Int) -> Promise<[Token]> {
+    func getConfirmedTokens(_ from: Int, limit: Int) -> Promise<[Token]> {
         Promise { seal in
-            zksGetConfirmedTokens(from, limit: limit) {
+            getConfirmedTokens(from, limit: limit) {
                 seal.resolve($0)
             }
         }
     }
     
-    func ethEstimateGas(_ transaction: EthereumTransaction) -> Promise<BigUInt> {
+    func getTestnetPaymaster() -> Promise<String> {
         Promise { seal in
-            ethEstimateGas(transaction) {
-                seal.resolve($0)
-            }
-        }
-    }
-    
-    func zksGetTestnetPaymaster() -> Promise<String> {
-        Promise { seal in
-            zksGetTestnetPaymaster() {
+            getTestnetPaymaster() {
                 seal.resolve($0)
             }
         }

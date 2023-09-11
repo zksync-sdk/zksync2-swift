@@ -14,7 +14,7 @@ import web3swift
 import web3swift_zksync2
 #endif
 
-public class ZkSyncImpl: ZkSync {
+public class ZkSyncImpl: ZkSyncClient {
     
     public var web3: web3
     
@@ -25,7 +25,7 @@ public class ZkSyncImpl: ZkSync {
         self.transport = HTTPTransport(self.web3.provider.url)
     }
     
-    public func zksEstimateFee(_ transaction: EthereumTransaction,
+    public func estimateFee(_ transaction: EthereumTransaction,
                         completion: @escaping (Result<Fee>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
@@ -36,21 +36,21 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    public func zksEstimateFeePromise(_ transaction: EthereumTransaction) -> Promise<Fee> {
+    public func estimateFeePromise(_ transaction: EthereumTransaction) -> Promise<Fee> {
         Promise { seal in
-            zksEstimateFee(transaction) { fee in
+            estimateFee(transaction) { fee in
                 seal.resolve(fee)
             }
         }
     }
     
-    public func zksMainContract(_ completion: @escaping (Result<String>) -> Void) {
+    public func mainContract(_ completion: @escaping (Result<String>) -> Void) {
         transport.send(method: "zks_getMainContract",
                        parameters: [],
                        completion: completion)
     }
     
-    public func zksGetConfirmedTokens(_ from: Int,
+    public func getConfirmedTokens(_ from: Int,
                                limit: Int,
                                completion: @escaping (Result<[Token]>) -> Void) {
         let parameters = [
@@ -63,7 +63,7 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    public func zksGetTokenPrice(_ tokenAddress: String,
+    public func getTokenPrice(_ tokenAddress: String,
                           completion: @escaping (Result<Decimal>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: tokenAddress),
@@ -76,7 +76,7 @@ public class ZkSyncImpl: ZkSync {
         })
     }
     
-    public func zksL1ChainId(_ completion: @escaping (Result<BigUInt>) -> Void) {
+    public func L1ChainId(_ completion: @escaping (Result<BigUInt>) -> Void) {
         transport.send(method: "zks_L1ChainId",
                        parameters: [],
                        completion: { (result: Result<String>) in
@@ -84,7 +84,7 @@ public class ZkSyncImpl: ZkSync {
         })
     }
     
-    public func zksGetAllAccountBalances(_ address: String,
+    public func getAllAccountBalances(_ address: String,
                                   completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: address)
@@ -97,13 +97,13 @@ public class ZkSyncImpl: ZkSync {
     
     // TODO: implement l1 for l2 and l2 for l1
     
-    public func zksGetBridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void) {
+    public func getBridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void) {
         transport.send(method: "zks_getBridgeContracts",
                        parameters: [],
                        completion: completion)
     }
     
-    public func zksGetL2ToL1MsgProof(_ block: Int,
+    public func getL2ToL1MsgProof(_ block: Int,
                               sender: String,
                               message: String,
                               l2LogPosition: Int64?, // FIXME: Should l2LogPosition be used?
@@ -119,7 +119,7 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    public func zksGetL2ToL1LogProof(_ txHash: String,
+    public func getL2ToL1LogProof(_ txHash: String,
                               logIndex: Int,
                               completion: @escaping (Result<L2ToL1MessageProof>) -> Void) {
         let parameters = [
@@ -132,26 +132,13 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    public func ethEstimateGas(_ transaction: EthereumTransaction,
-                        completion: @escaping (Result<BigUInt>) -> Void) {
-        let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
-        ]
-        
-        transport.send(method: "eth_estimateGas",
-                       parameters: parameters,
-                       completion: { (result: Result<String>) in
-            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
-        })
-    }
-    
-    public func zksGetTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void) {
+    public func getTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void) {
         transport.send(method: "zks_getTestnetPaymaster",
                        parameters: [],
                        completion: completion)
     }
     
-    public func zksGetTransactionDetails(_ transactionHash: String,
+    public func getTransactionDetails(_ transactionHash: String,
                                   completion: @escaping (Result<TransactionDetails>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: transactionHash),
@@ -162,7 +149,7 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    func zksGetBlockDetails(_ block: Int,
+    public func getBlockDetails(_ block: Int,
                             completion: @escaping (Result<BlockDetails>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .int, value: block),
@@ -173,50 +160,7 @@ public class ZkSyncImpl: ZkSync {
                        completion: completion)
     }
     
-    public func zksGetTransactionByHash(_ transactionHash: String,
-                                 completion: @escaping (Result<TransactionResponse>) -> Void) {
-        let parameters = [
-            JRPC.Parameter(type: .string, value: transactionHash),
-        ]
-        
-        transport.send(method: "eth_getTransactionByHash",
-                       parameters: parameters,
-                       completion: completion)
-    }
-    
-    public func zksGetLogs(_ completion: @escaping (Result<Log>) -> Void) {
-        transport.send(method: "eth_getLogs",
-                       parameters: [],
-                       completion: completion)
-    }
-    
-    public func zksGetBlockByHash(_ blockHash: String,
-                           returnFullTransactionObjects: Bool,
-                           completion: @escaping (Result<Block>) -> Void) {
-        let parameters = [
-            JRPC.Parameter(type: .string, value: blockHash),
-            JRPC.Parameter(type: .bool, value: returnFullTransactionObjects)
-        ]
-        
-        transport.send(method: "eth_getBlockByHash",
-                       parameters: parameters,
-                       completion: completion)
-    }
-    
-    public func zksGetBlockByNumber(_ block: DefaultBlockParameterName,
-                             returnFullTransactionObjects: Bool,
-                             completion: @escaping (Result<Block>) -> Void) {
-        let parameters = [
-            JRPC.Parameter(type: .string, value: block.rawValue),
-            JRPC.Parameter(type: .bool, value: true)
-        ]
-        
-        transport.send(method: "eth_getBlockByNumber",
-                       parameters: parameters,
-                       completion: completion)
-    }
-    
-    public func zksGetBlockDetails(_ blockNumber: BigUInt,
+    public func getBlockDetails(_ blockNumber: BigUInt,
                             returnFullTransactionObjects: Bool,
                             completion: @escaping (Result<BlockDetails>) -> Void) {
         let parameters = [

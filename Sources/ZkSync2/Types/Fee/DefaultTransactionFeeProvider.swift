@@ -16,24 +16,24 @@ import web3swift_zksync2
 
 class DefaultTransactionFeeProvider: ZkTransactionFeeProvider {
     
-    var zkSync: ZkSync
+    var zkSync: ZkSyncClient
     
     var feeToken: Token
     
-    init(zkSync: ZkSync, feeToken: Token) {
+    init(zkSync: ZkSyncClient, feeToken: Token) {
         self.zkSync = zkSync
         self.feeToken = feeToken
     }
     
     func getFee(for transaction: EthereumTransaction) -> Promise<Fee> {
-        return zkSync.zksEstimateFee(transaction)
+        return zkSync.estimateFee(transaction)
     }
     
     func getGasLimit(for transaction: EthereumTransaction) -> Promise<BigUInt> {
         Promise { seal in
-            zkSync.ethEstimateGas(transaction) {
-                seal.resolve($0)
-            }
+//111            zkSync.estimateGas(transaction) {
+//                seal.resolve($0)
+//            }
         }
     }
     

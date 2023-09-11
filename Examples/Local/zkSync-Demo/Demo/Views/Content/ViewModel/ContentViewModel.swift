@@ -30,7 +30,7 @@ class ContentViewModel: ObservableObject {
     let tokenAddress = "0xbc6b677377598a79fa1885e02df1894b05bc8b33"
     
     func refreshBalance() {
-        let balance = try! baseManager.wallet.getBalance().wait()
+        let balance = try! baseManager.walletL2.getBalance().wait()
         
         let decimalBalance = Token.ETH.intoDecimal(balance)
         

@@ -746,14 +746,14 @@ public class DefaultEthereumProvider: EthereumProvider {
 
 extension DefaultEthereumProvider {
     
-    static func load(_ zkSync: ZkSync,
+    static func load(_ zkSync: ZkSyncClient,
                      web3: web3,
                      gasProvider: ContractGasProvider) -> Promise<DefaultEthereumProvider> {
         Promise { seal in
-            zkSync.zksGetBridgeContracts { result in
+            zkSync.getBridgeContracts { result in
                 switch result {
                 case .success(let bridgeAddresses):
-                    zkSync.zksMainContract { result in
+                    zkSync.mainContract { result in
                         switch result {
                         case .success(let mainContractAddress):
                             let erc20Bridge = web3.contract(Web3.Utils.IL1Bridge,

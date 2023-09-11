@@ -14,7 +14,6 @@ import web3swift_zksync2
 #endif
 
 public class PrivateKeyEthSigner: EthSigner {
-    
     public var address: String {
         return credentials.address
     }

@@ -20,14 +20,11 @@ class NonceHolder {
     
     let zkSync: ZkSyncClient!
     
-    let contractGasProvider: ContractGasProvider!
-    
     let credentials: Credentials
     
-    init(_ contractAddress: EthereumAddress, zkSync: ZkSyncClient, contractGasProvider: ContractGasProvider, credentials: Credentials) {
+    init(_ contractAddress: EthereumAddress, zkSync: ZkSyncClient, credentials: Credentials) {
         self.contractAddress = contractAddress
         self.zkSync = zkSync
-        self.contractGasProvider = contractGasProvider
         self.credentials = credentials
     }
     

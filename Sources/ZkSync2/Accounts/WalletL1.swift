@@ -89,8 +89,7 @@ extension WalletL1 {
         let defaultEthereumProvider = DefaultEthereumProvider(
             web,
             l1ERC20Bridge: l1ERC20Bridge,
-            zkSyncContract: zkSyncContract,
-            gasProvider: DefaultGasProvider()
+            zkSyncContract: zkSyncContract
         )
         
         return try! defaultEthereumProvider.deposit(

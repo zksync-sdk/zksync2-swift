@@ -43,8 +43,6 @@ public class DefaultEthereumProvider: EthereumProvider {
         return zkSyncContract.contract.address!.address
     }
     
-    let gasProvider: ContractGasProvider
-    
     let gasLimits: Dictionary<String, BigUInt> = [
         "0x0000000000095413afc295d19edeb1ad7b71c952": BigUInt(140000),
         "0xeb4c2781e4eba804ce9a9803c67d0893436bb27d": BigUInt(160000),
@@ -92,12 +90,10 @@ public class DefaultEthereumProvider: EthereumProvider {
     
     public init(_ web3: web3,
          l1ERC20Bridge: web3.web3contract,
-         zkSyncContract: web3.web3contract,
-         gasProvider: ContractGasProvider) {
+         zkSyncContract: web3.web3contract) {
         self.web3 = web3
         self.l1ERC20Bridge = l1ERC20Bridge
         self.zkSyncContract = zkSyncContract
-        self.gasProvider = gasProvider
     }
     
     func gasPrice() throws -> BigUInt {
@@ -747,8 +743,7 @@ public class DefaultEthereumProvider: EthereumProvider {
 extension DefaultEthereumProvider {
     
     static func load(_ zkSync: ZkSyncClient,
-                     web3: web3,
-                     gasProvider: ContractGasProvider) -> Promise<DefaultEthereumProvider> {
+                     web3: web3) -> Promise<DefaultEthereumProvider> {
         Promise { seal in
             zkSync.getBridgeContracts { result in
                 switch result {
@@ -764,8 +759,7 @@ extension DefaultEthereumProvider {
                             
                             let defaultEthereumProvider = DefaultEthereumProvider(web3,
                                                                                   l1ERC20Bridge: erc20Bridge,
-                                                                                  zkSyncContract: mainContract,
-                                                                                  gasProvider: gasProvider)
+                                                                                  zkSyncContract: mainContract)
                             
                             return seal.resolve(.fulfilled(defaultEthereumProvider))
                         case .failure(let error):

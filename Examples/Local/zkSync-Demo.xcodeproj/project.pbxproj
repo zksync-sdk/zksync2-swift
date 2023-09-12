@@ -86,7 +86,6 @@
 		FAA280022A5D4A0B0002CB6A /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBF062A110E3D005A7E58 /* ContentViewModel.swift */; };
 		FAA280032A5D4A0B0002CB6A /* EthereumAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9978D2A5A39540067AA49 /* EthereumAddress.swift */; };
 		FAA280042A5D4A0B0002CB6A /* TokenManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC395E2A501CAC00DDE38D /* TokenManager.swift */; };
-		FAA280052A5D4A0B0002CB6A /* ContractGasProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997852A5A39540067AA49 /* ContractGasProvider.swift */; };
 		FAA280062A5D4A0B0002CB6A /* EthereumKeystoreV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9978C2A5A39540067AA49 /* EthereumKeystoreV3.swift */; };
 		FAA280072A5D4A0B0002CB6A /* PromiseKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997922A5A39540067AA49 /* PromiseKit.swift */; };
 		FAA280082A5D4A0B0002CB6A /* TokenId.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9977E2A5A39540067AA49 /* TokenId.swift */; };
@@ -192,7 +191,6 @@
 		FAC997BE2A5A39540067AA49 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997812A5A39540067AA49 /* Token.swift */; };
 		FAC997BF2A5A39540067AA49 /* EthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997832A5A39540067AA49 /* EthereumProvider.swift */; };
 		FAC997C02A5A39540067AA49 /* DefaultEthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */; };
-		FAC997C12A5A39540067AA49 /* ContractGasProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997852A5A39540067AA49 /* ContractGasProvider.swift */; };
 		FAC997C32A5A39540067AA49 /* ZkSyncImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997872A5A39540067AA49 /* ZkSyncImpl.swift */; };
 		FAC997C42A5A39540067AA49 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997892A5A39540067AA49 /* Data.swift */; };
 		FAC997C52A5A39540067AA49 /* Web3Eth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9978A2A5A39540067AA49 /* Web3Eth.swift */; };
@@ -313,7 +311,6 @@
 		FAC997812A5A39540067AA49 /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
 		FAC997832A5A39540067AA49 /* EthereumProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumProvider.swift; sourceTree = "<group>"; };
 		FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultEthereumProvider.swift; sourceTree = "<group>"; };
-		FAC997852A5A39540067AA49 /* ContractGasProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContractGasProvider.swift; sourceTree = "<group>"; };
 		FAC997872A5A39540067AA49 /* ZkSyncImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkSyncImpl.swift; sourceTree = "<group>"; };
 		FAC997892A5A39540067AA49 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		FAC9978A2A5A39540067AA49 /* Web3Eth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Web3Eth.swift; sourceTree = "<group>"; };
@@ -560,7 +557,6 @@
 		FA9245772AAFAC1600F0B282 /* Contracts */ = {
 			isa = PBXGroup;
 			children = (
-				FAC997822A5A39540067AA49 /* GasProvider */,
 				FA9245782AAFAC3900F0B282 /* ContractDeployer */,
 			);
 			path = Contracts;
@@ -592,9 +588,12 @@
 			children = (
 				FAC997782A5A39540067AA49 /* ZkSyncAddresses.swift */,
 				FAC9977A2A5A39540067AA49 /* AccountAbstraction.swift */,
+				FAC9977E2A5A39540067AA49 /* TokenId.swift */,
+				FAC9977F2A5A39540067AA49 /* ZkSyncNetwork.swift */,
+				FAC997802A5A39540067AA49 /* ZkBlockParameterName.swift */,
+				FAC997812A5A39540067AA49 /* Token.swift */,
+				FA9245962AAFD61400F0B282 /* Fee.swift */,
 				FAC997792A5A39540067AA49 /* Paymaster.swift */,
-				FAC9977D2A5A39540067AA49 /* Core */,
-				FAC9974F2A5A39540067AA49 /* Type */,
 			);
 			path = Types;
 			sourceTree = "<group>";
@@ -641,14 +640,6 @@
 			path = ../../../Sources/ZkSync2;
 			sourceTree = "<group>";
 		};
-		FAC9974F2A5A39540067AA49 /* Type */ = {
-			isa = PBXGroup;
-			children = (
-				FAC997502A5A39540067AA49 /* EthereumTransaction+EIP712.swift */,
-			);
-			path = Type;
-			sourceTree = "<group>";
-		};
 		FAC997512A5A39540067AA49 /* Wrappers */ = {
 			isa = PBXGroup;
 			children = (
@@ -670,6 +661,7 @@
 				FAC9975F2A5A39540067AA49 /* EIP712Encoder.swift */,
 				FAC997602A5A39540067AA49 /* Structurable.swift */,
 				FAC997612A5A39540067AA49 /* EIP712Domain.swift */,
+				FAC997502A5A39540067AA49 /* EthereumTransaction+EIP712.swift */,
 			);
 			path = EIP712;
 			sourceTree = "<group>";
@@ -711,26 +703,6 @@
 				FAC997732A5A39540067AA49 /* HTTPTransport.swift */,
 			);
 			path = Utils;
-			sourceTree = "<group>";
-		};
-		FAC9977D2A5A39540067AA49 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				FAC9977E2A5A39540067AA49 /* TokenId.swift */,
-				FAC9977F2A5A39540067AA49 /* ZkSyncNetwork.swift */,
-				FAC997802A5A39540067AA49 /* ZkBlockParameterName.swift */,
-				FAC997812A5A39540067AA49 /* Token.swift */,
-				FA9245962AAFD61400F0B282 /* Fee.swift */,
-			);
-			path = Core;
-			sourceTree = "<group>";
-		};
-		FAC997822A5A39540067AA49 /* GasProvider */ = {
-			isa = PBXGroup;
-			children = (
-				FAC997852A5A39540067AA49 /* ContractGasProvider.swift */,
-			);
-			path = GasProvider;
 			sourceTree = "<group>";
 		};
 		FAC997882A5A39540067AA49 /* Extensions */ = {
@@ -1066,7 +1038,6 @@
 				FAA280032A5D4A0B0002CB6A /* EthereumAddress.swift in Sources */,
 				FAA280042A5D4A0B0002CB6A /* TokenManager.swift in Sources */,
 				FA9245832AAFB1D300F0B282 /* WalletL2.swift in Sources */,
-				FAA280052A5D4A0B0002CB6A /* ContractGasProvider.swift in Sources */,
 				FAA280062A5D4A0B0002CB6A /* EthereumKeystoreV3.swift in Sources */,
 				FAA280072A5D4A0B0002CB6A /* PromiseKit.swift in Sources */,
 				FAA280082A5D4A0B0002CB6A /* TokenId.swift in Sources */,
@@ -1160,7 +1131,6 @@
 				FAC997C82A5A39540067AA49 /* EthereumAddress.swift in Sources */,
 				FA9245822AAFB1D300F0B282 /* WalletL2.swift in Sources */,
 				FACC39662A501CAC00DDE38D /* TokenManager.swift in Sources */,
-				FAC997C12A5A39540067AA49 /* ContractGasProvider.swift in Sources */,
 				FAC997C72A5A39540067AA49 /* EthereumKeystoreV3.swift in Sources */,
 				FAC997CD2A5A39540067AA49 /* PromiseKit.swift in Sources */,
 				FA92458E2AAFCB7000F0B282 /* ZkSyncClient.swift in Sources */,

@@ -15,7 +15,7 @@ import web3swift_zksync2
 #endif
 
 public class AccountsUtil {
-    static func estimateAndSend(zkSync: ZkSyncClient, signer: EthSigner, _ transaction: EthereumTransaction, nonce: BigUInt) -> Promise<TransactionSendingResult> {
+    static func estimateAndSend(zkSync: ZkSyncClient, signer: ETHSigner, _ transaction: EthereumTransaction, nonce: BigUInt) -> Promise<TransactionSendingResult> {
         let chainID = signer.domain.chainId
         let gasPrice = try! zkSync.web3.eth.getGasPrice()
         

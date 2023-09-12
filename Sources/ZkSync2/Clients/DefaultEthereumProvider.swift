@@ -1,8 +1,8 @@
 //
 //  DefaultEthereumProvider.swift
-//  ZkSync2
+//  zkSync-Demo
 //
-//  Created by Maxim Makhun on 7/17/22.
+//  Created by Bojan on 12.9.23..
 //
 
 import Foundation
@@ -104,7 +104,7 @@ public class DefaultEthereumProvider: EthereumProvider {
         return try web3.eth.getGasPrice()
     }
     
-    func approveDeposits(with token: Token,
+    func approveDeposit(with token: Token,
                          limit: BigUInt?) throws -> Promise<TransactionSendingResult> {
         guard let tokenAddress = EthereumAddress(token.l1Address),
               let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {

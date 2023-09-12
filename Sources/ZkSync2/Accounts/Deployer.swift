@@ -14,20 +14,20 @@ import web3swift
 import web3swift_zksync2
 #endif
 
-public class BaseDeployer {
+public class DeployerImpl: Deployer {
     public let zkSync: ZkSyncClient
     public let web: web3
     
-    public let signer: EthSigner
+    public let signer: ETHSigner
     
-    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: EthSigner) {
+    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: ETHSigner) {
         self.zkSync = zkSync
         self.web = web3
         self.signer = ethSigner
     }
 }
 
-extension BaseDeployer {
+extension DeployerImpl {
     public func deploy(_ bytecode: Data) -> Promise<TransactionSendingResult> {
         deploy(bytecode, calldata: nil, nonce: nil)
     }
@@ -57,7 +57,7 @@ extension BaseDeployer {
     }
 }
 
-extension BaseDeployer {
+extension DeployerImpl {
     public func getNonce(_ at: ZkBlockParameterName) -> Promise<BigUInt> {
         zkSync.web3.eth.getTransactionCountPromise(address: signer.address, onBlock: at.rawValue)
     }

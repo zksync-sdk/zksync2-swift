@@ -18,9 +18,9 @@ public class WalletL2: AdapterL2 {
     public let zkSync: ZkSyncClient
     public let web: web3
     
-    public let signer: EthSigner
+    public let signer: ETHSigner
     
-    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: EthSigner) {
+    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: ETHSigner) {
         self.zkSync = zkSync
         self.web = web3
         self.signer = ethSigner

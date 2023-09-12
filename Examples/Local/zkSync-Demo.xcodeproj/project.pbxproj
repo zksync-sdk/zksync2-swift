@@ -56,8 +56,6 @@
 		FA92458F2AAFCB7000F0B282 /* ZkSyncClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA92458D2AAFCB7000F0B282 /* ZkSyncClient.swift */; };
 		FA9245912AAFD2E800F0B282 /* EthereumImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245902AAFD2E800F0B282 /* EthereumImpl.swift */; };
 		FA9245922AAFD2E800F0B282 /* EthereumImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245902AAFD2E800F0B282 /* EthereumImpl.swift */; };
-		FA9245942AAFD3DD00F0B282 /* EthereumImpl+Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245932AAFD3DD00F0B282 /* EthereumImpl+Promise.swift */; };
-		FA9245952AAFD3DD00F0B282 /* EthereumImpl+Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245932AAFD3DD00F0B282 /* EthereumImpl+Promise.swift */; };
 		FA9245972AAFD61400F0B282 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245962AAFD61400F0B282 /* Fee.swift */; };
 		FA9245982AAFD61400F0B282 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245962AAFD61400F0B282 /* Fee.swift */; };
 		FAA27FE52A5D4A0B0002CB6A /* ButtonSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8D82A4F94F400D0EB17 /* ButtonSize.swift */; };
@@ -92,7 +90,6 @@
 		FAA280062A5D4A0B0002CB6A /* EthereumKeystoreV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9978C2A5A39540067AA49 /* EthereumKeystoreV3.swift */; };
 		FAA280072A5D4A0B0002CB6A /* PromiseKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997922A5A39540067AA49 /* PromiseKit.swift */; };
 		FAA280082A5D4A0B0002CB6A /* TokenId.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9977E2A5A39540067AA49 /* TokenId.swift */; };
-		FAA280092A5D4A0B0002CB6A /* EthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975D2A5A39540067AA49 /* EthSigner.swift */; };
 		FAA2800B2A5D4A0B0002CB6A /* LToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997552A5A39540067AA49 /* LToken.swift */; };
 		FAA2800C2A5D4A0B0002CB6A /* ZkSyncImpl+Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9978B2A5A39540067AA49 /* ZkSyncImpl+Promise.swift */; };
 		FAA2800D2A5D4A0B0002CB6A /* NonceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997592A5A39540067AA49 /* NonceHolder.swift */; };
@@ -100,7 +97,6 @@
 		FAA2800F2A5D4A0B0002CB6A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FADECD762A10F7F5004E419A /* ContentView.swift */; };
 		FAA280102A5D4A0B0002CB6A /* JRPCError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9976D2A5A39540067AA49 /* JRPCError.swift */; };
 		FAA280112A5D4A0B0002CB6A /* SmartContractManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39622A501CAC00DDE38D /* SmartContractManager.swift */; };
-		FAA280122A5D4A0B0002CB6A /* ZkSyncABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997762A5A39540067AA49 /* ZkSyncABI.swift */; };
 		FAA280132A5D4A0B0002CB6A /* TertiaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8DC2A4F94F400D0EB17 /* TertiaryButton.swift */; };
 		FAA280142A5D4A0B0002CB6A /* TertiaryButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8D62A4F94F400D0EB17 /* TertiaryButtonStyle.swift */; };
 		FAA280152A5D4A0B0002CB6A /* zkSync_DemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39502A501C7500DDE38D /* zkSync_DemoApp.swift */; };
@@ -119,7 +115,6 @@
 		FAA280222A5D4A0B0002CB6A /* SmartAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39632A501CAC00DDE38D /* SmartAccountManager.swift */; };
 		FAA280232A5D4A0B0002CB6A /* Numeric.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997912A5A39540067AA49 /* Numeric.swift */; };
 		FAA280242A5D4A0B0002CB6A /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8FF2A4F9FC700D0EB17 /* LoadingView.swift */; };
-		FAA280252A5D4A0B0002CB6A /* ContractUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997772A5A39540067AA49 /* ContractUtils.swift */; };
 		FAA280262A5D4A0B0002CB6A /* DefaultEthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */; };
 		FAA280272A5D4A0B0002CB6A /* BridgeAddresses.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9976B2A5A39540067AA49 /* BridgeAddresses.swift */; };
 		FAA280282A5D4A0B0002CB6A /* HTTPTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997732A5A39540067AA49 /* HTTPTransport.swift */; };
@@ -128,7 +123,7 @@
 		FAA2802B2A5D4A0B0002CB6A /* ContractDeployer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997752A5A39540067AA49 /* ContractDeployer.swift */; };
 		FAA2802C2A5D4A0B0002CB6A /* EthereumTransaction+EIP712.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997502A5A39540067AA49 /* EthereumTransaction+EIP712.swift */; };
 		FAA2802D2A5D4A0B0002CB6A /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39642A501CAC00DDE38D /* TransferManager.swift */; };
-		FAA2802E2A5D4A0B0002CB6A /* PrivateKeyEthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975C2A5A39540067AA49 /* PrivateKeyEthSigner.swift */; };
+		FAA2802E2A5D4A0B0002CB6A /* EthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975C2A5A39540067AA49 /* EthSigner.swift */; };
 		FAA2802F2A5D4A0B0002CB6A /* EIP712Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997612A5A39540067AA49 /* EIP712Domain.swift */; };
 		FAA280302A5D4A0B0002CB6A /* EthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997832A5A39540067AA49 /* EthereumProvider.swift */; };
 		FAA280312A5D4A0B0002CB6A /* PaymasterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39612A501CAC00DDE38D /* PaymasterManager.swift */; };
@@ -168,8 +163,7 @@
 		FAC9979E2A5A39540067AA49 /* IL2Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997572A5A39540067AA49 /* IL2Bridge.swift */; };
 		FAC9979F2A5A39540067AA49 /* IEthToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997582A5A39540067AA49 /* IEthToken.swift */; };
 		FAC997A02A5A39540067AA49 /* NonceHolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997592A5A39540067AA49 /* NonceHolder.swift */; };
-		FAC997A12A5A39540067AA49 /* PrivateKeyEthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975C2A5A39540067AA49 /* PrivateKeyEthSigner.swift */; };
-		FAC997A22A5A39540067AA49 /* EthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975D2A5A39540067AA49 /* EthSigner.swift */; };
+		FAC997A12A5A39540067AA49 /* EthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975C2A5A39540067AA49 /* EthSigner.swift */; };
 		FAC997A32A5A39540067AA49 /* EIP712Encoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975F2A5A39540067AA49 /* EIP712Encoder.swift */; };
 		FAC997A42A5A39540067AA49 /* Structurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997602A5A39540067AA49 /* Structurable.swift */; };
 		FAC997A52A5A39540067AA49 /* EIP712Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997612A5A39540067AA49 /* EIP712Domain.swift */; };
@@ -188,8 +182,6 @@
 		FAC997B22A5A39540067AA49 /* JRPCCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997712A5A39540067AA49 /* JRPCCounter.swift */; };
 		FAC997B32A5A39540067AA49 /* HTTPTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997732A5A39540067AA49 /* HTTPTransport.swift */; };
 		FAC997B42A5A39540067AA49 /* ContractDeployer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997752A5A39540067AA49 /* ContractDeployer.swift */; };
-		FAC997B52A5A39540067AA49 /* ZkSyncABI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997762A5A39540067AA49 /* ZkSyncABI.swift */; };
-		FAC997B62A5A39540067AA49 /* ContractUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997772A5A39540067AA49 /* ContractUtils.swift */; };
 		FAC997B72A5A39540067AA49 /* ZkSyncAddresses.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997782A5A39540067AA49 /* ZkSyncAddresses.swift */; };
 		FAC997B82A5A39540067AA49 /* Paymaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997792A5A39540067AA49 /* Paymaster.swift */; };
 		FAC997B92A5A39540067AA49 /* AccountAbstraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9977A2A5A39540067AA49 /* AccountAbstraction.swift */; };
@@ -275,7 +267,6 @@
 		FA92458A2AAFCB2900F0B282 /* EthereumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClient.swift; sourceTree = "<group>"; };
 		FA92458D2AAFCB7000F0B282 /* ZkSyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSyncClient.swift; sourceTree = "<group>"; };
 		FA9245902AAFD2E800F0B282 /* EthereumImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumImpl.swift; sourceTree = "<group>"; };
-		FA9245932AAFD3DD00F0B282 /* EthereumImpl+Promise.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EthereumImpl+Promise.swift"; sourceTree = "<group>"; };
 		FA9245962AAFD61400F0B282 /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		FAA280542A5D4A0B0002CB6A /* zkSync-Demo-Testnet.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "zkSync-Demo-Testnet.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAA280672A5D4C5A0002CB6A /* Config.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
@@ -293,8 +284,7 @@
 		FAC997572A5A39540067AA49 /* IL2Bridge.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IL2Bridge.swift; sourceTree = "<group>"; };
 		FAC997582A5A39540067AA49 /* IEthToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IEthToken.swift; sourceTree = "<group>"; };
 		FAC997592A5A39540067AA49 /* NonceHolder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonceHolder.swift; sourceTree = "<group>"; };
-		FAC9975C2A5A39540067AA49 /* PrivateKeyEthSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PrivateKeyEthSigner.swift; sourceTree = "<group>"; };
-		FAC9975D2A5A39540067AA49 /* EthSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthSigner.swift; sourceTree = "<group>"; };
+		FAC9975C2A5A39540067AA49 /* EthSigner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthSigner.swift; sourceTree = "<group>"; };
 		FAC9975F2A5A39540067AA49 /* EIP712Encoder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EIP712Encoder.swift; sourceTree = "<group>"; };
 		FAC997602A5A39540067AA49 /* Structurable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Structurable.swift; sourceTree = "<group>"; };
 		FAC997612A5A39540067AA49 /* EIP712Domain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EIP712Domain.swift; sourceTree = "<group>"; };
@@ -313,8 +303,6 @@
 		FAC997712A5A39540067AA49 /* JRPCCounter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JRPCCounter.swift; sourceTree = "<group>"; };
 		FAC997732A5A39540067AA49 /* HTTPTransport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPTransport.swift; sourceTree = "<group>"; };
 		FAC997752A5A39540067AA49 /* ContractDeployer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContractDeployer.swift; sourceTree = "<group>"; };
-		FAC997762A5A39540067AA49 /* ZkSyncABI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkSyncABI.swift; sourceTree = "<group>"; };
-		FAC997772A5A39540067AA49 /* ContractUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContractUtils.swift; sourceTree = "<group>"; };
 		FAC997782A5A39540067AA49 /* ZkSyncAddresses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkSyncAddresses.swift; sourceTree = "<group>"; };
 		FAC997792A5A39540067AA49 /* Paymaster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Paymaster.swift; sourceTree = "<group>"; };
 		FAC9977A2A5A39540067AA49 /* AccountAbstraction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AccountAbstraction.swift; sourceTree = "<group>"; };
@@ -563,8 +551,7 @@
 				FA92457E2AAFB1C700F0B282 /* WalletL1.swift */,
 				FA9245812AAFB1D300F0B282 /* WalletL2.swift */,
 				FA9245842AAFC2A800F0B282 /* Deployer.swift */,
-				FAC9975C2A5A39540067AA49 /* PrivateKeyEthSigner.swift */,
-				FAC9975D2A5A39540067AA49 /* EthSigner.swift */,
+				FAC9975C2A5A39540067AA49 /* EthSigner.swift */,
 				FA9245872AAFC44B00F0B282 /* AccountsUtil.swift */,
 			);
 			path = Accounts;
@@ -573,6 +560,7 @@
 		FA9245772AAFAC1600F0B282 /* Contracts */ = {
 			isa = PBXGroup;
 			children = (
+				FAC997822A5A39540067AA49 /* GasProvider */,
 				FA9245782AAFAC3900F0B282 /* ContractDeployer */,
 			);
 			path = Contracts;
@@ -593,6 +581,8 @@
 				FA9245902AAFD2E800F0B282 /* EthereumImpl.swift */,
 				FA92458D2AAFCB7000F0B282 /* ZkSyncClient.swift */,
 				FAC997872A5A39540067AA49 /* ZkSyncImpl.swift */,
+				FAC997832A5A39540067AA49 /* EthereumProvider.swift */,
+				FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */,
 			);
 			path = Clients;
 			sourceTree = "<group>";
@@ -600,6 +590,9 @@
 		FA92457A2AAFACE100F0B282 /* Types */ = {
 			isa = PBXGroup;
 			children = (
+				FAC997782A5A39540067AA49 /* ZkSyncAddresses.swift */,
+				FAC9977A2A5A39540067AA49 /* AccountAbstraction.swift */,
+				FAC997792A5A39540067AA49 /* Paymaster.swift */,
 				FAC9977D2A5A39540067AA49 /* Core */,
 				FAC9974F2A5A39540067AA49 /* Type */,
 			);
@@ -711,15 +704,9 @@
 		FAC997742A5A39540067AA49 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
-				FAC997822A5A39540067AA49 /* Provider */,
 				FAC997512A5A39540067AA49 /* Wrappers */,
 				FAC997632A5A39540067AA49 /* Response */,
 				FAC9976F2A5A39540067AA49 /* Request */,
-				FAC997762A5A39540067AA49 /* ZkSyncABI.swift */,
-				FAC997772A5A39540067AA49 /* ContractUtils.swift */,
-				FAC997782A5A39540067AA49 /* ZkSyncAddresses.swift */,
-				FAC997792A5A39540067AA49 /* Paymaster.swift */,
-				FAC9977A2A5A39540067AA49 /* AccountAbstraction.swift */,
 				FAC9977B2A5A39540067AA49 /* ZkSyncTransactionReceiptProcessor.swift */,
 				FAC997732A5A39540067AA49 /* HTTPTransport.swift */,
 			);
@@ -738,14 +725,12 @@
 			path = Core;
 			sourceTree = "<group>";
 		};
-		FAC997822A5A39540067AA49 /* Provider */ = {
+		FAC997822A5A39540067AA49 /* GasProvider */ = {
 			isa = PBXGroup;
 			children = (
-				FAC997832A5A39540067AA49 /* EthereumProvider.swift */,
-				FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */,
 				FAC997852A5A39540067AA49 /* ContractGasProvider.swift */,
 			);
-			path = Provider;
+			path = GasProvider;
 			sourceTree = "<group>";
 		};
 		FAC997882A5A39540067AA49 /* Extensions */ = {
@@ -753,7 +738,6 @@
 			children = (
 				FAC997892A5A39540067AA49 /* Data.swift */,
 				FAC9978A2A5A39540067AA49 /* Web3Eth.swift */,
-				FA9245932AAFD3DD00F0B282 /* EthereumImpl+Promise.swift */,
 				FAC9978B2A5A39540067AA49 /* ZkSyncImpl+Promise.swift */,
 				FAC9978C2A5A39540067AA49 /* EthereumKeystoreV3.swift */,
 				FAC9978D2A5A39540067AA49 /* EthereumAddress.swift */,
@@ -1074,7 +1058,6 @@
 				FAA27FF72A5D4A0B0002CB6A /* IL1Bridge.swift in Sources */,
 				FAA27FF82A5D4A0B0002CB6A /* Paymaster.swift in Sources */,
 				FAA27FFA2A5D4A0B0002CB6A /* PrimaryButton.swift in Sources */,
-				FA9245952AAFD3DD00F0B282 /* EthereumImpl+Promise.swift in Sources */,
 				FAA27FFD2A5D4A0B0002CB6A /* ZkBlockParameterName.swift in Sources */,
 				FAA27FFE2A5D4A0B0002CB6A /* L2ToL1MessageProof.swift in Sources */,
 				FAA280002A5D4A0B0002CB6A /* JRPCCounter.swift in Sources */,
@@ -1088,7 +1071,6 @@
 				FAA280072A5D4A0B0002CB6A /* PromiseKit.swift in Sources */,
 				FAA280082A5D4A0B0002CB6A /* TokenId.swift in Sources */,
 				FA92458F2AAFCB7000F0B282 /* ZkSyncClient.swift in Sources */,
-				FAA280092A5D4A0B0002CB6A /* EthSigner.swift in Sources */,
 				FAA2800B2A5D4A0B0002CB6A /* LToken.swift in Sources */,
 				FAA2800C2A5D4A0B0002CB6A /* ZkSyncImpl+Promise.swift in Sources */,
 				FAA2800D2A5D4A0B0002CB6A /* NonceHolder.swift in Sources */,
@@ -1097,7 +1079,6 @@
 				FAA280102A5D4A0B0002CB6A /* JRPCError.swift in Sources */,
 				FAA280112A5D4A0B0002CB6A /* SmartContractManager.swift in Sources */,
 				FA9245892AAFC44B00F0B282 /* AccountsUtil.swift in Sources */,
-				FAA280122A5D4A0B0002CB6A /* ZkSyncABI.swift in Sources */,
 				FAA280132A5D4A0B0002CB6A /* TertiaryButton.swift in Sources */,
 				FAA280142A5D4A0B0002CB6A /* TertiaryButtonStyle.swift in Sources */,
 				FAA280152A5D4A0B0002CB6A /* zkSync_DemoApp.swift in Sources */,
@@ -1117,7 +1098,6 @@
 				FAA280222A5D4A0B0002CB6A /* SmartAccountManager.swift in Sources */,
 				FAA280232A5D4A0B0002CB6A /* Numeric.swift in Sources */,
 				FAA280242A5D4A0B0002CB6A /* LoadingView.swift in Sources */,
-				FAA280252A5D4A0B0002CB6A /* ContractUtils.swift in Sources */,
 				FAA280262A5D4A0B0002CB6A /* DefaultEthereumProvider.swift in Sources */,
 				FAA280272A5D4A0B0002CB6A /* BridgeAddresses.swift in Sources */,
 				FAA280282A5D4A0B0002CB6A /* HTTPTransport.swift in Sources */,
@@ -1126,7 +1106,7 @@
 				FAA2802B2A5D4A0B0002CB6A /* ContractDeployer.swift in Sources */,
 				FAA2802C2A5D4A0B0002CB6A /* EthereumTransaction+EIP712.swift in Sources */,
 				FAA2802D2A5D4A0B0002CB6A /* TransferManager.swift in Sources */,
-				FAA2802E2A5D4A0B0002CB6A /* PrivateKeyEthSigner.swift in Sources */,
+				FAA2802E2A5D4A0B0002CB6A /* EthSigner.swift in Sources */,
 				FAA2806D2A5D4C5A0002CB6A /* Config.swift in Sources */,
 				FAA2802F2A5D4A0B0002CB6A /* EIP712Domain.swift in Sources */,
 				FAA280302A5D4A0B0002CB6A /* EthereumProvider.swift in Sources */,
@@ -1171,7 +1151,6 @@
 				FAC997C32A5A39540067AA49 /* ZkSyncImpl.swift in Sources */,
 				FAC9979D2A5A39540067AA49 /* IL1Bridge.swift in Sources */,
 				FAC997B82A5A39540067AA49 /* Paymaster.swift in Sources */,
-				FA9245942AAFD3DD00F0B282 /* EthereumImpl+Promise.swift in Sources */,
 				FA8FD8F42A4F94F400D0EB17 /* PrimaryButton.swift in Sources */,
 				FAC997BD2A5A39540067AA49 /* ZkBlockParameterName.swift in Sources */,
 				FAC997AB2A5A39540067AA49 /* L2ToL1MessageProof.swift in Sources */,
@@ -1186,7 +1165,6 @@
 				FAC997CD2A5A39540067AA49 /* PromiseKit.swift in Sources */,
 				FA92458E2AAFCB7000F0B282 /* ZkSyncClient.swift in Sources */,
 				FAC997BB2A5A39540067AA49 /* TokenId.swift in Sources */,
-				FAC997A22A5A39540067AA49 /* EthSigner.swift in Sources */,
 				FAC9979C2A5A39540067AA49 /* LToken.swift in Sources */,
 				FAC997C62A5A39540067AA49 /* ZkSyncImpl+Promise.swift in Sources */,
 				FAC997A02A5A39540067AA49 /* NonceHolder.swift in Sources */,
@@ -1195,7 +1173,6 @@
 				FAC997AF2A5A39540067AA49 /* JRPCError.swift in Sources */,
 				FA9245882AAFC44B00F0B282 /* AccountsUtil.swift in Sources */,
 				FACC396A2A501CAC00DDE38D /* SmartContractManager.swift in Sources */,
-				FAC997B52A5A39540067AA49 /* ZkSyncABI.swift in Sources */,
 				FA8FD8F52A4F94F400D0EB17 /* TertiaryButton.swift in Sources */,
 				FA8FD8F12A4F94F400D0EB17 /* TertiaryButtonStyle.swift in Sources */,
 				FACC39572A501C7500DDE38D /* zkSync_DemoApp.swift in Sources */,
@@ -1215,7 +1192,6 @@
 				FACC396B2A501CAC00DDE38D /* SmartAccountManager.swift in Sources */,
 				FAC997CC2A5A39540067AA49 /* Numeric.swift in Sources */,
 				FA8FD9002A4F9FC700D0EB17 /* LoadingView.swift in Sources */,
-				FAC997B62A5A39540067AA49 /* ContractUtils.swift in Sources */,
 				FAC997C02A5A39540067AA49 /* DefaultEthereumProvider.swift in Sources */,
 				FAC997AD2A5A39540067AA49 /* BridgeAddresses.swift in Sources */,
 				FAC997B32A5A39540067AA49 /* HTTPTransport.swift in Sources */,
@@ -1224,7 +1200,7 @@
 				FAC997B42A5A39540067AA49 /* ContractDeployer.swift in Sources */,
 				FAC997982A5A39540067AA49 /* EthereumTransaction+EIP712.swift in Sources */,
 				FACC396C2A501CAC00DDE38D /* TransferManager.swift in Sources */,
-				FAC997A12A5A39540067AA49 /* PrivateKeyEthSigner.swift in Sources */,
+				FAC997A12A5A39540067AA49 /* EthSigner.swift in Sources */,
 				FAC997A52A5A39540067AA49 /* EIP712Domain.swift in Sources */,
 				FAC997BF2A5A39540067AA49 /* EthereumProvider.swift in Sources */,
 				FACC39692A501CAC00DDE38D /* PaymasterManager.swift in Sources */,

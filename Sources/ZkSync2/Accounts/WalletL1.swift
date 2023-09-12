@@ -18,9 +18,9 @@ public class WalletL1: AdapterL1 {
     public let zkSync: ZkSyncClient
     public let web: web3
     
-    public let signer: EthSigner
+    public let signer: ETHSigner
     
-    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: EthSigner) {
+    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: ETHSigner) {
         self.zkSync = zkSync
         self.web = web3
         self.signer = ethSigner
@@ -28,6 +28,28 @@ public class WalletL1: AdapterL1 {
 }
 
 extension WalletL1 {
+    public func mainContract(callback: @escaping ((web3.web3contract) -> Void)) {
+        zkSync.mainContract { result in
+            switch result {
+            case .success(let address):
+                let zkSyncContract = self.web.contract(
+                    Web3.Utils.IZkSync,
+                    at: EthereumAddress(address)
+                )!
+                
+                callback(zkSyncContract)
+            case .failure(let error):
+                fatalError(error.localizedDescription)
+            }
+        }
+    }
+    
+    public func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void)) {
+        zkSync.getBridgeContracts { result in
+            callback(result)
+        }
+    }
+    
     public func deposit(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult> {
         deposit(to, amount: amount, token: nil, nonce: nil)
     }

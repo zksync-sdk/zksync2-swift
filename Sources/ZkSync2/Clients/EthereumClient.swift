@@ -18,8 +18,6 @@ public typealias Result<T> = Swift.Result<T, Error>
 
 public protocol EthereumClient {
     var web3: web3 { get set }
-    //111
-    func getLogs(_ completion: @escaping (Result<Log>) -> Void)
     
     // ChainID retrieves the current chain ID for transaction replay protection.
 //111    ChainID(ctx context.Context) (*big.Int, error)
@@ -27,17 +25,15 @@ public protocol EthereumClient {
     //
     // Note that loading full blocks requires two requests. Use HeaderByHash
     // if you don't need all transactions or uncle headers.
-//111    BlockByHash(ctx context.Context, hash common.Hash) (*zkTypes.Block, error)
-    func getBlockByHash(_ blockHash: String, returnFullTransactionObjects: Bool, completion: @escaping (Result<Block>) -> Void)
+    func blockByHash(_ blockHash: String, returnFullTransactionObjects: Bool, completion: @escaping (Result<Block>) -> Void)
     // BlockByNumber returns a block from the current canonical chain. If number is nil, the
     // latest known block is returned.
     //
     // Note that loading full blocks requires two requests. Use HeaderByNumber
     // if you don't need all transactions or uncle headers.
-//111    BlockByNumber(ctx context.Context, number *big.Int) (*zkTypes.Block, error)
+    func blockByNumber(_ block: DefaultBlockParameterName, returnFullTransactionObjects: Bool, completion: @escaping (Result<Block>) -> Void)
     // BlockNumber returns the most recent block number
 //111    BlockNumber(ctx context.Context) (uint64, error)
-    func getBlockByNumber(_ block: DefaultBlockParameterName, returnFullTransactionObjects: Bool, completion: @escaping (Result<Block>) -> Void)
     // PeerCount returns the number of p2p peers as reported by the net_peerCount method
 //111    PeerCount(ctx context.Context) (uint64, error)
     // HeaderByHash returns the block header with the given hash.
@@ -46,8 +42,7 @@ public protocol EthereumClient {
     // nil, the latest known header is returned.
 //111    HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
     // TransactionByHash returns the transaction with the given hash.
-//111    TransactionByHash(ctx context.Context, hash common.Hash) (tx *zkTypes.TransactionResponse, isPending bool, err error)
-    func getTransactionByHash(_ transactionHash: String, completion: @escaping (Result<TransactionResponse>) -> Void)
+    func transactionByHash(_ transactionHash: String, completion: @escaping (Result<TransactionResponse>) -> Void)
     // TransactionSender returns the sender address of the given transaction. The transaction
     // must be known to the remote node and included in the blockchain at the given block and
     // index. The sender is the one derived by the protocol at the time of inclusion.
@@ -138,7 +133,6 @@ public protocol EthereumClient {
     // the current pending state of the backend blockchain. There is no guarantee that this is
     // the true gas limit requirement as other transactions may be added or removed by miners,
     // but it should provide a basis for setting a reasonable default.
-//111    EstimateGas(ctx context.Context, msg ethereum.CallMsg) (uint64, error)
     func estimateGas(_ transaction: EthereumTransaction, completion: @escaping (Result<BigUInt>) -> Void)
     // EstimateGasL2 is almost the same as EstimateGas except that it executes an EIP-712 transaction.
 //111    EstimateGasL2(ctx context.Context, msg zkTypes.CallMsg) (uint64, error)

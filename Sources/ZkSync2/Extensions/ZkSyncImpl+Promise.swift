@@ -26,7 +26,7 @@ public extension ZkSyncImpl {
     
     func getTokenPrice(_ tokenAddress: String) -> Promise<Decimal> {
         Promise { seal in
-            getTokenPrice(tokenAddress) {
+            tokenPrice(tokenAddress) {
                 seal.resolve($0)
             }
         }
@@ -42,7 +42,7 @@ public extension ZkSyncImpl {
     
     func getBridgeContracts() -> Promise<BridgeAddresses> {
         Promise { seal in
-            getBridgeContracts {
+            bridgeContracts {
                 seal.resolve($0)
             }
         }
@@ -58,7 +58,7 @@ public extension ZkSyncImpl {
     
     func getConfirmedTokens(_ from: Int, limit: Int) -> Promise<[Token]> {
         Promise { seal in
-            getConfirmedTokens(from, limit: limit) {
+            confirmedTokens(from, limit: limit) {
                 seal.resolve($0)
             }
         }

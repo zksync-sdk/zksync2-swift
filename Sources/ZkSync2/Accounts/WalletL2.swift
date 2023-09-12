@@ -105,7 +105,7 @@ extension WalletL2 {
             
             let semaphore = DispatchSemaphore(value: 0)
             
-            zkSync.getBridgeContracts { result in
+            zkSync.bridgeContracts { result in
                 switch result {
                 case .success(let bridgeAddresses):
                     l2Bridge = bridgeAddresses.l2Erc20DefaultBridge

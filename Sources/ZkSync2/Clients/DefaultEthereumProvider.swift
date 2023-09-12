@@ -96,10 +96,6 @@ public class DefaultEthereumProvider: EthereumProvider {
         self.zkSyncContract = zkSyncContract
     }
     
-    func gasPrice() throws -> BigUInt {
-        return try web3.eth.getGasPrice()
-    }
-    
     func approveDeposit(with token: Token,
                          limit: BigUInt?) throws -> Promise<TransactionSendingResult> {
         guard let tokenAddress = EthereumAddress(token.l1Address),
@@ -124,111 +120,6 @@ public class DefaultEthereumProvider: EthereumProvider {
         }
     }
     
-    func transfer(with token: Token,
-                  amount: BigUInt,
-                  to address: String) throws -> Promise<TransactionSendingResult> {
-        let transaction: WriteTransaction
-        do {
-            if token.isETH {
-                transaction = try transferEth(amount: amount,
-                                              to: address)
-            } else {
-                transaction = try transferERC20(token: token,
-                                                amount: amount,
-                                                to: address)
-            }
-            
-            return transaction.sendPromise()
-        } catch {
-            return .init(error: error)
-        }
-    }
-    
-    func transferEth(amount: BigUInt,
-                     to address: String) throws -> WriteTransaction {
-        guard let fromAddress = EthereumAddress(l1ERC20BridgeAddress),
-              let toAddress = EthereumAddress(address) else {
-                  throw EthereumProviderError.invalidAddress
-              }
-        
-        guard let transaction = web3.eth.sendETH(from: fromAddress,
-                                                 to: toAddress,
-                                                 amount: amount.description,
-                                                 units: .wei) else {
-            throw EthereumProviderError.internalError
-        }
-        
-        return transaction
-    }
-    
-    func transferERC20(token: Token,
-                       amount: BigUInt,
-                       to address: String) throws -> WriteTransaction {
-        guard let fromAddress = EthereumAddress(l1ERC20BridgeAddress),
-              let toAddress = EthereumAddress(address),
-              let erc20ContractAddress = EthereumAddress(token.l1Address) else {
-                  throw EthereumProviderError.invalidToken
-              }
-        
-        guard let transaction = web3.eth.sendERC20tokensWithKnownDecimals(tokenAddress: erc20ContractAddress,
-                                                                          from: fromAddress,
-                                                                          to: toAddress,
-                                                                          amount: amount) else {
-            throw EthereumProviderError.internalError
-        }
-        
-        return transaction
-    }
-    
-    //    {
-    //        "inputs": [
-    //            {
-    //                "internalType": "address",
-    //                "name": "_contractL2",
-    //                "type": "address"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2Value",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "bytes",
-    //                "name": "_calldata",
-    //                "type": "bytes"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2GasLimit",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2GasPerPubdataByteLimit",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "bytes[]",
-    //                "name": "_factoryDeps",
-    //                "type": "bytes[]"
-    //            },
-    //            {
-    //                "internalType": "address",
-    //                "name": "_refundRecipient",
-    //                "type": "address"
-    //            }
-    //        ],
-    //        "name": "requestL2Transaction",
-    //        "outputs": [
-    //            {
-    //                "internalType": "bytes32",
-    //                "name": "canonicalTxHash",
-    //                "type": "bytes32"
-    //            }
-    //        ],
-    //        "stateMutability": "payable",
-    //        "type": "function"
-    //    }
     func requestExecute(_ contractAddress: String,
                         l2Value: BigUInt,
                         calldata: Data,
@@ -242,7 +133,7 @@ public class DefaultEthereumProvider: EthereumProvider {
             gasPrice = try! web3.eth.getGasPrice()
         }
         
-        guard let baseCost = try getBaseCost(gasLimit, gasPrice: gasPrice).wait()["0"] as? BigUInt else {
+        guard let baseCost = try baseCost(gasLimit, gasPrice: gasPrice).wait()["0"] as? BigUInt else {
             return Promise(error: EthereumProviderError.invalidParameter)
         }
         
@@ -290,28 +181,25 @@ public class DefaultEthereumProvider: EthereumProvider {
         return transaction.sendPromise()
     }
     
-    public func deposit(with token: Token,
-                 amount: BigUInt,
-                 operatorTips: BigUInt,
-                 to userAddress: String) throws -> Promise<TransactionSendingResult> {
+    public func deposit(with token: Token, amount: BigUInt, address: String, operatorTips: BigUInt) throws -> Promise<TransactionSendingResult> {
         if token.isETH {
             let gasLimit = BigUInt(10000000)
             
-            return try requestExecute(userAddress,
+            return try requestExecute(address,
                                       l2Value: amount,
                                       calldata: Data(),
                                       gasLimit: gasLimit,
                                       factoryDeps: nil,
                                       operatorTips: operatorTips,
                                       gasPrice: nil,
-                                      refundRecipient: userAddress)
+                                      refundRecipient: address)
         } else {
             let baseCost = BigUInt.zero
             let gasLimit = gasLimits[token.l1Address, default: BigUInt(300000)]
             let totalAmount = operatorTips + baseCost
             
             let parameters = [
-                userAddress,
+                address,
                 token.l1Address,
                 gasLimit,
                 l1ToL2GasPerPubData,
@@ -320,7 +208,7 @@ public class DefaultEthereumProvider: EthereumProvider {
             ] as [AnyObject]
             
             var transactionOptions = TransactionOptions.defaultOptions
-            transactionOptions.to = EthereumAddress(userAddress)!
+            transactionOptions.to = EthereumAddress(address)!
             
             guard let transaction = l1ERC20Bridge.write("deposit",
                                                         parameters: parameters,
@@ -332,14 +220,8 @@ public class DefaultEthereumProvider: EthereumProvider {
         }
     }
     
-    func withdraw(with token: Token,
-                  amount: BigUInt,
-                  from userAddress: String) throws -> Promise<TransactionSendingResult> {
-        throw EthereumProviderError.internalError
-    }
-    
     func isDepositApproved(with token: Token,
-                           address: String,
+                           to address: String,
                            threshold: BigUInt?) throws -> Bool {
         guard let tokenAddress = EthereumAddress(token.l1Address),
               let ownerAddress = EthereumAddress(address),
@@ -357,40 +239,7 @@ public class DefaultEthereumProvider: EthereumProvider {
         return allowance > (threshold ?? DefaultEthereumProvider.DefaultThreshold)
     }
     
-    //    {
-    //        "inputs": [
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2BlockNumber",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2MessageIndex",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint16",
-    //                "name": "_l2TxNumberInBlock",
-    //                "type": "uint16"
-    //            },
-    //            {
-    //                "internalType": "bytes",
-    //                "name": "_message",
-    //                "type": "bytes"
-    //            },
-    //            {
-    //                "internalType": "bytes32[]",
-    //                "name": "_merkleProof",
-    //                "type": "bytes32[]"
-    //            }
-    //        ],
-    //        "name": "finalizeEthWithdrawal",
-    //        "outputs": [],
-    //        "stateMutability": "nonpayable",
-    //        "type": "function"
-    //    }
-    public func finalizeEthWithdrawal(_ l2BlockNumber: BigUInt,
+    func finalizeEthWithdrawal(_ l2BlockNumber: BigUInt,
                                       l2MessageIndex: BigUInt,
                                       l2TxNumberInBlock: UInt,
                                       message: Data,
@@ -419,39 +268,6 @@ public class DefaultEthereumProvider: EthereumProvider {
         return transaction.sendPromise()
     }
     
-    //    {
-    //        "inputs": [
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2BlockNumber",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2MessageIndex",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint16",
-    //                "name": "_l2TxNumberInBlock",
-    //                "type": "uint16"
-    //            },
-    //            {
-    //                "internalType": "bytes",
-    //                "name": "_message",
-    //                "type": "bytes"
-    //            },
-    //            {
-    //                "internalType": "bytes32[]",
-    //                "name": "_merkleProof",
-    //                "type": "bytes32[]"
-    //            }
-    //        ],
-    //        "name": "finalizeWithdrawal",
-    //        "outputs": [],
-    //        "stateMutability": "nonpayable",
-    //        "type": "function"
-    //    }
     func finalizeWithdrawal(_ l1BridgeAddress: String,
                             l2BlockNumber: BigUInt,
                             l2MessageIndex: BigUInt,
@@ -487,49 +303,6 @@ public class DefaultEthereumProvider: EthereumProvider {
         return writeTransaction.sendPromise()
     }
     
-    //    {
-    //        "inputs": [
-    //            {
-    //                "internalType": "address",
-    //                "name": "_depositSender",
-    //                "type": "address"
-    //            },
-    //            {
-    //                "internalType": "address",
-    //                "name": "_l1Token",
-    //                "type": "address"
-    //            },
-    //            {
-    //                "internalType": "bytes32",
-    //                "name": "_l2TxHash",
-    //                "type": "bytes32"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2BlockNumber",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2MessageIndex",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint16",
-    //                "name": "_l2TxNumberInBlock",
-    //                "type": "uint16"
-    //            },
-    //            {
-    //                "internalType": "bytes32[]",
-    //                "name": "_merkleProof",
-    //                "type": "bytes32[]"
-    //            }
-    //        ],
-    //        "name": "claimFailedDeposit",
-    //        "outputs": [],
-    //        "stateMutability": "nonpayable",
-    //        "type": "function"
-    //    }
     func claimFailedDeposit(_ l1BridgeAddress: String,
                             depositSender: String,
                             l1Token: String,
@@ -566,30 +339,6 @@ public class DefaultEthereumProvider: EthereumProvider {
         return writeTransaction.sendPromise()
     }
     
-    //    {
-    //        "inputs": [
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2BlockNumber",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2MessageIndex",
-    //                "type": "uint256"
-    //            }
-    //        ],
-    //        "name": "isEthWithdrawalFinalized",
-    //        "outputs": [
-    //            {
-    //                "internalType": "bool",
-    //                "name": "",
-    //                "type": "bool"
-    //            }
-    //        ],
-    //        "stateMutability": "view",
-    //        "type": "function"
-    //    }
     func isEthWithdrawalFinalized(_ l2BlockNumber: BigUInt,
                                   l2MessageIndex: BigUInt) -> Promise<[String: Any]> {
         let parameters = [
@@ -612,30 +361,6 @@ public class DefaultEthereumProvider: EthereumProvider {
         return readTransaction.callPromise()
     }
     
-    //    {
-    //        "inputs": [
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2BlockNumber",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2MessageIndex",
-    //                "type": "uint256"
-    //            }
-    //        ],
-    //        "name": "isWithdrawalFinalized",
-    //        "outputs": [
-    //            {
-    //                "internalType": "bool",
-    //                "name": "",
-    //                "type": "bool"
-    //            }
-    //        ],
-    //        "stateMutability": "view",
-    //        "type": "function"
-    //    }
     func isWithdrawalFinalized(_ l1BridgeAddress: String,
                                l2BlockNumber: BigUInt,
                                l2MessageIndex: BigInt) -> Promise<[String: Any]> {
@@ -662,36 +387,7 @@ public class DefaultEthereumProvider: EthereumProvider {
         return readTransaction.callPromise()
     }
     
-    //    {
-    //        "inputs": [
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_gasPrice",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2GasLimit",
-    //                "type": "uint256"
-    //            },
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "_l2GasPerPubdataByteLimit",
-    //                "type": "uint256"
-    //            }
-    //        ],
-    //        "name": "l2TransactionBaseCost",
-    //        "outputs": [
-    //            {
-    //                "internalType": "uint256",
-    //                "name": "",
-    //                "type": "uint256"
-    //            }
-    //        ],
-    //        "stateMutability": "view",
-    //        "type": "function"
-    //    }
-    func getBaseCost(_ gasLimit: BigUInt,
+    func baseCost(_ gasLimit: BigUInt,
                      gasPerPubdataByte: BigUInt = BigUInt(50000),
                      gasPrice: BigUInt?) -> Promise<[String: Any]> {
         var gasPrice = gasPrice
@@ -745,7 +441,7 @@ extension DefaultEthereumProvider {
     static func load(_ zkSync: ZkSyncClient,
                      web3: web3) -> Promise<DefaultEthereumProvider> {
         Promise { seal in
-            zkSync.getBridgeContracts { result in
+            zkSync.bridgeContracts { result in
                 switch result {
                 case .success(let bridgeAddresses):
                     zkSync.mainContract { result in

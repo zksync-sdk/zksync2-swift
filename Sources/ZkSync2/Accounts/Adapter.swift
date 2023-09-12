@@ -39,7 +39,6 @@ public protocol AdapterL1 {
     // DepositTransaction.ApproveERC20 can be enabled to perform token approval.
     // If there are already enough approved tokens for the L1 bridge, token approval will be skipped.
     // To check the amount of approved tokens for a specific bridge, use the AdapterL1.AllowanceL1 method.
-//111    Deposit(auth *TransactOpts, tx DepositTransaction) (*types.Transaction, error)
     func deposit(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult>
     func deposit(_ to: String, amount: BigUInt, token: Token) -> Promise<TransactionSendingResult>
     func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
@@ -76,7 +75,6 @@ public protocol AdapterL2 {
     // Withdraw initiates the withdrawal process which withdraws ETH or any ERC20
     // token from the associated account on L2 network to the target account on L1
     // network.
-//111    Withdraw(auth *TransactOpts, tx WithdrawalTransaction) (*types.Transaction, error)
     func withdraw(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult>
     func withdraw(_ to: String, amount: BigUInt, token: Token) -> Promise<TransactionSendingResult>
     func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
@@ -85,7 +83,6 @@ public protocol AdapterL2 {
 //111    EstimateGasWithdraw(ctx context.Context, msg WithdrawalCallMsg) (uint64, error)
     // Transfer moves the ETH or any ERC20 token from the associated account to the
     // target account.
-//111    Transfer(auth *TransactOpts, tx TransferTransaction) (*types.Transaction, error)
     func transfer(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult>
     func transfer(_ to: String, amount: BigUInt, token: Token) -> Promise<TransactionSendingResult>
     func transfer(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult>

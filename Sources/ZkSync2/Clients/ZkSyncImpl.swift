@@ -50,7 +50,7 @@ public class ZkSyncImpl: ZkSyncClient {
                        completion: completion)
     }
     
-    public func getConfirmedTokens(_ from: Int,
+    public func confirmedTokens(_ from: Int,
                                limit: Int,
                                completion: @escaping (Result<[Token]>) -> Void) {
         let parameters = [
@@ -63,7 +63,7 @@ public class ZkSyncImpl: ZkSyncClient {
                        completion: completion)
     }
     
-    public func getTokenPrice(_ tokenAddress: String,
+    public func tokenPrice(_ tokenAddress: String,
                           completion: @escaping (Result<Decimal>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: tokenAddress),
@@ -84,7 +84,7 @@ public class ZkSyncImpl: ZkSyncClient {
         })
     }
     
-    public func getAllAccountBalances(_ address: String,
+    public func allAccountBalances(_ address: String,
                                   completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: address)
@@ -97,7 +97,7 @@ public class ZkSyncImpl: ZkSyncClient {
     
     // TODO: implement l1 for l2 and l2 for l1
     
-    public func getBridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void) {
+    public func bridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void) {
         transport.send(method: "zks_getBridgeContracts",
                        parameters: [],
                        completion: completion)
@@ -138,7 +138,7 @@ public class ZkSyncImpl: ZkSyncClient {
                        completion: completion)
     }
     
-    public func getTransactionDetails(_ transactionHash: String,
+    public func transactionDetails(_ transactionHash: String,
                                   completion: @escaping (Result<TransactionDetails>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: transactionHash),
@@ -149,7 +149,7 @@ public class ZkSyncImpl: ZkSyncClient {
                        completion: completion)
     }
     
-    public func getBlockDetails(_ block: Int,
+    public func blockDetails(_ block: Int,
                             completion: @escaping (Result<BlockDetails>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .int, value: block),
@@ -160,7 +160,7 @@ public class ZkSyncImpl: ZkSyncClient {
                        completion: completion)
     }
     
-    public func getBlockDetails(_ blockNumber: BigUInt,
+    public func blockDetails(_ blockNumber: BigUInt,
                             returnFullTransactionObjects: Bool,
                             completion: @escaping (Result<BlockDetails>) -> Void) {
         let parameters = [

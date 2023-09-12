@@ -37,7 +37,7 @@ public class EthereumImpl: EthereumClient {
         })
     }
     
-    public func getTransactionByHash(_ transactionHash: String,
+    public func transactionByHash(_ transactionHash: String,
                                      completion: @escaping (Result<TransactionResponse>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: transactionHash),
@@ -54,7 +54,7 @@ public class EthereumImpl: EthereumClient {
                        completion: completion)
     }
     
-    public func getBlockByHash(_ blockHash: String,
+    public func blockByHash(_ blockHash: String,
                                returnFullTransactionObjects: Bool,
                                completion: @escaping (Result<Block>) -> Void) {
         let parameters = [
@@ -67,7 +67,7 @@ public class EthereumImpl: EthereumClient {
                        completion: completion)
     }
     
-    public func getBlockByNumber(_ block: DefaultBlockParameterName,
+    public func blockByNumber(_ block: DefaultBlockParameterName,
                                  returnFullTransactionObjects: Bool,
                                  completion: @escaping (Result<Block>) -> Void) {
         let parameters = [

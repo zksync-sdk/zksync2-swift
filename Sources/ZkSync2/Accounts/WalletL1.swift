@@ -45,7 +45,7 @@ extension WalletL1 {
     }
     
     public func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void)) {
-        zkSync.getBridgeContracts { result in
+        zkSync.bridgeContracts { result in
             callback(result)
         }
     }
@@ -95,8 +95,8 @@ extension WalletL1 {
         return try! defaultEthereumProvider.deposit(
             with: token ?? Token.ETH,
             amount: amount,
-            operatorTips: BigUInt(0),
-            to: to
+            address: to,
+            operatorTips: BigUInt(0)
         )
     }
 }

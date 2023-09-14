@@ -1,5 +1,5 @@
 //
-//  ZkSyncImpl.swift
+//  ZkSyncClientImpl.swift
 //  zkSync-Demo
 //
 //  Created by Bojan on 12.9.23..
@@ -14,7 +14,7 @@ import web3swift
 import web3swift_zksync2
 #endif
 
-public class ZkSyncImpl: ZkSyncClient {
+public class ZkSyncClientImpl: ZkSyncClient {
     
     public var web3: web3
     
@@ -39,6 +39,25 @@ public class ZkSyncImpl: ZkSyncClient {
     public func estimateFeePromise(_ transaction: EthereumTransaction) -> Promise<Fee> {
         Promise { seal in
             estimateFee(transaction) { fee in
+                seal.resolve(fee)
+            }
+        }
+    }
+    
+    public func estimateGasL1(_ transaction: EthereumTransaction,
+                            completion: @escaping (Result<Fee>) -> Void) {
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
+        ]
+        
+        transport.send(method: "zks_estimateGasL1ToL2",
+                       parameters: parameters,
+                       completion: completion)
+    }
+    
+    public func estimateGasL1(_ transaction: EthereumTransaction) -> Promise<Fee> {
+        Promise { seal in
+            estimateGasL1(transaction) { fee in
                 seal.resolve(fee)
             }
         }

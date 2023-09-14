@@ -73,7 +73,7 @@ public protocol ZkSyncClient {
     func estimateFee(_ transaction: EthereumTransaction) -> Promise<Fee>
     // EstimateGasL1 estimates the amount of gas required to submit a transaction
     // from L1 to L2.
-//111    EstimateGasL1(ctx context.Context, tx zkTypes.CallMsg) (uint64, error)
+    func estimateGasL1(_ transaction: EthereumTransaction) -> Promise<Fee>
     // EstimateGasTransfer estimates the amount of gas required for a transfer
     // transaction.
 //111    EstimateGasTransfer(ctx context.Context, msg TransferCallMsg) (uint64, error)

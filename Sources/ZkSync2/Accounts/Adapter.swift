@@ -116,14 +116,11 @@ public protocol AdapterL2 {
 // and smart accounts on L2 network for the associated account.
 public protocol Deployer {
     // Deploy deploys smart contract using CREATE2 opcode.
-//111    Deploy(auth *TransactOpts, tx Create2Transaction) (common.Hash, error)
-    func deploy(_ bytecode: Data) -> Promise<TransactionSendingResult>
-    func deploy(_ bytecode: Data, calldata: Data?) -> Promise<TransactionSendingResult>
     func deploy(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
     // DeployWithCreate deploys smart contract using CREATE opcode.
-//111    DeployWithCreate(auth *TransactOpts, tx CreateTransaction) (common.Hash, error)
+    func deployWithCreate(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
     // DeployAccount deploys smart account using CREATE2 opcode.
-//111    DeployAccount(auth *TransactOpts, tx Create2Transaction) (common.Hash, error)
+    func deployAccount(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
     // DeployAccountWithCreate deploys smart account using CREATE opcode.
-//111    DeployAccountWithCreate(auth *TransactOpts, tx CreateTransaction) (common.Hash, error)
+    func deployAccountWithCreate(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
 }

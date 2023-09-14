@@ -1,5 +1,5 @@
 //
-//  ZkSyncImpl+Promise.swift
+//  ZkSyncClientImpl+Promise.swift
 //  ZkSync2
 //
 //  Created by Maxim Makhun on 10/1/22.
@@ -14,7 +14,7 @@ import web3swift
 import web3swift_zksync2
 #endif
 
-public extension ZkSyncImpl {
+public extension ZkSyncClientImpl {
     
     func mainContract() -> Promise<String> {
         Promise { seal in

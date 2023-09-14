@@ -28,14 +28,6 @@ public class DeployerImpl: Deployer {
 }
 
 extension DeployerImpl {
-    public func deploy(_ bytecode: Data) -> Promise<TransactionSendingResult> {
-        deploy(bytecode, calldata: nil, nonce: nil)
-    }
-    
-    public func deploy(_ bytecode: Data, calldata: Data?) -> Promise<TransactionSendingResult> {
-        deploy(bytecode, calldata: calldata, nonce: nil)
-    }
-    
     public func deploy(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult> {
         let nonceToUse: BigUInt
         if let nonce = nonce {
@@ -52,6 +44,66 @@ extension DeployerImpl {
         }
         
         let estimate = EthereumTransaction.create2ContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, deps: [bytecode], calldata: validCalldata, salt: Data(), chainId: signer.domain.chainId)
+        
+        return AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
+    }
+    
+    public func deployWithCreate(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+        let nonceToUse: BigUInt
+        if let nonce = nonce {
+            nonceToUse = nonce
+        } else {
+            nonceToUse = try! getNonce()
+        }
+        
+        let validCalldata: Data
+        if let calldata = calldata {
+            validCalldata = calldata
+        } else {
+            validCalldata = Data(hex: "0x")
+        }
+        
+        let estimate = EthereumTransaction.createContractTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, calldata: validCalldata)
+        
+        return AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
+    }
+    
+    public func deployAccount(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+        let nonceToUse: BigUInt
+        if let nonce = nonce {
+            nonceToUse = nonce
+        } else {
+            nonceToUse = try! getNonce()
+        }
+        
+        let validCalldata: Data
+        if let calldata = calldata {
+            validCalldata = calldata
+        } else {
+            validCalldata = Data(hex: "0x")
+        }
+        
+        let estimate = EthereumTransaction.create2AccountTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, deps: [bytecode], calldata: validCalldata, salt: Data(), chainId: signer.domain.chainId)
+        
+        return AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
+    }
+    
+    public func deployAccountWithCreate(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+        let nonceToUse: BigUInt
+        if let nonce = nonce {
+            nonceToUse = nonce
+        } else {
+            nonceToUse = try! getNonce()
+        }
+        
+        let validCalldata: Data
+        if let calldata = calldata {
+            validCalldata = calldata
+        } else {
+            validCalldata = Data(hex: "0x")
+        }
+        
+        let estimate = EthereumTransaction.createAccountTransaction(from: EthereumAddress(signer.address)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, bytecode: bytecode, calldata: validCalldata)
         
         return AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
     }

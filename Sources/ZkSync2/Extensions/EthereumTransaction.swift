@@ -24,10 +24,9 @@ extension EthereumTransaction {
     public static func createContractTransaction(from: EthereumAddress,
                                           gasPrice: BigUInt,
                                           gasLimit: BigUInt,
-                                          bytecode: String,
+                                          bytecode: Data,
                                           calldata: Data) -> EthereumTransaction {
-        let bytecodeBytes = Data(fromHex: bytecode)!
-        let calldataCreate = ContractDeployer.encodeCreate(bytecodeBytes, calldata: calldata)
+        let calldataCreate = ContractDeployer.encodeCreate(bytecode, calldata: calldata)
         
 #if DEBUG
         print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
@@ -48,7 +47,7 @@ extension EthereumTransaction {
         var EIP712Meta = EIP712Meta()
         EIP712Meta.gasPerPubdata = BigUInt(160000)
         EIP712Meta.customSignature = nil
-        EIP712Meta.factoryDeps = [bytecodeBytes]
+        EIP712Meta.factoryDeps = [bytecode]
         EIP712Meta.paymasterParams = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         
@@ -64,10 +63,9 @@ extension EthereumTransaction {
     public static func createAccountTransaction(from: EthereumAddress,
                                           gasPrice: BigUInt,
                                           gasLimit: BigUInt,
-                                          bytecode: String,
+                                          bytecode: Data,
                                           calldata: Data) -> EthereumTransaction {
-        let bytecodeBytes = Data(fromHex: bytecode)!
-        let calldataCreate = ContractDeployer.encodeCreateAccount(bytecodeBytes, calldata: calldata, version: .version1)
+        let calldataCreate = ContractDeployer.encodeCreateAccount(bytecode, calldata: calldata, version: .version1)
         
 #if DEBUG
         print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
@@ -88,7 +86,7 @@ extension EthereumTransaction {
         var EIP712Meta = EIP712Meta()
         EIP712Meta.gasPerPubdata = BigUInt(160000)
         EIP712Meta.customSignature = nil
-        EIP712Meta.factoryDeps = [bytecodeBytes]
+        EIP712Meta.factoryDeps = [bytecode]
         EIP712Meta.paymasterParams = nil
         ethereumParameters.EIP712Meta = EIP712Meta
         

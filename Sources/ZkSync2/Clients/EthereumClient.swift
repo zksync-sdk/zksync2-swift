@@ -33,9 +33,9 @@ public protocol EthereumClient {
     // if you don't need all transactions or uncle headers.
     func blockByNumber(_ block: DefaultBlockParameterName, returnFullTransactionObjects: Bool, completion: @escaping (Result<Block>) -> Void)
     // BlockNumber returns the most recent block number
-//111    BlockNumber(ctx context.Context) (uint64, error)
+    func blockNumber(completion: @escaping (Result<BigUInt>) -> Void)
     // PeerCount returns the number of p2p peers as reported by the net_peerCount method
-//111    PeerCount(ctx context.Context) (uint64, error)
+    func peerCount(completion: @escaping (Result<BigUInt>) -> Void)
     // HeaderByHash returns the block header with the given hash.
 //111    HeaderByHash(ctx context.Context, hash common.Hash) (*types.Header, error)
     // HeaderByNumber returns a block header from the current canonical chain. If number is
@@ -107,10 +107,10 @@ public protocol EthereumClient {
     // blockNumber selects the block height at which the call runs. It can be nil, in which
     // case the code is taken from the latest known block. Note that state from very old
     // blocks might not be available.
-//111    CallContract(ctx context.Context, msg ethereum.CallMsg, blockNumber *big.Int) ([]byte, error)
+    func callContract(_ transaction: EthereumTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void)
     // CallContractL2 is almost the same as CallContract except that it executes a message call
     // for EIP-712 transaction.
-//111    CallContractL2(ctx context.Context, msg zkTypes.CallMsg, blockNumber *big.Int) ([]byte, error)
+    func callContractL2(_ transaction: EthereumTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void)
     // CallContractAtHash is almost the same as CallContract except that it selects
     // the block by block hash instead of block height.
 //111    CallContractAtHash(ctx context.Context, msg ethereum.CallMsg, blockHash common.Hash) ([]byte, error)

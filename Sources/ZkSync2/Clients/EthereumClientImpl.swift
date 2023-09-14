@@ -1,5 +1,5 @@
 //
-//  EthereumImpl.swift
+//  EthereumClientImpl.swift
 //  zkSync-Demo
 //
 //  Created by Bojan on 1.9.23..
@@ -14,7 +14,7 @@ import web3swift
 import web3swift_zksync2
 #endif
 
-public class EthereumImpl: EthereumClient {
+public class EthereumClientImpl: EthereumClient {
     public var web3: web3
     
     let transport: Transport
@@ -78,5 +78,55 @@ public class EthereumImpl: EthereumClient {
         transport.send(method: "eth_getBlockByNumber",
                        parameters: parameters,
                        completion: completion)
+    }
+    
+    public func blockNumber(completion: @escaping (Result<BigUInt>) -> Void) {
+        do {
+            let blockNumber = try web3.eth.getBlockNumber()
+            
+            completion(.success(blockNumber))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func peerCount(completion: @escaping (Result<BigUInt>) -> Void) {
+        do {
+            let blockNumber = try web3.eth.getPeerCount()
+            
+            completion(.success(blockNumber))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func callContract(_ transaction: EthereumTransaction, blockNumber: BigUInt? = nil, completion: @escaping (Result<Data>) -> Void) {
+        var transactionOptions = TransactionOptions.defaultOptions
+        if let blockNumber = blockNumber {
+            transactionOptions.callOnBlock = .exactBlockNumber(blockNumber)
+        }
+        
+        do {
+            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            
+            completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func callContractL2(_ transaction: EthereumTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) {
+        var transactionOptions = TransactionOptions.defaultOptions
+        if let blockNumber = blockNumber {
+            transactionOptions.callOnBlock = .exactBlockNumber(blockNumber)
+        }
+        
+        do {
+            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            
+            completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
     }
 }

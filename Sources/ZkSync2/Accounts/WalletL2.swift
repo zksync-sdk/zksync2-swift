@@ -16,12 +16,14 @@ import web3swift_zksync2
 
 public class WalletL2: AdapterL2 {
     public let zkSync: ZkSyncClient
+    public let ethClient: EthereumClient
     public let web: web3
     
     public let signer: ETHSigner
     
-    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: ETHSigner) {
+    public init(_ zkSync: ZkSyncClient, ethClient: EthereumClient, web3: web3, ethSigner: ETHSigner) {
         self.zkSync = zkSync
+        self.ethClient = ethClient
         self.web = web3
         self.signer = ethSigner
     }
@@ -125,6 +127,10 @@ extension WalletL2 {
             
             return AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
         }
+    }
+    
+    public func callContract(_ transaction: EthereumTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) {
+        ethClient.callContract(transaction, blockNumber: blockNumber, completion: completion)
     }
 }
 

@@ -16,12 +16,14 @@ import web3swift_zksync2
 
 public class WalletL1: AdapterL1 {
     public let zkSync: ZkSyncClient
+    public let ethClient: EthereumClient
     public let web: web3
     
     public let signer: ETHSigner
     
-    public init(_ zkSync: ZkSyncClient, web3: web3, ethSigner: ETHSigner) {
+    public init(_ zkSync: ZkSyncClient, ethClient: EthereumClient, web3: web3, ethSigner: ETHSigner) {
         self.zkSync = zkSync
+        self.ethClient = ethClient
         self.web = web3
         self.signer = ethSigner
     }

@@ -132,6 +132,10 @@ extension WalletL2 {
     public func callContract(_ transaction: EthereumTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) {
         ethClient.callContract(transaction, blockNumber: blockNumber, completion: completion)
     }
+    
+    public func sendTransaction(_ transaction: EthereumTransaction, transactionOptions: TransactionOptions, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
+        ethClient.sendTransaction(transaction, transactionOptions: transactionOptions, completion: completion)
+    }
 }
 
 extension WalletL2 {

@@ -24,8 +24,34 @@ public class EthereumClientImpl: EthereumClient {
         self.transport = HTTPTransport(self.web3.provider.url)
     }
     
+    public func suggestGasPrice(completion: @escaping (Result<BigUInt>) -> Void) {
+        do {
+            let gasPrice = try web3.eth.getGasPrice()
+            
+            completion(.success(gasPrice))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func suggestGasTipCap(completion: @escaping (Result<BigUInt>) -> Void) {
+        completion(.success(BigUInt(1_000_000_000)))
+    }
+    
     public func estimateGas(_ transaction: EthereumTransaction,
                             completion: @escaping (Result<BigUInt>) -> Void) {
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
+        ]
+        
+        transport.send(method: "eth_estimateGas",
+                       parameters: parameters,
+                       completion: { (result: Result<String>) in
+            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
+        })
+    }
+    
+    public func estimateGasL2(_ transaction: EthereumTransaction, completion: @escaping (Result<BigUInt>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
         ]
@@ -125,6 +151,86 @@ public class EthereumClientImpl: EthereumClient {
             let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
             
             completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func callContractAtHash(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
+        var transactionOptions = TransactionOptions.defaultOptions
+        
+        do {
+            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            
+            completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func callContractAtHashL2(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
+        var transactionOptions = TransactionOptions.defaultOptions
+        
+        do {
+            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            
+            completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func pendingCallContract(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.callOnBlock = .pending
+        
+        do {
+            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            
+            completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func pendingCallContractL2(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.callOnBlock = .pending
+        
+        do {
+            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
+            
+            completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func transactionReceipt(_ txHash: String, completion: @escaping (Result<TransactionReceipt>) -> Void) {
+        do {
+            let transactionReceipt = try web3.eth.getTransactionReceipt(txHash)
+            
+            completion(.success(transactionReceipt))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func sendTransaction(_ transaction: EthereumTransaction, transactionOptions: TransactionOptions, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
+        do {
+            let result = try web3.eth.sendTransaction(transaction, transactionOptions: transactionOptions)
+            
+            completion(.success(result))
+        } catch {
+            completion(.failure(error))
+        }
+    }
+    
+    public func sendRawTransaction(transaction: Data, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
+        do {
+            let result = try web3.eth.sendRawTransaction(transaction)
+            
+            completion(.success(result))
         } catch {
             completion(.failure(error))
         }

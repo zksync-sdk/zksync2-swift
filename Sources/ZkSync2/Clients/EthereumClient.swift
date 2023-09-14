@@ -53,7 +53,7 @@ public protocol EthereumClient {
 //111    TransactionInBlock(ctx context.Context, blockHash common.Hash, index uint) (*zkTypes.TransactionResponse, error)
     // TransactionReceipt returns the receipt of a transaction by transaction hash.
     // Note that the receipt is not available for pending transactions.
-//111    TransactionReceipt(ctx context.Context, txHash common.Hash) (*zkTypes.Receipt, error)
+    func transactionReceipt(_ txHash: String, completion: @escaping (Result<TransactionReceipt>) -> Void)
     // SyncProgress retrieves the current progress of the sync algorithm. If there's
     // no sync currently running, it returns nil.
 //111    SyncProgress(ctx context.Context) (*ethereum.SyncProgress, error)
@@ -113,36 +113,36 @@ public protocol EthereumClient {
     func callContractL2(_ transaction: EthereumTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void)
     // CallContractAtHash is almost the same as CallContract except that it selects
     // the block by block hash instead of block height.
-//111    CallContractAtHash(ctx context.Context, msg ethereum.CallMsg, blockHash common.Hash) ([]byte, error)
+    func callContractAtHash(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void)
     // CallContractAtHashL2 is almost the same as CallContractL2 except that it selects
     // the block by block hash instead of block height.
-//111    CallContractAtHashL2(ctx context.Context, msg zkTypes.CallMsg, blockHash common.Hash) ([]byte, error)
+    func callContractAtHashL2(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void)
     // PendingCallContract executes a message call transaction using the EVM.
     // The state seen by the contract call is the pending state.
-//111    PendingCallContract(ctx context.Context, msg ethereum.CallMsg) ([]byte, error)
+    func pendingCallContract(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void)
     // PendingCallContractL2 executes a message call for EIP-712 transaction using the EVM.
     // The state seen by the contract call is the pending state.
-//111    PendingCallContractL2(ctx context.Context, msg zkTypes.CallMsg) ([]byte, error)
+    func pendingCallContractL2(_ transaction: EthereumTransaction, hash: String, completion: @escaping (Result<Data>) -> Void)
     // SuggestGasPrice retrieves the currently suggested gas price to allow a timely
     // execution of a transaction.
-//111    SuggestGasPrice(ctx context.Context) (*big.Int, error)
+    func suggestGasPrice(completion: @escaping (Result<BigUInt>) -> Void)
     // SuggestGasTipCap retrieves the currently suggested gas tip cap after 1559 to
     // allow a timely execution of a transaction.
-//111    SuggestGasTipCap(ctx context.Context) (*big.Int, error)
+    func suggestGasTipCap(completion: @escaping (Result<BigUInt>) -> Void)
     // EstimateGas tries to estimate the gas needed to execute a transaction based on
     // the current pending state of the backend blockchain. There is no guarantee that this is
     // the true gas limit requirement as other transactions may be added or removed by miners,
     // but it should provide a basis for setting a reasonable default.
     func estimateGas(_ transaction: EthereumTransaction, completion: @escaping (Result<BigUInt>) -> Void)
     // EstimateGasL2 is almost the same as EstimateGas except that it executes an EIP-712 transaction.
-//111    EstimateGasL2(ctx context.Context, msg zkTypes.CallMsg) (uint64, error)
+    func estimateGasL2(_ transaction: EthereumTransaction, completion: @escaping (Result<BigUInt>) -> Void)
     // SendTransaction injects a signed transaction into the pending pool for execution.
     //
     // If the transaction was a contract creation use the TransactionReceipt method to get the
     // contract address after the transaction has been mined.
-//111    SendTransaction(ctx context.Context, tx *types.Transaction) error
+    func sendTransaction(_ transaction: EthereumTransaction, transactionOptions: TransactionOptions, completion: @escaping (Result<TransactionSendingResult>) -> Void)
     // SendRawTransaction injects a signed raw transaction into the pending pool for execution.
-//111    SendRawTransaction(ctx context.Context, tx []byte) (common.Hash, error)
+    func sendRawTransaction(transaction: Data, completion: @escaping (Result<TransactionSendingResult>) -> Void)
     
     // WaitMined waits for tx to be mined on the blockchain.
     // It stops waiting when the context is canceled.

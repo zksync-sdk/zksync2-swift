@@ -109,7 +109,7 @@ public protocol AdapterL2 {
 //111    SignTransaction(tx *zkTypes.Transaction712) ([]byte, error)
     // SendTransaction injects a transaction into the pending pool for execution. Any
     // unset transaction fields are prepared using the PopulateTransaction method.
-//111    SendTransaction(ctx context.Context, tx *Transaction) (common.Hash, error)
+    func sendTransaction(_ transaction: EthereumTransaction, transactionOptions: TransactionOptions, completion: @escaping (Result<TransactionSendingResult>) -> Void)
 }
 
 // Deployer is associated with an account and provides deployment of smart contracts

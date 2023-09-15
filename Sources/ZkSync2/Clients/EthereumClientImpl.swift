@@ -236,99 +236,45 @@ public class EthereumClientImpl: EthereumClient {
         }
     }
     
-    public func chainID() {
-        
+    public func chainID() -> Promise<BigUInt> {
+        web3.eth.getChainIdPromise()
     }
     
-    public func headerByHash() {
+    public func transactionSender(_ blockHash: String,
+                            index: Int,
+                            completion: @escaping (Result<Block>) -> Void) {
+        let parameters = [
+            JRPC.Parameter(type: .string, value: blockHash),
+            JRPC.Parameter(type: .int, value: index)
+        ]
         
+        transport.send(method: "eth_getTransactionByBlockHashAndIndex",
+                       parameters: parameters,
+                       completion: completion)
     }
     
-    public func headerByNumber() {
-        
+    public func transactionCount(address: String, blockHash: String) throws -> BigUInt {
+        return try web3.eth.getTransactionCount(address: EthereumAddress(address)!, onBlock: blockHash)
     }
     
-    public func transactionSender() {
+    public func transactionInBlock(_ blockHash: String,
+                                  index: Int,
+                                  completion: @escaping (Result<Block>) -> Void) {
+        let parameters = [
+            JRPC.Parameter(type: .string, value: blockHash),
+            JRPC.Parameter(type: .int, value: index)
+        ]
         
+        transport.send(method: "eth_getTransactionByBlockHashAndIndex",
+                       parameters: parameters,
+                       completion: completion)
     }
     
-    public func transactionCount() {
-        
+    public func balanceAt(address: String, blockHash: String) throws -> BigUInt {
+        return try web3.eth.getBalance(address: EthereumAddress(address)!, onBlock: blockHash)
     }
     
-    public func transactionInBlock() {
-        
-    }
-    
-    public func syncProgress() {
-        
-    }
-    
-    public func subscribeNewHead() {
-        
-    }
-    
-    public func networkID() {
-        
-    }
-    
-    public func balanceAt() {
-        
-    }
-    
-    public func storageAt() {
-        
-    }
-    
-    public func codeAt() {
-        
-    }
-    
-    public func nonceAt() {
-        
-    }
-    
-    public func filterLogs() {
-        
-    }
-    
-    public func filterLogsL2() {
-        
-    }
-    
-    public func subscribeFilterLogs() {
-        
-    }
-    
-    public func subscribeFilterLogsL2() {
-        
-    }
-    
-    public func pendingBalanceAt() {
-        
-    }
-    
-    public func pendingStorageAt() {
-        
-    }
-    
-    public func pendingCodeAt() {
-        
-    }
-    
-    public func pendingNonceAt() {
-        
-    }
-    
-    public func pendingTransactionCount() {
-        
-    }
-    
-    public func waitMined() {
-        
-    }
-    
-    public func waitFinalized() {
-        
+    public func codeAt(address: String, blockHash: String) throws -> String {
+        return try web3.eth.getCodePromise(address: EthereumAddress(address)!, onBlock: blockHash).wait()
     }
 }

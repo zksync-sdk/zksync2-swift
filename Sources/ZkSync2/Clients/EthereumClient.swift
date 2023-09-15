@@ -20,7 +20,7 @@ public protocol EthereumClient {
     var web3: web3 { get set }
     
     // ChainID retrieves the current chain ID for transaction replay protection.
-    func chainID()
+    func chainID() -> Promise<BigUInt>
     // BlockByHash returns the given full block.
     //
     // Note that loading full blocks requires two requests. Use HeaderByHash
@@ -36,70 +36,30 @@ public protocol EthereumClient {
     func blockNumber(completion: @escaping (Result<BigUInt>) -> Void)
     // PeerCount returns the number of p2p peers as reported by the net_peerCount method
     func peerCount(completion: @escaping (Result<BigUInt>) -> Void)
-    // HeaderByHash returns the block header with the given hash.
-    func headerByHash()
-    // HeaderByNumber returns a block header from the current canonical chain. If number is
-    // nil, the latest known header is returned.
-    func headerByNumber()
     // TransactionByHash returns the transaction with the given hash.
     func transactionByHash(_ transactionHash: String, completion: @escaping (Result<TransactionResponse>) -> Void)
     // TransactionSender returns the sender address of the given transaction. The transaction
     // must be known to the remote node and included in the blockchain at the given block and
     // index. The sender is the one derived by the protocol at the time of inclusion.
-    func transactionSender()
+    func transactionSender(_ blockHash: String,
+                           index: Int,
+                           completion: @escaping (Result<Block>) -> Void)
     // TransactionCount returns the total number of transactions in the given block.
-    func transactionCount()
+    func transactionCount(address: String, blockHash: String) throws -> BigUInt
     // TransactionInBlock returns a single transaction at index in the given block.
-    func transactionInBlock()
+    func transactionInBlock(_ blockHash: String,
+                            index: Int,
+                            completion: @escaping (Result<Block>) -> Void)
     // TransactionReceipt returns the receipt of a transaction by transaction hash.
     // Note that the receipt is not available for pending transactions.
     func transactionReceipt(_ txHash: String, completion: @escaping (Result<TransactionReceipt>) -> Void)
-    // SyncProgress retrieves the current progress of the sync algorithm. If there's
-    // no sync currently running, it returns nil.
-    func syncProgress()
-    // SubscribeNewHead subscribes to notifications about the current blockchain head
-    // on the given channel.
-    func subscribeNewHead()
     
-    // NetworkID returns the network ID for this client.
-    func networkID()
     // BalanceAt returns the wei balance of the given account.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-    func balanceAt()
-    // StorageAt returns the value of key in the contract storage of the given account.
-    // The block number can be nil, in which case the value is taken from the latest known block.
-    func storageAt()
+    func balanceAt(address: String, blockHash: String) throws -> BigUInt
     // CodeAt returns the contract code of the given account.
     // The block number can be nil, in which case the code is taken from the latest known block.
-    func codeAt()
-    // NonceAt returns the account nonce of the given account.
-    // The block number can be nil, in which case the nonce is taken from the latest known block.
-    func nonceAt()
-    
-    // FilterLogs performs the same function as FilterLogsL2, and that method should be used instead.
-    // This method is designed to be compatible with bind.ContractBackend.
-    func filterLogs()
-    // FilterLogsL2 executes a log filter operation, blocking during execution and
-    // returning all the results in one batch.
-    func filterLogsL2()
-    // SubscribeFilterLogs performs the same function as SubscribeFilterLogsL2, and that method should be used instead.
-    // This method is designed to be compatible with bind.ContractBackend.
-    func subscribeFilterLogs()
-    // SubscribeFilterLogsL2 creates a background log filtering operation, returning
-    // a subscription immediately, which can be used to stream the found events.
-    func subscribeFilterLogsL2()
-    
-    // PendingBalanceAt returns the wei balance of the given account in the pending state.
-    func pendingBalanceAt()
-    // PendingStorageAt returns the value of key in the contract storage of the given account in the pending state.
-    func pendingStorageAt()
-    // PendingCodeAt returns the contract code of the given account in the pending state.
-    func pendingCodeAt()
-    // PendingNonceAt returns the account nonce of the given account in the pending state.
-    // This is the nonce that should be used for the next transaction.
-    func pendingNonceAt()
-    // PendingTransactionCount returns the total number of transactions in the pending state.
-    func pendingTransactionCount()
+    func codeAt(address: String, blockHash: String) throws -> String
     
     // CallContract executes a message call transaction, which is directly executed in the VM
     // of the node, but never mined into the blockchain.
@@ -143,11 +103,4 @@ public protocol EthereumClient {
     func sendTransaction(_ transaction: EthereumTransaction, transactionOptions: TransactionOptions, completion: @escaping (Result<TransactionSendingResult>) -> Void)
     // SendRawTransaction injects a signed raw transaction into the pending pool for execution.
     func sendRawTransaction(transaction: Data, completion: @escaping (Result<TransactionSendingResult>) -> Void)
-    
-    // WaitMined waits for tx to be mined on the blockchain.
-    // It stops waiting when the context is canceled.
-    func waitMined()
-    // WaitFinalized waits for tx to be finalized on the blockchain.
-    // It stops waiting when the context is canceled.
-    func waitFinalized()
 }

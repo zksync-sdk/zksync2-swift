@@ -114,7 +114,6 @@
 		FAA280222A5D4A0B0002CB6A /* SmartAccountManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39632A501CAC00DDE38D /* SmartAccountManager.swift */; };
 		FAA280232A5D4A0B0002CB6A /* Numeric.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997912A5A39540067AA49 /* Numeric.swift */; };
 		FAA280242A5D4A0B0002CB6A /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8FF2A4F9FC700D0EB17 /* LoadingView.swift */; };
-		FAA280262A5D4A0B0002CB6A /* DefaultEthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */; };
 		FAA280272A5D4A0B0002CB6A /* BridgeAddresses.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9976B2A5A39540067AA49 /* BridgeAddresses.swift */; };
 		FAA280282A5D4A0B0002CB6A /* HTTPTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997732A5A39540067AA49 /* HTTPTransport.swift */; };
 		FAA280292A5D4A0B0002CB6A /* PrimaryButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD8D42A4F94F400D0EB17 /* PrimaryButtonStyle.swift */; };
@@ -124,7 +123,6 @@
 		FAA2802D2A5D4A0B0002CB6A /* TransferManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39642A501CAC00DDE38D /* TransferManager.swift */; };
 		FAA2802E2A5D4A0B0002CB6A /* EthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9975C2A5A39540067AA49 /* EthSigner.swift */; };
 		FAA2802F2A5D4A0B0002CB6A /* EIP712Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997612A5A39540067AA49 /* EIP712Domain.swift */; };
-		FAA280302A5D4A0B0002CB6A /* EthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997832A5A39540067AA49 /* EthereumProvider.swift */; };
 		FAA280312A5D4A0B0002CB6A /* PaymasterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC39612A501CAC00DDE38D /* PaymasterManager.swift */; };
 		FAA280322A5D4A0B0002CB6A /* WithdrawManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = FACC395D2A501CAC00DDE38D /* WithdrawManager.swift */; };
 		FAA280342A5D4A0B0002CB6A /* UIControl+ActivityIndicatorView .swift in Sources */ = {isa = PBXBuildFile; fileRef = FA8FD9012A4FA08400D0EB17 /* UIControl+ActivityIndicatorView .swift */; };
@@ -189,8 +187,6 @@
 		FAC997BC2A5A39540067AA49 /* ZkSyncNetwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9977F2A5A39540067AA49 /* ZkSyncNetwork.swift */; };
 		FAC997BD2A5A39540067AA49 /* ZkBlockParameterName.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997802A5A39540067AA49 /* ZkBlockParameterName.swift */; };
 		FAC997BE2A5A39540067AA49 /* Token.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997812A5A39540067AA49 /* Token.swift */; };
-		FAC997BF2A5A39540067AA49 /* EthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997832A5A39540067AA49 /* EthereumProvider.swift */; };
-		FAC997C02A5A39540067AA49 /* DefaultEthereumProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */; };
 		FAC997C32A5A39540067AA49 /* ZkSyncClientImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997872A5A39540067AA49 /* ZkSyncClientImpl.swift */; };
 		FAC997C42A5A39540067AA49 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC997892A5A39540067AA49 /* Data.swift */; };
 		FAC997C52A5A39540067AA49 /* Web3Eth.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC9978A2A5A39540067AA49 /* Web3Eth.swift */; };
@@ -309,8 +305,6 @@
 		FAC9977F2A5A39540067AA49 /* ZkSyncNetwork.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkSyncNetwork.swift; sourceTree = "<group>"; };
 		FAC997802A5A39540067AA49 /* ZkBlockParameterName.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkBlockParameterName.swift; sourceTree = "<group>"; };
 		FAC997812A5A39540067AA49 /* Token.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Token.swift; sourceTree = "<group>"; };
-		FAC997832A5A39540067AA49 /* EthereumProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EthereumProvider.swift; sourceTree = "<group>"; };
-		FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DefaultEthereumProvider.swift; sourceTree = "<group>"; };
 		FAC997872A5A39540067AA49 /* ZkSyncClientImpl.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZkSyncClientImpl.swift; sourceTree = "<group>"; };
 		FAC997892A5A39540067AA49 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		FAC9978A2A5A39540067AA49 /* Web3Eth.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Web3Eth.swift; sourceTree = "<group>"; };
@@ -577,8 +571,6 @@
 				FA9245902AAFD2E800F0B282 /* EthereumClientImpl.swift */,
 				FA92458D2AAFCB7000F0B282 /* ZkSyncClient.swift */,
 				FAC997872A5A39540067AA49 /* ZkSyncClientImpl.swift */,
-				FAC997832A5A39540067AA49 /* EthereumProvider.swift */,
-				FAC997842A5A39540067AA49 /* DefaultEthereumProvider.swift */,
 			);
 			path = Clients;
 			sourceTree = "<group>";
@@ -1069,7 +1061,6 @@
 				FAA280222A5D4A0B0002CB6A /* SmartAccountManager.swift in Sources */,
 				FAA280232A5D4A0B0002CB6A /* Numeric.swift in Sources */,
 				FAA280242A5D4A0B0002CB6A /* LoadingView.swift in Sources */,
-				FAA280262A5D4A0B0002CB6A /* DefaultEthereumProvider.swift in Sources */,
 				FAA280272A5D4A0B0002CB6A /* BridgeAddresses.swift in Sources */,
 				FAA280282A5D4A0B0002CB6A /* HTTPTransport.swift in Sources */,
 				FAA280292A5D4A0B0002CB6A /* PrimaryButtonStyle.swift in Sources */,
@@ -1080,7 +1071,6 @@
 				FAA2802E2A5D4A0B0002CB6A /* EthSigner.swift in Sources */,
 				FAA2806D2A5D4C5A0002CB6A /* Config.swift in Sources */,
 				FAA2802F2A5D4A0B0002CB6A /* EIP712Domain.swift in Sources */,
-				FAA280302A5D4A0B0002CB6A /* EthereumProvider.swift in Sources */,
 				FAA280312A5D4A0B0002CB6A /* PaymasterManager.swift in Sources */,
 				FAA280322A5D4A0B0002CB6A /* WithdrawManager.swift in Sources */,
 				FA9245982AAFD61400F0B282 /* Fee.swift in Sources */,
@@ -1162,7 +1152,6 @@
 				FACC396B2A501CAC00DDE38D /* SmartAccountManager.swift in Sources */,
 				FAC997CC2A5A39540067AA49 /* Numeric.swift in Sources */,
 				FA8FD9002A4F9FC700D0EB17 /* LoadingView.swift in Sources */,
-				FAC997C02A5A39540067AA49 /* DefaultEthereumProvider.swift in Sources */,
 				FAC997AD2A5A39540067AA49 /* BridgeAddresses.swift in Sources */,
 				FAC997B32A5A39540067AA49 /* HTTPTransport.swift in Sources */,
 				FA8FD8EF2A4F94F400D0EB17 /* PrimaryButtonStyle.swift in Sources */,
@@ -1172,7 +1161,6 @@
 				FACC396C2A501CAC00DDE38D /* TransferManager.swift in Sources */,
 				FAC997A12A5A39540067AA49 /* EthSigner.swift in Sources */,
 				FAC997A52A5A39540067AA49 /* EIP712Domain.swift in Sources */,
-				FAC997BF2A5A39540067AA49 /* EthereumProvider.swift in Sources */,
 				FACC39692A501CAC00DDE38D /* PaymasterManager.swift in Sources */,
 				FACC39652A501CAC00DDE38D /* WithdrawManager.swift in Sources */,
 				FA9245972AAFD61400F0B282 /* Fee.swift in Sources */,

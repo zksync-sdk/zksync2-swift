@@ -17,6 +17,8 @@ import web3swift_zksync2
 // AdapterL1 is associated with an account and provides common operations on the
 // L1 network for the associated account.
 public protocol AdapterL1 {
+    func approveDeposit(with token: Token, limit: BigUInt?) throws -> Promise<TransactionSendingResult>
+    func isDepositApproved(with token: Token, to address: String, threshold: BigUInt?) throws -> Bool
     // MainContract returns the zkSync L1 smart contract.
     func mainContract(callback: @escaping ((web3.web3contract) -> Void))
     // L1BridgeContracts returns L1 bridge contracts.
@@ -31,7 +33,9 @@ public protocol AdapterL1 {
     // ApproveERC20 approves the specified amount of tokens for the specified L1 bridge.
     func approveERC20()
     // BaseCost returns base cost for L2 transaction.
-    func baseCost()
+    func baseCost(_ gasLimit: BigUInt,
+             gasPerPubdataByte: BigUInt,
+             gasPrice: BigUInt?) -> Promise<[String: Any]>
     // Deposit transfers the specified token from the associated account on the L1 network
     // to the target account on the L2 network. The token can be either ETH or any ERC20 token.
     // For ERC20 tokens, enough approved tokens must be associated with the specified L1 bridge
@@ -39,9 +43,9 @@ public protocol AdapterL1 {
     // DepositTransaction.ApproveERC20 can be enabled to perform token approval.
     // If there are already enough approved tokens for the L1 bridge, token approval will be skipped.
     // To check the amount of approved tokens for a specific bridge, use the AdapterL1.AllowanceL1 method.
-    func deposit(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult>
-    func deposit(_ to: String, amount: BigUInt, token: Token) -> Promise<TransactionSendingResult>
-    func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
+    func deposit(_ to: String, amount: BigUInt) throws -> Promise<TransactionSendingResult>
+    func deposit(_ to: String, amount: BigUInt, token: Token) throws -> Promise<TransactionSendingResult>
+    func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) throws -> Promise<TransactionSendingResult>
     // EstimateGasDeposit estimates the amount of gas required for a deposit transaction on L1 network.
     // Gas of approving ERC20 token is not included in estimation.
     func estimateGasDeposit()
@@ -54,9 +58,23 @@ public protocol AdapterL1 {
     // ClaimFailedDeposit withdraws funds from the initiated deposit, which failed when finalizing on L2.
     // If the deposit L2 transaction has failed, it sends an L1 transaction calling ClaimFailedDeposit method
     // of the L1 bridge, which results in returning L1 tokens back to the depositor, otherwise throws the error.
-    func claimFailedDeposit()
+    func claimFailedDeposit(_ l1BridgeAddress: String,
+                            depositSender: String,
+                            l1Token: String,
+                            l2TxHash: Data,
+                            l2BlockNumber: BigUInt,
+                            l2MessageIndex: BigUInt,
+                            l2TxNumberInBlock: UInt,
+                            proof: [Data]) -> Promise<TransactionSendingResult>
     // RequestExecute request execution of L2 transaction from L1.
-    func requestExecute()
+    func requestExecute(_ contractAddress: String,
+                        l2Value: BigUInt,
+                        calldata: Data,
+                        gasLimit: BigUInt,
+                        factoryDeps: [Data]?,
+                        operatorTips: BigUInt?,
+                        gasPrice: BigUInt?,
+                        refundRecipient: String) throws -> Promise<TransactionSendingResult>
     // EstimateGasRequestExecute estimates the amount of gas required for a request execute transaction.
     func estimateGasRequestExecute()
 }

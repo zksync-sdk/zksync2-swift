@@ -14,10 +14,19 @@ import web3swift
 import web3swift_zksync2
 #endif
 
+enum EthereumProviderError: Error {
+    case invalidAddress
+    case invalidToken
+    case invalidParameter
+    case internalError
+}
+
 public class WalletL1: AdapterL1 {
     public let zkSync: ZkSyncClient
     public let ethClient: EthereumClient
     public let web: web3
+    var zkSyncContract: web3.web3contract!//111
+    var l1ERC20BridgeAddress: String!//111
     
     public let signer: ETHSigner
     
@@ -30,6 +39,49 @@ public class WalletL1: AdapterL1 {
 }
 
 extension WalletL1 {
+    public func approveDeposit(with token: Token,
+                               limit: BigUInt?) throws -> Promise<TransactionSendingResult> {
+        guard let tokenAddress = EthereumAddress(token.l1Address),
+              let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
+            throw EthereumProviderError.invalidToken
+        }
+        
+        let tokenContract = ERC20(web3: web,
+                                  provider: web.provider,
+                                  address: tokenAddress)
+        
+        let maxApproveAmount = BigUInt.two.power(256) - 1
+        let amount = limit?.description ?? maxApproveAmount.description
+        
+        do {
+            let transaction = try tokenContract.approve(from: spenderAddress,
+                                                        spender: spenderAddress,
+                                                        amount: amount)
+            return transaction.sendPromise()
+        } catch {
+            return .init(error: error)
+        }
+    }
+    
+    public func isDepositApproved(with token: Token,
+                           to address: String,
+                           threshold: BigUInt?) throws -> Bool {
+        guard let tokenAddress = EthereumAddress(token.l1Address),
+              let ownerAddress = EthereumAddress(address),
+              let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
+            throw EthereumProviderError.invalidToken
+        }
+        
+        let tokenContract = ERC20(web3: web,
+                                  provider: web.provider,
+                                  address: tokenAddress)
+        
+        let allowance = try tokenContract.getAllowance(originalOwner: ownerAddress,
+                                                       delegate: spenderAddress)
+        
+        return allowance > (threshold ?? BigUInt.two.power(255))
+    }
+    
     public func mainContract(callback: @escaping ((web3.web3contract) -> Void)) {
         zkSync.mainContract { result in
             switch result {
@@ -55,47 +107,157 @@ extension WalletL1 {
     }
     
     public func allowanceL1() {
-        
+        //111
     }
     
     public func l2TokenAddress() {
-        
+        //111
     }
     
     public func approveERC20() {
-        
+        //111
     }
     
-    public func baseCost() {
+    public func baseCost(_ gasLimit: BigUInt,
+                  gasPerPubdataByte: BigUInt = BigUInt(50000),
+                  gasPrice: BigUInt?) -> Promise<[String: Any]> {
+        var gasPrice = gasPrice
+        if gasPrice == nil {
+            gasPrice = try! web.eth.getGasPrice()
+        }
         
+        let parameters = [
+            gasPrice,
+            gasLimit,
+            gasPerPubdataByte
+        ] as [AnyObject]
+        
+        guard let transaction = zkSyncContract.read("l2TransactionBaseCost",
+                                                    parameters: parameters,
+                                                    transactionOptions: nil) else {
+            return Promise(error: EthereumProviderError.invalidParameter)
+        }
+        
+        return transaction.callPromise()
     }
     
     public func estimateGasDeposit() {
-        
+        //111
     }
     
     public func fullRequiredDepositFee() {
-        
+        //111
     }
     
     public func finalizeWithdraw() {
-        
+        //111
     }
     
     public func isWithdrawFinalized() {
-        
+        //111
     }
     
-    public func claimFailedDeposit() {
+    public func claimFailedDeposit(_ l1BridgeAddress: String,
+                            depositSender: String,
+                            l1Token: String,
+                            l2TxHash: Data,
+                            l2BlockNumber: BigUInt,
+                            l2MessageIndex: BigUInt,
+                            l2TxNumberInBlock: UInt,
+                            proof: [Data]) -> Promise<TransactionSendingResult> {
+        let l1Bridge = web.contract(Web3.Utils.IL1Bridge,
+                                     at: EthereumAddress(l1BridgeAddress))!
         
+        let parameters = [
+            depositSender,
+            l1Token,
+            l2TxHash,
+            l2BlockNumber,
+            l2MessageIndex,
+            l2TxNumberInBlock,
+            proof
+        ] as [AnyObject]
+        
+        guard let writeTransaction = l1Bridge.write("claimFailedDeposit",
+                                                    parameters: parameters,
+                                                    transactionOptions: nil) else {
+            return Promise(error: EthereumProviderError.invalidParameter)
+        }
+        
+        guard let encodedTransaction = writeTransaction.transaction.encode(for: .transaction) else {
+            fatalError("Failed to encode transaction.")
+        }
+        
+        print("Encoded transaction: \(encodedTransaction.toHexString().addHexPrefix())")
+        
+        return writeTransaction.sendPromise()
     }
     
-    public func requestExecute() {
+    public func requestExecute(_ contractAddress: String,
+                        l2Value: BigUInt,
+                        calldata: Data,
+                        gasLimit: BigUInt,
+                        factoryDeps: [Data]?,
+                        operatorTips: BigUInt?,
+                        gasPrice: BigUInt?,
+                        refundRecipient: String) throws -> Promise<TransactionSendingResult> {
+        var gasPrice = gasPrice
+        if gasPrice == nil {
+            gasPrice = try! web.eth.getGasPrice()
+        }
         
+        guard let baseCost = try baseCost(gasLimit, gasPrice: gasPrice).wait()["0"] as? BigUInt else {
+            return Promise(error: EthereumProviderError.invalidParameter)
+        }
+        
+        let l1ToL2GasPerPubData = BigUInt(800)
+        
+        var parameters = [
+            EthereumAddress(contractAddress)!,
+            l2Value,
+            calldata,
+            gasLimit,
+            l1ToL2GasPerPubData
+        ] as [AnyObject]
+        
+        let bytesArr: [Data] = factoryDeps?.compactMap({ $0 }) ?? []
+        parameters.append(bytesArr as AnyObject)
+        
+        parameters.append(EthereumAddress(contractAddress)! as AnyObject)
+        
+        let operatorTipsValue: BigUInt
+        if let operatorTips = operatorTips {
+            operatorTipsValue = operatorTips
+        } else {
+            operatorTipsValue = BigUInt.zero
+        }
+        
+        let totalValue = l2Value + baseCost + operatorTipsValue
+        
+        let nonce = try! self.web.eth.getTransactionCountPromise(address: EthereumAddress(contractAddress)!).wait()
+        
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.type = .legacy
+        //111transactionOptions.from = EthereumAddress(l1ERC20BridgeAddress)!
+        //111transactionOptions.to = zkSyncContract.contract.address
+        transactionOptions.nonce = .manual(nonce)
+        transactionOptions.gasLimit = .manual(gasLimit)
+        transactionOptions.gasPrice = .manual(gasPrice!)
+        transactionOptions.maxPriorityFeePerGas = .manual(BigUInt(100000000))
+        transactionOptions.value = totalValue
+        transactionOptions.chainID = self.web.provider.network?.chainID
+        
+        guard let transaction = zkSyncContract.write("requestL2Transaction",
+                                                     parameters: parameters,
+                                                     transactionOptions: transactionOptions) else {
+            return Promise(error: EthereumProviderError.invalidParameter)
+        }
+        
+        return transaction.sendPromise()
     }
     
     public func estimateGasRequestExecute() {
-        
+        //111
     }
     
     public func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void)) {
@@ -104,15 +266,15 @@ extension WalletL1 {
         }
     }
     
-    public func deposit(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult> {
-        deposit(to, amount: amount, token: nil, nonce: nil)
+    public func deposit(_ to: String, amount: BigUInt) throws -> Promise<TransactionSendingResult> {
+        try deposit(to, amount: amount, token: nil, nonce: nil)
     }
     
-    public func deposit(_ to: String, amount: BigUInt, token: Token) -> Promise<TransactionSendingResult> {
-        deposit(to, amount: amount, token: token, nonce: nil)
+    public func deposit(_ to: String, amount: BigUInt, token: Token) throws -> Promise<TransactionSendingResult> {
+        try deposit(to, amount: amount, token: token, nonce: nil)
     }
     
-    public func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult> {
+    public func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) throws -> Promise<TransactionSendingResult> {
         let semaphore = DispatchSemaphore(value: 0)
         
         var zkSyncAddress: String = ""
@@ -140,17 +302,57 @@ extension WalletL1 {
             at: EthereumAddress(signer.address)
         )!
         
-        let defaultEthereumProvider = DefaultEthereumProvider(
-            web,
-            l1ERC20Bridge: l1ERC20Bridge,
-            zkSyncContract: zkSyncContract
-        )
+        let operatorTips = BigUInt.zero
         
-        return try! defaultEthereumProvider.deposit(
-            with: token ?? Token.ETH,
-            amount: amount,
-            address: to,
-            operatorTips: BigUInt(0)
-        )
+        if token?.isETH == true {
+            let gasLimit = BigUInt(10000000)
+            
+            return try requestExecute(to,
+                                      l2Value: amount,
+                                      calldata: Data(),
+                                      gasLimit: gasLimit,
+                                      factoryDeps: nil,
+                                      operatorTips: operatorTips,
+                                      gasPrice: nil,
+                                      refundRecipient: to)
+        } else {
+            let baseCost = BigUInt.zero
+            let gasLimit = BigUInt(300000)
+            let totalAmount = operatorTips + baseCost
+            
+            let l1ToL2GasPerPubData = BigUInt(800)
+            
+            let parameters = [
+                to,
+                token?.l1Address as Any,
+                gasLimit,
+                l1ToL2GasPerPubData,
+                amount,
+                totalAmount
+            ] as [AnyObject]
+            
+            var transactionOptions = TransactionOptions.defaultOptions
+            transactionOptions.to = EthereumAddress(to)!
+            
+            guard let transaction = l1ERC20Bridge.write("deposit",
+                                                        parameters: parameters,
+                                                        transactionOptions: transactionOptions) else {
+                return Promise(error: EthereumProviderError.invalidParameter)
+            }
+            
+            return transaction.sendPromise()
+        }
+//        let defaultEthereumProvider = DefaultEthereumProvider(
+//            web,
+//            l1ERC20Bridge: l1ERC20Bridge,
+//            zkSyncContract: zkSyncContract
+//        )
+//
+//        return try! defaultEthereumProvider.deposit(
+//            with: token ?? Token.ETH,
+//            amount: amount,
+//            address: to,
+//            operatorTips: BigUInt(0)
+//        )
     }
 }

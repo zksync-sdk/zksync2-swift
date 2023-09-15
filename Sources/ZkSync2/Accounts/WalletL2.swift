@@ -31,15 +31,15 @@ public class WalletL2: AdapterL2 {
 
 extension WalletL2 {
     public func balance() {
-        
+        //111
     }
     
     public func allBalances() {
-        
+        //111
     }
     
     public func l2BridgeContracts() {
-        
+        //111
     }
     
     public func withdraw(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult> {

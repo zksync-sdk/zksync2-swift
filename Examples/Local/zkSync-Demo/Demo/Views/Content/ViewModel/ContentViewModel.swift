@@ -75,12 +75,6 @@ class ContentViewModel: ObservableObject {
         })
     }
     
-    func deposit() {
-        depositManager.deposit(callback: { 
-            self.refreshBalance()
-        })
-    }
-    
     func depositViaWallet() {
         depositManager.depositViaWallet(callback: {
             self.refreshBalance()

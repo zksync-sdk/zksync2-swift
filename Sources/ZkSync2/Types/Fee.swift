@@ -1,8 +1,8 @@
 //
 //  Fee.swift
-//  ZkSync2
+//  zkSync-Demo
 //
-//  Created by Maxim Makhun on 7/17/22.
+//  Created by Bojan on 1.9.23..
 //
 
 import Foundation

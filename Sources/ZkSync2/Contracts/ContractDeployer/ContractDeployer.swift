@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CryptoKit
 import BigInt
 #if canImport(web3swift)
 import web3swift
@@ -13,6 +14,15 @@ import Web3Core
 #else
 import web3swift_zksync2
 #endif
+
+extension Digest {
+    var bytes: [UInt8] { Array(makeIterator()) }
+    var data: Data { Data(bytes) }
+    
+    var hexStr: String {
+        bytes.map { String(format: "%02X", $0) }.joined()
+    }
+}
 
 public class ContractDeployer {
     
@@ -217,21 +227,40 @@ public class ContractDeployer {
     }
     
     public static func hashBytecode(_ bytecode: Data) -> Data {
-        if bytecode.count % 32 != 0 {
-            fatalError("Bytecode length in bytes must be divisible by 32")
-        }
-
-        let length = BigUInt(bytecode.count / 32)
-        if length > ContractDeployer.MaxBytecodeSize {
-            fatalError("Bytecode length must be less than 2^16 bytes")
-        }
-
-        let codeHashVersion = Data(hex: "0x0100")
-        let bytecodeLength = length.data2
-
-        var bytecodeHash = bytecode.sha256()
-        bytecodeHash.replaceSubrange(0...3, with: Data(codeHashVersion + bytecodeLength))
-
-        return bytecodeHash
+        return bytecode//444
+//444        var bytecodeHash = Web3.Utils.sha256(bytecode)
+//
+//        let function = ABI.Element.Function(name: "createAccount",
+//                                            inputs: inputs,
+//                                            outputs: [],
+//                                            constant: false,
+//                                            payable: false)
+//
+//        let elementFunction: ABI.Element = .function(function)
+//
+//        let salt = Data(capacity: 32)
+//
+//        let bytecodeHash = ContractDeployer.hashBytecode(bytecode)
+//
+//        let parameters: [AnyObject] = [
+//            salt as AnyObject,
+//            bytecodeHash as AnyObject,
+//            calldata as AnyObject,
+//            version.rawValue as AnyObject,
+//        ]
+//
+//        guard let encodedCallData = elementFunction.encodeParameters(parameters) else {
+//            fatalError("Failed to encode function.")
+//        }
+//
+//#if DEBUG
+//        print("bytecode: \(bytecode.toHexString().addHexPrefix())")
+//        print("bytecodeHash: \(bytecodeHash.toHexString().addHexPrefix())")
+//        print("calldata: \(calldata.toHexString().addHexPrefix())")
+//        print("version: \(version)")
+//        print("encodedCallData: \(encodedCallData.toHexString().addHexPrefix())")
+//#endif
+//
+//        return encodedCallData
     }
 }

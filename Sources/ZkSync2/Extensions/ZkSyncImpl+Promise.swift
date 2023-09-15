@@ -15,11 +15,11 @@ import Web3Core
 import web3swift_zksync2
 #endif
 
-public extension ZkSyncImpl {
+public extension ZkSyncClientImpl {
     
     func zksMainContract() -> Promise<String> {
         Promise { seal in
-            zksMainContract {
+            mainContract {
                 seal.resolve($0)
             }
         }
@@ -27,7 +27,7 @@ public extension ZkSyncImpl {
     
     func zksGetTokenPrice(_ tokenAddress: String) -> Promise<Decimal> {
         Promise { seal in
-            zksGetTokenPrice(tokenAddress) {
+            tokenPrice(tokenAddress) {
                 seal.resolve($0)
             }
         }
@@ -35,7 +35,7 @@ public extension ZkSyncImpl {
     
     func zksL1ChainId() -> Promise<BigUInt> {
         Promise { seal in
-            zksL1ChainId {
+            L1ChainId {
                 seal.resolve($0)
             }
         }
@@ -43,8 +43,7 @@ public extension ZkSyncImpl {
     
     func zksGetAllAccountBalances(_ address: String) -> Promise<Dictionary<String, String>> {
         Promise { seal in
-            zksGetAllAccountBalances(address,
-                                     completion: {
+            allAccountBalances(address, completion: {
                 seal.resolve($0)
             })
         }
@@ -52,7 +51,7 @@ public extension ZkSyncImpl {
     
     func zksGetBridgeContracts() -> Promise<BridgeAddresses> {
         Promise { seal in
-            zksGetBridgeContracts {
+            bridgeContracts {
                 seal.resolve($0)
             }
         }
@@ -60,7 +59,7 @@ public extension ZkSyncImpl {
     
     func zksEstimateFee(_ transaction: CodableTransaction) -> Promise<Fee> {
         Promise { seal in
-            zksEstimateFee(transaction) {
+            estimateFee(transaction) {
                 seal.resolve($0)
             }
         }
@@ -68,7 +67,7 @@ public extension ZkSyncImpl {
     
     func zksGetConfirmedTokens(_ from: Int, limit: Int) -> Promise<[Token]> {
         Promise { seal in
-            zksGetConfirmedTokens(from, limit: limit) {
+            confirmedTokens(from, limit: limit) {
                 seal.resolve($0)
             }
         }
@@ -76,15 +75,15 @@ public extension ZkSyncImpl {
     
     func ethEstimateGas(_ transaction: CodableTransaction) -> Promise<BigUInt> {
         Promise { seal in
-            ethEstimateGas(transaction) {
-                seal.resolve($0)
-            }
+//444            estimateGas(transaction) {
+//                seal.resolve($0)
+//            }
         }
     }
     
     func zksGetTestnetPaymaster() -> Promise<String> {
         Promise { seal in
-            zksGetTestnetPaymaster() {
+            getTestnetPaymaster() {
                 seal.resolve($0)
             }
         }

@@ -14,7 +14,7 @@ import Web3Core
 import web3swift_zksync2
 #endif
 
-extension CodableTransaction: Structurable {
+extension CodableTransaction: Structurable { refactor/refactor:Sources/ZkSync2/EIP712/EthereumTransaction+EIP712.swift
     public func getTypeName() -> String {
         "Transaction"
     }

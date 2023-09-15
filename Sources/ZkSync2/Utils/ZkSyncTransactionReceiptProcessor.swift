@@ -24,9 +24,9 @@ public class ZkSyncTransactionReceiptProcessor {
     var sleepDuration = TimeInterval(Double(DEFAULT_POLLING_FREQUENCY) / 100.0)
     var attempts = DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH
     
-    let zkSync: ZkSync
+    let zkSync: ZkSyncClient
     
-    public init(zkSync: ZkSync) {
+    public init(zkSync: ZkSyncClient) {
         self.zkSync = zkSync
     }
     

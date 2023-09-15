@@ -13,6 +13,23 @@ import PromiseKit
 
 class ZKSyncWeb3RpcIntegrationTests: BaseIntegrationEnv {
     
+    static let L1NodeUrl = URL(string: "https://rpc.ankr.com/eth_goerli")!
+    static let L2NodeUrl = URL(string: "https://zksync2-testnet.zksync.dev")!
+    
+    let ethToken = Token.ETH
+    
+    var zkSync: JsonRpc2_0ZkSync!
+    
+    let credentials = Credentials(BigUInt.one)
+    
+    var signer: EthSigner!
+    
+    var chainId: BigUInt!
+    
+    var feeProvider: ZkTransactionFeeProvider!
+    
+    var l1Web3: web3!
+    
     override func setUpWithError() throws {
         
     }

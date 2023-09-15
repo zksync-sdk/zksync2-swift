@@ -1,5 +1,5 @@
 //
-//  EthereumTransaction.swift
+//  CodableTransaction.swift
 //  ZkSync2
 //
 //  Created by Maxim Makhun on 7/17/22.
@@ -25,10 +25,9 @@ extension CodableTransaction {
     public static func createContractTransaction(from: EthereumAddress,
                                           gasPrice: BigUInt,
                                           gasLimit: BigUInt,
-                                          bytecode: String,
+                                          bytecode: Data,
                                           calldata: Data) -> CodableTransaction {
-        let bytecodeBytes = Data(hex: bytecode)
-        let calldataCreate = ContractDeployer.encodeCreate(bytecodeBytes, calldata: calldata)
+        let calldataCreate = ContractDeployer.encodeCreate(bytecode, calldata: calldata)
 
 #if DEBUG
         print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
@@ -36,14 +35,14 @@ extension CodableTransaction {
         
         let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
 
-        var EIP712Meta = EIP712Meta()
-        EIP712Meta.gasPerPubdata = BigUInt(160000)
-        EIP712Meta.customSignature = nil
-        EIP712Meta.factoryDeps = [bytecodeBytes]
-        EIP712Meta.paymasterParams = nil
+//444        var EIP712Meta = EIP712Meta()
+//        EIP712Meta.gasPerPubdata = BigUInt(160000)
+//        EIP712Meta.customSignature = nil
+//        EIP712Meta.factoryDeps = [bytecode]
+//        EIP712Meta.paymasterParams = nil
 
         var transaction = CodableTransaction(
-            type: .eip712,
+            //444type: .eip712,
             to: to,
             value: .zero,
             data: calldataCreate
@@ -51,7 +50,7 @@ extension CodableTransaction {
         transaction.from = from
         transaction.gasLimit = gasLimit
         transaction.gasPrice = gasPrice
-        transaction.eip712Meta = EIP712Meta
+        //444transaction.eip712Meta = EIP712Meta
         
         return transaction
     }
@@ -59,10 +58,9 @@ extension CodableTransaction {
     public static func createAccountTransaction(from: EthereumAddress,
                                           gasPrice: BigUInt,
                                           gasLimit: BigUInt,
-                                          bytecode: String,
+                                          bytecode: Data,
                                           calldata: Data) -> CodableTransaction {
-        let bytecodeBytes = Data(hex: bytecode)
-        let calldataCreate = ContractDeployer.encodeCreateAccount(bytecodeBytes, calldata: calldata, version: .version1)
+        let calldataCreate = ContractDeployer.encodeCreateAccount(bytecode, calldata: calldata, version: .version1)
         
 #if DEBUG
         print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
@@ -70,14 +68,14 @@ extension CodableTransaction {
         
         let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
 
-        var EIP712Meta = EIP712Meta()
-        EIP712Meta.gasPerPubdata = BigUInt(160000)
-        EIP712Meta.customSignature = nil
-        EIP712Meta.factoryDeps = [bytecodeBytes]
-        EIP712Meta.paymasterParams = nil
+//444        var EIP712Meta = EIP712Meta()
+//        EIP712Meta.gasPerPubdata = BigUInt(160000)
+//        EIP712Meta.customSignature = nil
+//        EIP712Meta.factoryDeps = [bytecode]
+//        EIP712Meta.paymasterParams = nil
 
         var transaction = CodableTransaction(
-            type: .eip712,
+            //444type: .eip712,
             to: to,
             value: .zero,
             data: calldataCreate
@@ -85,7 +83,7 @@ extension CodableTransaction {
         transaction.from = from
         transaction.gasLimit = gasLimit
         transaction.gasPrice = gasPrice
-        transaction.eip712Meta = EIP712Meta
+        //444transaction.eip712Meta = EIP712Meta
         
         return transaction
     }
@@ -95,14 +93,14 @@ extension CodableTransaction {
                                        gasLimit: BigUInt,
                                        to: EthereumAddress,
                                        value: BigUInt) -> CodableTransaction {
-        var EIP712Meta = EIP712Meta()
-        EIP712Meta.gasPerPubdata = BigUInt(160000)
-        EIP712Meta.customSignature = nil
-        EIP712Meta.factoryDeps = nil
-        EIP712Meta.paymasterParams = nil
+//444        var EIP712Meta = EIP712Meta()
+//        EIP712Meta.gasPerPubdata = BigUInt(160000)
+//        EIP712Meta.customSignature = nil
+//        EIP712Meta.factoryDeps = nil
+//        EIP712Meta.paymasterParams = nil
 
         var transaction = CodableTransaction(
-            type: .eip712,
+            //444type: .eip712,
             to: to,
             value: value,
             data: Data()
@@ -111,7 +109,7 @@ extension CodableTransaction {
         transaction.gasLimit = gasLimit
         transaction.gasPrice = gasPrice
         transaction.value = value
-        transaction.eip712Meta = EIP712Meta
+        //444transaction.eip712Meta = EIP712Meta
         
         return transaction
     }
@@ -144,14 +142,14 @@ extension CodableTransaction {
                                               gasLimit: BigUInt,
                                               value: BigUInt? = nil,
                                               data: Data) -> CodableTransaction {
-        var EIP712Meta = EIP712Meta()
-        EIP712Meta.gasPerPubdata = BigUInt(160000)
-        EIP712Meta.customSignature = nil
-        EIP712Meta.factoryDeps = nil
-        EIP712Meta.paymasterParams = nil
+//444        var EIP712Meta = EIP712Meta()
+//        EIP712Meta.gasPerPubdata = BigUInt(160000)
+//        EIP712Meta.customSignature = nil
+//        EIP712Meta.factoryDeps = nil
+//        EIP712Meta.paymasterParams = nil
 
         var transaction = CodableTransaction(
-            type: .eip712,
+            //444type: .eip712,
             to: to,
             value: value ?? .zero,
             data: data
@@ -159,7 +157,7 @@ extension CodableTransaction {
         transaction.from = from
         transaction.gasPrice = gasPrice
         transaction.gasLimit = gasLimit
-        transaction.eip712Meta = EIP712Meta
+        //444transaction.eip712Meta = EIP712Meta
         
         return transaction
     }
@@ -172,63 +170,67 @@ extension CodableTransaction {
                                            calldata: Data = Data(),
                                            salt: Data,
                                            chainId: BigUInt) -> CodableTransaction {
+        let calldataCreate = ContractDeployer.encodeCreate2(bytecode, calldata: calldata)
+        
+#if DEBUG
+        print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
+#endif
+        
         let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
-
-        let calldataCreate = ContractDeployer.encodeCreate2(
-            bytecode,
-            calldata: calldata,
-            salt: salt
-        )
-
-        var EIP712Meta = EIP712Meta()
-        EIP712Meta.gasPerPubdata = BigUInt(160000)
-        EIP712Meta.factoryDeps = [bytecode]
-        EIP712Meta.paymasterParams = nil
-        EIP712Meta.customSignature = nil
-
+        
+//444        var EIP712Meta = EIP712Meta()
+//        EIP712Meta.gasPerPubdata = BigUInt(160000)
+//        EIP712Meta.customSignature = nil
+//        EIP712Meta.factoryDeps = [bytecode]
+//        EIP712Meta.paymasterParams = nil
+        
         var transaction = CodableTransaction(
-            type: .eip712,
+            //444type: .eip712,
             to: to,
             value: .zero,
             data: calldataCreate
         )
         transaction.from = from
-        transaction.gasPrice = gasPrice
         transaction.gasLimit = gasLimit
-        transaction.eip712Meta = EIP712Meta
+        transaction.gasPrice = gasPrice
+        //444transaction.eip712Meta = EIP712Meta
         
         return transaction
     }
     
     public static func create2AccountTransaction(from: EthereumAddress,
-                                           gasPrice: BigUInt,
-                                           gasLimit: BigUInt,
-                                           bytecode: Data,
-                                           deps: [Data],
-                                           calldata: Data = Data(),
-                                           salt: Data,
-                                           chainId: BigUInt) -> CodableTransaction {
-        let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
-
+                                                 gasPrice: BigUInt,
+                                                 gasLimit: BigUInt,
+                                                 bytecode: Data,
+                                                 deps: [Data],
+                                                 calldata: Data = Data(),
+                                                 salt: Data,
+                                                 chainId: BigUInt) -> CodableTransaction {
         let calldataCreate = ContractDeployer.encodeCreate2Account(bytecode, calldata: calldata, salt: salt, version: .version1)
-
-        var EIP712Meta = EIP712Meta()
-        EIP712Meta.gasPerPubdata = BigUInt(160000)
-        EIP712Meta.factoryDeps = [bytecode]
-        EIP712Meta.paymasterParams = nil
-        EIP712Meta.customSignature = nil
-
+        
+#if DEBUG
+        print("calldata: \(calldataCreate.toHexString().addHexPrefix())")
+#endif
+        
+        let to = EthereumAddress(ZkSyncAddresses.ContractDeployerAddress)!
+        
+//444        var EIP712Meta = EIP712Meta()
+//        EIP712Meta.gasPerPubdata = BigUInt(160000)
+//        EIP712Meta.customSignature = nil
+//        EIP712Meta.factoryDeps = [bytecode]
+//        EIP712Meta.paymasterParams = nil
+        
         var transaction = CodableTransaction(
-            type: .eip712,
+            //444type: .eip712,
             to: to,
             value: .zero,
             data: calldataCreate
         )
         transaction.from = from
-        transaction.gasPrice = gasPrice
         transaction.gasLimit = gasLimit
-        transaction.eip712Meta = EIP712Meta
-
+        transaction.gasPrice = gasPrice
+        //444transaction.eip712Meta = EIP712Meta
+        
         return transaction
     }
 }

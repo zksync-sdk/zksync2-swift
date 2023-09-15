@@ -31,13 +31,13 @@ class ContentViewModel: ObservableObject {
     
     func refreshBalance() {
         Task {
-            let balance = await baseManager.wallet.getBalance()
+            let balance = await baseManager.walletL2.getBalance()
             
-            let decimalBalance = Token.ETH.intoDecimal(balance)
-            
-            DispatchQueue.main.async {
-                self.balance = decimalBalance
-            }
+//444            let decimalBalance = Token.ETH.intoDecimal(balance)
+//
+//            DispatchQueue.main.async {
+//                self.balance = decimalBalance
+//            }
         }
     }
     
@@ -73,12 +73,6 @@ class ContentViewModel: ObservableObject {
     
     func transferViaWallet() {
         transferManager.transferViaWallet(toAddress: transferToAddress, value: value, callback: {
-            self.refreshBalance()
-        })
-    }
-    
-    func deposit() {
-        depositManager.deposit(callback: {
             self.refreshBalance()
         })
     }

@@ -20,7 +20,7 @@ public protocol EthereumClient {
     var web3: web3 { get set }
     
     // ChainID retrieves the current chain ID for transaction replay protection.
-//111    ChainID(ctx context.Context) (*big.Int, error)
+    func chainID()
     // BlockByHash returns the given full block.
     //
     // Note that loading full blocks requires two requests. Use HeaderByHash
@@ -37,69 +37,69 @@ public protocol EthereumClient {
     // PeerCount returns the number of p2p peers as reported by the net_peerCount method
     func peerCount(completion: @escaping (Result<BigUInt>) -> Void)
     // HeaderByHash returns the block header with the given hash.
-//111    HeaderByHash(ctx context.Context, hash common.Hash) (*types.Header, error)
+    func headerByHash()
     // HeaderByNumber returns a block header from the current canonical chain. If number is
     // nil, the latest known header is returned.
-//111    HeaderByNumber(ctx context.Context, number *big.Int) (*types.Header, error)
+    func headerByNumber()
     // TransactionByHash returns the transaction with the given hash.
     func transactionByHash(_ transactionHash: String, completion: @escaping (Result<TransactionResponse>) -> Void)
     // TransactionSender returns the sender address of the given transaction. The transaction
     // must be known to the remote node and included in the blockchain at the given block and
     // index. The sender is the one derived by the protocol at the time of inclusion.
-//111    TransactionSender(ctx context.Context, tx *zkTypes.TransactionResponse, block common.Hash, index uint) (common.Address, error)
+    func transactionSender()
     // TransactionCount returns the total number of transactions in the given block.
-//111    TransactionCount(ctx context.Context, blockHash common.Hash) (uint, error)
+    func transactionCount()
     // TransactionInBlock returns a single transaction at index in the given block.
-//111    TransactionInBlock(ctx context.Context, blockHash common.Hash, index uint) (*zkTypes.TransactionResponse, error)
+    func transactionInBlock()
     // TransactionReceipt returns the receipt of a transaction by transaction hash.
     // Note that the receipt is not available for pending transactions.
     func transactionReceipt(_ txHash: String, completion: @escaping (Result<TransactionReceipt>) -> Void)
     // SyncProgress retrieves the current progress of the sync algorithm. If there's
     // no sync currently running, it returns nil.
-//111    SyncProgress(ctx context.Context) (*ethereum.SyncProgress, error)
+    func syncProgress()
     // SubscribeNewHead subscribes to notifications about the current blockchain head
     // on the given channel.
-//111    SubscribeNewHead(ctx context.Context, ch chan<- *types.Header) (ethereum.Subscription, error)
+    func subscribeNewHead()
     
     // NetworkID returns the network ID for this client.
-//111    NetworkID(ctx context.Context) (*big.Int, error)
+    func networkID()
     // BalanceAt returns the wei balance of the given account.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-//111    BalanceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (*big.Int, error)
+    func balanceAt()
     // StorageAt returns the value of key in the contract storage of the given account.
     // The block number can be nil, in which case the value is taken from the latest known block.
-//111    StorageAt(ctx context.Context, account common.Address, key common.Hash, blockNumber *big.Int) ([]byte, error)
+    func storageAt()
     // CodeAt returns the contract code of the given account.
     // The block number can be nil, in which case the code is taken from the latest known block.
-//111    CodeAt(ctx context.Context, account common.Address, blockNumber *big.Int) ([]byte, error)
+    func codeAt()
     // NonceAt returns the account nonce of the given account.
     // The block number can be nil, in which case the nonce is taken from the latest known block.
-//111    NonceAt(ctx context.Context, account common.Address, blockNumber *big.Int) (uint64, error)
+    func nonceAt()
     
     // FilterLogs performs the same function as FilterLogsL2, and that method should be used instead.
     // This method is designed to be compatible with bind.ContractBackend.
-//111    FilterLogs(ctx context.Context, query ethereum.FilterQuery) ([]types.Log, error)
+    func filterLogs()
     // FilterLogsL2 executes a log filter operation, blocking during execution and
     // returning all the results in one batch.
-//111    FilterLogsL2(ctx context.Context, query ethereum.FilterQuery) ([]zkTypes.Log, error)
+    func filterLogsL2()
     // SubscribeFilterLogs performs the same function as SubscribeFilterLogsL2, and that method should be used instead.
     // This method is designed to be compatible with bind.ContractBackend.
-//111    SubscribeFilterLogs(ctx context.Context, query ethereum.FilterQuery, ch chan<- types.Log) (ethereum.Subscription, error)
+    func subscribeFilterLogs()
     // SubscribeFilterLogsL2 creates a background log filtering operation, returning
     // a subscription immediately, which can be used to stream the found events.
-//111    SubscribeFilterLogsL2(ctx context.Context, query ethereum.FilterQuery, ch chan<- zkTypes.Log) (ethereum.Subscription, error)
+    func subscribeFilterLogsL2()
     
     // PendingBalanceAt returns the wei balance of the given account in the pending state.
-//111    PendingBalanceAt(ctx context.Context, account common.Address) (*big.Int, error)
+    func pendingBalanceAt()
     // PendingStorageAt returns the value of key in the contract storage of the given account in the pending state.
-//111    PendingStorageAt(ctx context.Context, account common.Address, key common.Hash) ([]byte, error)
+    func pendingStorageAt()
     // PendingCodeAt returns the contract code of the given account in the pending state.
-//111    PendingCodeAt(ctx context.Context, account common.Address) ([]byte, error)
+    func pendingCodeAt()
     // PendingNonceAt returns the account nonce of the given account in the pending state.
     // This is the nonce that should be used for the next transaction.
-//111    PendingNonceAt(ctx context.Context, account common.Address) (uint64, error)
+    func pendingNonceAt()
     // PendingTransactionCount returns the total number of transactions in the pending state.
-//111    PendingTransactionCount(ctx context.Context) (uint, error)
+    func pendingTransactionCount()
     
     // CallContract executes a message call transaction, which is directly executed in the VM
     // of the node, but never mined into the blockchain.
@@ -146,8 +146,8 @@ public protocol EthereumClient {
     
     // WaitMined waits for tx to be mined on the blockchain.
     // It stops waiting when the context is canceled.
-//111    WaitMined(ctx context.Context, txHash common.Hash) (*zkTypes.Receipt, error)
+    func waitMined()
     // WaitFinalized waits for tx to be finalized on the blockchain.
     // It stops waiting when the context is canceled.
-//111    WaitFinalized(ctx context.Context, txHash common.Hash) (*zkTypes.Receipt, error)
+    func waitFinalized()
 }

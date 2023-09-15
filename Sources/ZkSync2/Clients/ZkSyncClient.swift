@@ -28,17 +28,17 @@ public protocol ZkSyncClient {
     func bridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void)
     // ContractAccountInfo returns the version of the supported account abstraction
     // and nonce ordering from a given contract address.
-//111    ContractAccountInfo(ctx context.Context, address common.Address) (*zkTypes.ContractAccountInfo, error)
+    func contractAccountInfo()
     
     // L1ChainID returns the chain id of the underlying L1.
     func L1ChainId(_ completion: @escaping (Result<BigUInt>) -> Void)
     // L1BatchNumber returns the latest L1 batch number.
-//111    L1BatchNumber(ctx context.Context) (*big.Int, error)
+    func l1BatchNumber(_ completion: @escaping (Result<String>) -> Void)
     // L1BatchBlockRange returns the range of blocks contained within a batch given
     // by batch number.
-//111    L1BatchBlockRange(ctx context.Context, l1BatchNumber *big.Int) (*BlockRange, error)
+    func l1BatchBlockRange(l1BatchNumber: BigUInt, _ completion: @escaping (Result<String>) -> Void)
     // L1BatchDetails returns data pertaining to a given batch.
-//111    L1BatchDetails(ctx context.Context, l1BatchNumber *big.Int) (*zkTypes.BatchDetails, error)
+    func l1BatchDetails(l1BatchNumber: BigUInt, _ completion: @escaping (Result<String>) -> Void)
     // BlockDetails returns additional zkSync Era-specific information about the L2
     // block.
     func blockDetails(_ blockNumber: BigUInt, returnFullTransactionObjects: Bool, completion: @escaping (Result<BlockDetails>) -> Void)
@@ -47,12 +47,9 @@ public protocol ZkSyncClient {
     func transactionDetails(_ transactionHash: String, completion: @escaping (Result<TransactionDetails>) -> Void)
     // LogProof returns the proof for a transaction's L2 to L1 log sent via the
     // L1Messenger system contract.
-//111    LogProof(ctx context.Context, txHash common.Hash, logIndex int) (*zkTypes.MessageProof, error)
+    func logProof(txHash: Data, logIndex: BigUInt, _ completion: @escaping (Result<String>) -> Void)
     // Deprecated: Deprecated in favor of LogProof.
-//111    MsgProof(ctx context.Context, block uint32, sender common.Address, msg common.Hash) (*zkTypes.MessageProof, error)
-    // L2TransactionFromPriorityOp returns transaction on L2 network from transaction
-    // receipt on L1 network.
-//111    L2TransactionFromPriorityOp(ctx context.Context, l1TxReceipt *types.Receipt) (*zkTypes.TransactionResponse, error)
+    func msgProof(block: BigUInt, sender: String, _ completion: @escaping (Result<String>) -> Void)
     
     // ConfirmedTokens returns [address, symbol, name, and decimal] information of
     // all tokens within a range of ids given by parameters from and limit.
@@ -61,10 +58,10 @@ public protocol ZkSyncClient {
     func tokenPrice(_ tokenAddress: String, completion: @escaping (Result<Decimal>) -> Void)
     // L2TokenAddress returns the L2 token address equivalent for a L1 token address
     // as they are not equal. ETH address is set to zero address.
-//111    L2TokenAddress(ctx context.Context, token common.Address) (common.Address, error)
+    func l2TokenAddress()
     // L1TokenAddress returns the L1 token address equivalent for a L2 token address
     // as they are not equal. ETH address is set to zero address.
-//111    L1TokenAddress(ctx context.Context, token common.Address) (common.Address, error)
+    func l1TokenAddress()
     // AllAccountBalances returns all balances for confirmed tokens given by an
     // account address.
     func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void)
@@ -76,11 +73,11 @@ public protocol ZkSyncClient {
     func estimateGasL1(_ transaction: EthereumTransaction) -> Promise<Fee>
     // EstimateGasTransfer estimates the amount of gas required for a transfer
     // transaction.
-//111    EstimateGasTransfer(ctx context.Context, msg TransferCallMsg) (uint64, error)
+    func estimateGasTransfer(_ transaction: EthereumTransaction) -> Promise<BigUInt>
     // EstimateGasWithdraw estimates the amount of gas required for a withdrawal
     // transaction.
-//111    EstimateGasWithdraw(ctx context.Context, msg WithdrawalCallMsg) (uint64, error)
+    func estimateGasWithdraw(_ transaction: EthereumTransaction) -> Promise<BigUInt>
     // EstimateL1ToL2Execute estimates the amount of gas required for an L1 to L2
     // execute operation.
-//111    EstimateL1ToL2Execute(ctx context.Context, msg zkTypes.CallMsg) (uint64, error)
+    func estimateL1ToL2Execute(_ transaction: EthereumTransaction) -> Promise<BigUInt>
 }

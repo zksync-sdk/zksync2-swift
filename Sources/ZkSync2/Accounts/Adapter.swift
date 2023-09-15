@@ -23,15 +23,15 @@ public protocol AdapterL1 {
     func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void))
     // BalanceL1 returns the balance of the specified token on L1 that can be
     // either ETH or any ERC20 token.
-//111    BalanceL1(opts *CallOpts, token common.Address) (*big.Int, error)
+    func balanceL1(token: Token) -> Promise<BigUInt>
     // AllowanceL1 returns the amount of approved tokens for a specific L1 bridge.
-//111    AllowanceL1(opts *CallOpts, token common.Address, bridgeAddress common.Address) (*big.Int, error)
+    func allowanceL1()
     // L2TokenAddress returns the corresponding address on the L2 network for the token on the L1 network.
-//111    L2TokenAddress(ctx context.Context, token common.Address) (common.Address, error)
+    func l2TokenAddress()
     // ApproveERC20 approves the specified amount of tokens for the specified L1 bridge.
-//111    ApproveERC20(auth *TransactOpts, token common.Address, amount *big.Int, bridgeAddress common.Address) (*types.Transaction, error)
+    func approveERC20()
     // BaseCost returns base cost for L2 transaction.
-//111    BaseCost(opts *CallOpts, gasLimit, gasPerPubdataByte, gasPrice *big.Int) (*big.Int, error)
+    func baseCost()
     // Deposit transfers the specified token from the associated account on the L1 network
     // to the target account on the L2 network. The token can be either ETH or any ERC20 token.
     // For ERC20 tokens, enough approved tokens must be associated with the specified L1 bridge
@@ -44,21 +44,21 @@ public protocol AdapterL1 {
     func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
     // EstimateGasDeposit estimates the amount of gas required for a deposit transaction on L1 network.
     // Gas of approving ERC20 token is not included in estimation.
-//111    EstimateGasDeposit(ctx context.Context, msg DepositCallMsg) (uint64, error)
+    func estimateGasDeposit()
     // FullRequiredDepositFee retrieves the full needed ETH fee for the deposit on both L1 and L2 networks.
-//111    FullRequiredDepositFee(ctx context.Context, msg DepositCallMsg) (*FullDepositFee, error)
+    func fullRequiredDepositFee()
     // FinalizeWithdraw proves the inclusion of the L2 -> L1 withdrawal message.
-//111    FinalizeWithdraw(auth *TransactOpts, withdrawalHash common.Hash, index int) (*types.Transaction, error)
+    func finalizeWithdraw()
     // IsWithdrawFinalized checks if the withdrawal finalized on L1 network.
-//111    IsWithdrawFinalized(opts *CallOpts, withdrawalHash common.Hash, index int) (bool, error)
+    func isWithdrawFinalized()
     // ClaimFailedDeposit withdraws funds from the initiated deposit, which failed when finalizing on L2.
     // If the deposit L2 transaction has failed, it sends an L1 transaction calling ClaimFailedDeposit method
     // of the L1 bridge, which results in returning L1 tokens back to the depositor, otherwise throws the error.
-//111    ClaimFailedDeposit(auth *TransactOpts, depositHash common.Hash) (*types.Transaction, error)
+    func claimFailedDeposit()
     // RequestExecute request execution of L2 transaction from L1.
-//111    RequestExecute(auth *TransactOpts, tx RequestExecuteTransaction) (*types.Transaction, error)
+    func requestExecute()
     // EstimateGasRequestExecute estimates the amount of gas required for a request execute transaction.
-//111    EstimateGasRequestExecute(ctx context.Context, msg RequestExecuteCallMsg) (uint64, error)
+    func estimateGasRequestExecute()
 }
 
 // AdapterL2 is associated with an account and provides common operations on the
@@ -66,12 +66,12 @@ public protocol AdapterL1 {
 public protocol AdapterL2 {
     // Balance returns the balance of the specified token that can be either ETH or any ERC20 token.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-//111    Balance(ctx context.Context, token common.Address, at *big.Int) (*big.Int, error)
+    func balance()
     // AllBalances returns all balances for confirmed tokens given by an associated
     // account.
-//111    AllBalances(ctx context.Context) (map[common.Address]*big.Int, error)
+    func allBalances()
     // L2BridgeContracts returns L2 bridge contracts.
-//111    L2BridgeContracts(ctx context.Context) (*zkTypes.L2BridgeContracts, error)
+    func l2BridgeContracts()
     // Withdraw initiates the withdrawal process which withdraws ETH or any ERC20
     // token from the associated account on L2 network to the target account on L1
     // network.
@@ -80,7 +80,7 @@ public protocol AdapterL2 {
     func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
     // EstimateGasWithdraw estimates the amount of gas required for a withdrawal
     // transaction.
-//111    EstimateGasWithdraw(ctx context.Context, msg WithdrawalCallMsg) (uint64, error)
+    func estimateGasWithdraw(_ transaction: EthereumTransaction) -> Promise<BigUInt>
     // Transfer moves the ETH or any ERC20 token from the associated account to the
     // target account.
     func transfer(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult>
@@ -88,7 +88,7 @@ public protocol AdapterL2 {
     func transfer(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) -> Promise<TransactionSendingResult>
     // EstimateGasTransfer estimates the amount of gas required for a transfer
     // transaction.
-//111    EstimateGasTransfer(ctx context.Context, msg TransferCallMsg) (uint64, error)
+    func estimateGasTransfer(_ transaction: EthereumTransaction) -> Promise<BigUInt>
     // CallContract executes a message call for EIP-712 transaction, which is
     // directly executed in the VM of the node, but never mined into the blockchain.
     //
@@ -101,12 +101,12 @@ public protocol AdapterL2 {
     // required fields are Transaction.To and either Transaction.Data or
     // Transaction.Value (or both, if the method is payable). Any other fields that
     // are not set will be prepared by this method.
-//111    PopulateTransaction(ctx context.Context, tx Transaction) (*zkTypes.Transaction712, error)
+    func populateTransaction(_ transaction: inout EthereumTransaction)
     // SignTransaction returns a signed transaction that is ready to be broadcast to
     // the network. The input transaction must be a valid transaction with all fields
     // having appropriate values. To obtain a valid transaction, you can use the
     // PopulateTransaction method.
-//111    SignTransaction(tx *zkTypes.Transaction712) ([]byte, error)
+    func signTransaction(_ transaction: inout EthereumTransaction)
     // SendTransaction injects a transaction into the pending pool for execution. Any
     // unset transaction fields are prepared using the PopulateTransaction method.
     func sendTransaction(_ transaction: EthereumTransaction, transactionOptions: TransactionOptions, completion: @escaping (Result<TransactionSendingResult>) -> Void)

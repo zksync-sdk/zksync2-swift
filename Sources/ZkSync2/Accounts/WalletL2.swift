@@ -30,6 +30,18 @@ public class WalletL2: AdapterL2 {
 }
 
 extension WalletL2 {
+    public func balance() {
+        
+    }
+    
+    public func allBalances() {
+        
+    }
+    
+    public func l2BridgeContracts() {
+        
+    }
+    
     public func withdraw(_ to: String, amount: BigUInt) -> Promise<TransactionSendingResult> {
         withdraw(to, amount: amount, token: nil, nonce: nil)
     }
@@ -133,8 +145,37 @@ extension WalletL2 {
         ethClient.callContract(transaction, blockNumber: blockNumber, completion: completion)
     }
     
+    public func populateTransaction(_ transaction: inout EthereumTransaction) {
+        var transactionOptions = TransactionOptions.defaultOptions
+        transactionOptions.callOnBlock = .pending
+        
+        if transaction.chainID == nil {
+            transaction.chainID = signer.domain.chainId
+        }
+        if transaction.nonce == .zero {
+            
+        }
+    }
+    
     public func sendTransaction(_ transaction: EthereumTransaction, transactionOptions: TransactionOptions, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
         ethClient.sendTransaction(transaction, transactionOptions: transactionOptions, completion: completion)
+    }
+    
+    public func signTransaction(_ transaction: inout EthereumTransaction) {
+        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
+        
+        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
+        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
+        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
+        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+    }
+    
+    public func estimateGasWithdraw(_ transaction: EthereumTransaction) -> Promise<BigUInt> {
+        return zkSync.estimateGasTransfer(transaction)
+    }
+    
+    public func estimateGasTransfer(_ transaction: EthereumTransaction) -> Promise<BigUInt> {
+        return zkSync.estimateGasTransfer(transaction)
     }
 }
 

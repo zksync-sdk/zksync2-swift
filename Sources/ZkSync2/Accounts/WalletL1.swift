@@ -46,6 +46,58 @@ extension WalletL1 {
         }
     }
     
+    public func balanceL1(token: Token) -> Promise<BigUInt> {
+        if token.symbol == Token.ETH.symbol {
+            return web.eth.getBalancePromise(address: EthereumAddress(signer.address)!)
+        } else {
+            fatalError("Not supported")
+        }
+    }
+    
+    public func allowanceL1() {
+        
+    }
+    
+    public func l2TokenAddress() {
+        
+    }
+    
+    public func approveERC20() {
+        
+    }
+    
+    public func baseCost() {
+        
+    }
+    
+    public func estimateGasDeposit() {
+        
+    }
+    
+    public func fullRequiredDepositFee() {
+        
+    }
+    
+    public func finalizeWithdraw() {
+        
+    }
+    
+    public func isWithdrawFinalized() {
+        
+    }
+    
+    public func claimFailedDeposit() {
+        
+    }
+    
+    public func requestExecute() {
+        
+    }
+    
+    public func estimateGasRequestExecute() {
+        
+    }
+    
     public func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void)) {
         zkSync.bridgeContracts { result in
             callback(result)

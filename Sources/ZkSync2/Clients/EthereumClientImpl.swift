@@ -235,4 +235,100 @@ public class EthereumClientImpl: EthereumClient {
             completion(.failure(error))
         }
     }
+    
+    public func chainID() {
+        
+    }
+    
+    public func headerByHash() {
+        
+    }
+    
+    public func headerByNumber() {
+        
+    }
+    
+    public func transactionSender() {
+        
+    }
+    
+    public func transactionCount() {
+        
+    }
+    
+    public func transactionInBlock() {
+        
+    }
+    
+    public func syncProgress() {
+        
+    }
+    
+    public func subscribeNewHead() {
+        
+    }
+    
+    public func networkID() {
+        
+    }
+    
+    public func balanceAt() {
+        
+    }
+    
+    public func storageAt() {
+        
+    }
+    
+    public func codeAt() {
+        
+    }
+    
+    public func nonceAt() {
+        
+    }
+    
+    public func filterLogs() {
+        
+    }
+    
+    public func filterLogsL2() {
+        
+    }
+    
+    public func subscribeFilterLogs() {
+        
+    }
+    
+    public func subscribeFilterLogsL2() {
+        
+    }
+    
+    public func pendingBalanceAt() {
+        
+    }
+    
+    public func pendingStorageAt() {
+        
+    }
+    
+    public func pendingCodeAt() {
+        
+    }
+    
+    public func pendingNonceAt() {
+        
+    }
+    
+    public func pendingTransactionCount() {
+        
+    }
+    
+    public func waitMined() {
+        
+    }
+    
+    public func waitFinalized() {
+        
+    }
 }

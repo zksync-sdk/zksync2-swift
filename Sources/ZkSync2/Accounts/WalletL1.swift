@@ -55,7 +55,7 @@ extension WalletL1 {
         let amount = limit?.description ?? maxApproveAmount.description
         
         let transaction = try await tokenContract.approve(from: spenderAddress, spender: spenderAddress, amount: amount)
-        return try await transaction.writeToChain(password: "")//444
+        return try await web.eth.send(transaction.transaction)
     }
     
     public func isDepositApproved(with token: Token,
@@ -92,15 +92,12 @@ extension WalletL1 {
         }
     }
     
-    public func balanceL1(token: Token) -> Promise<BigUInt> {
-//444        if token.symbol == Token.ETH.symbol {
-//            return web.eth.getBalancePromise(address: EthereumAddress(signer.address)!)
-//        } else {
-//            fatalError("Not supported")
-//        }
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
+    public func balanceL1(token: Token) async -> BigUInt {
+        if token.symbol == Token.ETH.symbol {
+            return try! await web.eth.getBalance(for: EthereumAddress(signer.address)!)
+        } else {
+            fatalError("Not supported")
+        }
     }
     
     public func allowanceL1() {
@@ -117,7 +114,7 @@ extension WalletL1 {
     
     public func baseCost(_ gasLimit: BigUInt,
                   gasPerPubdataByte: BigUInt = BigUInt(50000),
-                         gasPrice: BigUInt?) async -> Promise<[String: Any]> {
+                         gasPrice: BigUInt?) async throws -> [String: Any] {
         var gasPrice = gasPrice
         if gasPrice == nil {
             gasPrice = try! await web.eth.gasPrice()
@@ -129,16 +126,11 @@ extension WalletL1 {
             gasPerPubdataByte
         ] as [AnyObject]
         
-//444        guard let transaction = zkSyncContract.read("l2TransactionBaseCost",
-//                                                    parameters: parameters,
-//                                                    transactionOptions: nil) else {
-//            return Promise(error: EthereumProviderError.invalidParameter)
-//        }
-//
-//        return transaction.callPromise()
-        return Promise<[String: Any]> { result in
-            result.fulfill([:])
+        guard let transaction = zkSyncContract.createReadOperation("l2TransactionBaseCost", parameters: parameters) else {
+            throw EthereumProviderError.invalidParameter
         }
+
+        return try await transaction.callContractMethod()
     }
     
     public func estimateGasDeposit() {
@@ -188,7 +180,7 @@ extension WalletL1 {
 
         print("Encoded transaction: \(encodedTransaction.toHexString().addHexPrefix())")
 
-        return try await writeTransaction.writeToChain(password: "")//444
+        return try await web.eth.send(writeTransaction.transaction)
     }
 
     public func requestExecute(_ contractAddress: String,
@@ -204,7 +196,7 @@ extension WalletL1 {
             gasPrice = try! await web.eth.gasPrice()
         }
 
-        guard let baseCost = try await baseCost(gasLimit, gasPrice: gasPrice).wait()["0"] as? BigUInt else {
+        guard let baseCost = try await baseCost(gasLimit, gasPrice: gasPrice)["0"] as? BigUInt else {
             throw EthereumProviderError.invalidParameter
         }
 
@@ -325,15 +317,13 @@ extension WalletL1 {
                 totalAmount
             ] as [AnyObject]
 
-//            var transactionOptions = TransactionOptions.defaultOptions
-//            transactionOptions.to = EthereumAddress(to)!
-
-            guard let transaction = l1ERC20Bridge.createWriteOperation("deposit",
-                                                        parameters: parameters) else {//444 , transactionOptions: transactionOptions
+            guard let writeTransaction = l1ERC20Bridge.createWriteOperation("deposit",
+                                                        parameters: parameters) else {
                 throw EthereumProviderError.invalidParameter
             }
+            writeTransaction.transaction.to = EthereumAddress(to)!
 
-            return try await transaction.writeToChain(password: "")//444
+            return try await web.eth.send(writeTransaction.transaction)
         }
 //444 remove?        let defaultEthereumProvider = DefaultEthereumProvider(
 //            web,

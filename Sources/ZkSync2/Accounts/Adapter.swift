@@ -26,7 +26,7 @@ public protocol AdapterL1 {
     func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void))
     // BalanceL1 returns the balance of the specified token on L1 that can be
     // either ETH or any ERC20 token.
-    func balanceL1(token: Token) -> Promise<BigUInt>
+    func balanceL1(token: Token) async -> BigUInt
     // AllowanceL1 returns the amount of approved tokens for a specific L1 bridge.
     func allowanceL1()
     // L2TokenAddress returns the corresponding address on the L2 network for the token on the L1 network.
@@ -35,8 +35,8 @@ public protocol AdapterL1 {
     func approveERC20()
     // BaseCost returns base cost for L2 transaction.
     func baseCost(_ gasLimit: BigUInt,
-             gasPerPubdataByte: BigUInt,
-             gasPrice: BigUInt?) async -> Promise<[String: Any]>
+                         gasPerPubdataByte: BigUInt,
+                         gasPrice: BigUInt?) async throws -> [String: Any]
     // Deposit transfers the specified token from the associated account on the L1 network
     // to the target account on the L2 network. The token can be either ETH or any ERC20 token.
     // For ERC20 tokens, enough approved tokens must be associated with the specified L1 bridge
@@ -114,7 +114,7 @@ public protocol AdapterL2 {
     // blockNumber selects the block height at which the call runs. It can be nil, in
     // which case the code is taken from the latest known block. Note that state from
     // very old blocks might not be available.
-    func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void)
+    func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) async
     // PopulateTransaction is designed for users who prefer a simplified approach by
     // providing only the necessary data to create a valid transaction. The only
     // required fields are Transaction.To and either Transaction.Data or

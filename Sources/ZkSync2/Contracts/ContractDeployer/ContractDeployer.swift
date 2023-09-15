@@ -226,41 +226,45 @@ public class ContractDeployer {
         return encodedCallData
     }
     
-    public static func hashBytecode(_ bytecode: Data) -> Data {
-        return bytecode//444
-//444        var bytecodeHash = Web3.Utils.sha256(bytecode)
-//
-//        let function = ABI.Element.Function(name: "createAccount",
-//                                            inputs: inputs,
-//                                            outputs: [],
-//                                            constant: false,
-//                                            payable: false)
-//
-//        let elementFunction: ABI.Element = .function(function)
-//
-//        let salt = Data(capacity: 32)
-//
-//        let bytecodeHash = ContractDeployer.hashBytecode(bytecode)
-//
-//        let parameters: [AnyObject] = [
-//            salt as AnyObject,
-//            bytecodeHash as AnyObject,
-//            calldata as AnyObject,
-//            version.rawValue as AnyObject,
-//        ]
-//
-//        guard let encodedCallData = elementFunction.encodeParameters(parameters) else {
-//            fatalError("Failed to encode function.")
-//        }
-//
-//#if DEBUG
-//        print("bytecode: \(bytecode.toHexString().addHexPrefix())")
-//        print("bytecodeHash: \(bytecodeHash.toHexString().addHexPrefix())")
-//        print("calldata: \(calldata.toHexString().addHexPrefix())")
-//        print("version: \(version)")
-//        print("encodedCallData: \(encodedCallData.toHexString().addHexPrefix())")
-//#endif
-//
-//        return encodedCallData
+    public static func hashBytecode(_ bytecode: Data, calldata: Data = Data(), salt: Data = Data(), version: AccountAbstractionVersion = .version1) -> Data {
+        let inputs = [
+            ABI.Element.InOut(name: "salt", type: .bytes(length: 32)),
+            ABI.Element.InOut(name: "bytecodeHash", type: .bytes(length: 32)),
+            ABI.Element.InOut(name: "input", type: .dynamicBytes),
+            ABI.Element.InOut(name: "aaVersion", type: .uint(bits: 8))
+        ]
+        
+        let function = ABI.Element.Function(name: "createAccount",
+                                            inputs: inputs,
+                                            outputs: [],
+                                            constant: false,
+                                            payable: false)
+
+        let elementFunction: ABI.Element = .function(function)
+
+        let salt = Data(capacity: 32)
+
+        let bytecodeHash = ContractDeployer.hashBytecode(bytecode, calldata: calldata, salt: salt, version: version)
+
+        let parameters: [AnyObject] = [
+            salt as AnyObject,
+            bytecodeHash as AnyObject,
+            calldata as AnyObject,
+            version.rawValue as AnyObject,
+        ]
+
+        guard let encodedCallData = elementFunction.encodeParameters(parameters) else {
+            fatalError("Failed to encode function.")
+        }
+
+#if DEBUG
+        print("bytecode: \(bytecode.toHexString().addHexPrefix())")
+        print("bytecodeHash: \(bytecodeHash.toHexString().addHexPrefix())")
+        print("calldata: \(calldata.toHexString().addHexPrefix())")
+        print("version: \(version)")
+        print("encodedCallData: \(encodedCallData.toHexString().addHexPrefix())")
+#endif
+
+        return encodedCallData
     }
 }

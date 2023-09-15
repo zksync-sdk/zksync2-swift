@@ -73,12 +73,8 @@ public extension ZkSyncClientImpl {
         }
     }
     
-    func ethEstimateGas(_ transaction: CodableTransaction) -> Promise<BigUInt> {
-        Promise { seal in
-//444            estimateGas(transaction) {
-//                seal.resolve($0)
-//            }
-        }
+    func ethEstimateGas(_ transaction: CodableTransaction) async throws -> BigUInt {
+        try await web3.eth.estimateGas(for: transaction)
     }
     
     func zksGetTestnetPaymaster() -> Promise<String> {

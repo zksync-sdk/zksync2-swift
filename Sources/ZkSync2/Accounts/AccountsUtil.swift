@@ -48,7 +48,7 @@ public class AccountsUtil {
 //        ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
 
         var prepared = CodableTransaction(
-            //444type: .eip712,
+            type: .eip712,
             to: transaction.to,
             nonce: nonce,
             chainID: chainID,

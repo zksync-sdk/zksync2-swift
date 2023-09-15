@@ -63,7 +63,7 @@ extension WalletL2 {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         if tokenToUse.isETH {
@@ -142,24 +142,16 @@ extension WalletL2 {
         }
     }
     
-    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) {
-        ethClient.callContract(transaction, blockNumber: blockNumber, completion: completion)
+    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) async {
+        await ethClient.callContract(transaction, blockNumber: blockNumber, completion: completion)
     }
     
     public func populateTransaction(_ transaction: inout CodableTransaction) {
-//444        var transactionOptions = TransactionOptions.defaultOptions
-//        transactionOptions.callOnBlock = .pending
-//
-//        if transaction.chainID == nil {
-//            transaction.chainID = signer.domain.chainId
-//        }
-//        if transaction.nonce == .zero {
-//
-//        }
+        //111
     }
     
     public func sendTransaction(_ transaction: CodableTransaction, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
-        //444ethClient.sendTransaction(transaction, transactionOptions: transactionOptions, completion: completion)
+        ethClient.sendTransaction(transaction, completion: completion)
     }
     
     public func signTransaction(_ transaction: inout CodableTransaction) {
@@ -246,7 +238,7 @@ extension WalletL2 {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         var estimate = CodableTransaction.createFunctionCallTransaction(from: from, to: to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: txAmount, data: calldata)
@@ -268,7 +260,7 @@ extension WalletL2 {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         // TODO: Validate calldata.
@@ -278,59 +270,44 @@ extension WalletL2 {
         return await AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
     }
     
-    public func getBalance() -> Promise<BigUInt> {
-        getBalance(signer.address, token: Token.ETH, at: .committed)
+    public func getBalance() async throws -> BigUInt {
+        try await getBalance(signer.address, token: Token.ETH, at: .latest)
     }
     
-    public func getBalance(_ token: Token) -> Promise<BigUInt> {
-        getBalance(signer.address, token: token, at: .committed)
+    public func getBalance(_ token: Token) async throws -> BigUInt {
+        try await getBalance(signer.address, token: token, at: .latest)
     }
     
-    public func getBalance(_ address: String) -> Promise<BigUInt> {
-        getBalance(address, token: Token.ETH, at: .committed)
+    public func getBalance(_ address: String) async throws -> BigUInt {
+        try await getBalance(address, token: Token.ETH, at: .latest)
     }
     
-    public func getBalance(_ address: String, token: Token) -> Promise<BigUInt> {
-        getBalance(address, token: token, at: .committed)
+    public func getBalance(_ address: String, token: Token) async throws -> BigUInt {
+        try await getBalance(address, token: token, at: .latest)
     }
     
-    public func getBalance(_ address: String, token: Token, at: ZkBlockParameterName) -> Promise<BigUInt> {
-//444        guard let ethereumAddress = EthereumAddress(address),
-//              let l2EthereumAddress = EthereumAddress(token.l2Address) else {
-//            fatalError("Tokens are not valid.")
-//        }
-//
-//        if token.isETH {
-//            return zkSync.web3.eth.getBalancePromise(address: ethereumAddress,
-//                                                     onBlock: at.rawValue)
-//        } else {
-//            let erc20 = ERC20(web3: zkSync.web3,
-//                              provider: zkSync.web3.provider,
-//                              address: l2EthereumAddress)
-//
-//            let balance = try! erc20.getBalance(account: ethereumAddress)
-//
-//            return Promise {
-//                $0.fulfill(balance)
-//            }
-//        }
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
+    public func getBalance(_ address: String, token: Token, at block: BlockNumber) async throws -> BigUInt {
+        guard let ethereumAddress = EthereumAddress(address),
+              let l2EthereumAddress = EthereumAddress(token.l2Address) else {
+            fatalError("Tokens are not valid.")
+        }
+
+        if token.isETH {
+            return try await zkSync.web3.eth.getBalance(for: ethereumAddress, onBlock: block)
+        } else {
+            let erc20 = ERC20(web3: zkSync.web3,
+                              provider: zkSync.web3.provider,
+                              address: l2EthereumAddress)
+
+            return try await erc20.getBalance(account: ethereumAddress)
+        }
     }
     
-    public func getNonce(_ at: ZkBlockParameterName) -> Promise<BigUInt> {
-        //444zkSync.web3.eth.getTransactionCountPromise(address: signer.address, onBlock: at.rawValue)
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
+    public func getNonce(at block: BlockNumber) async throws -> BigUInt {
+        try await zkSync.web3.eth.getTransactionCount(for: EthereumAddress(signer.address)!, onBlock: block)
     }
     
-    public func getNonce() throws -> BigUInt {
-        try getNonce(.committed).wait()
-    }
-    
-    public func getNonce() -> Promise<BigUInt> {
-        getNonce(.committed)
+    public func getNonce() async throws -> BigUInt {
+        try await getNonce(at: .latest)
     }
 }

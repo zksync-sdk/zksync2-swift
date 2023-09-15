@@ -34,7 +34,7 @@ extension DeployerImpl {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         let validCalldata: Data
@@ -54,7 +54,7 @@ extension DeployerImpl {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         let validCalldata: Data
@@ -74,7 +74,7 @@ extension DeployerImpl {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         let validCalldata: Data
@@ -94,7 +94,7 @@ extension DeployerImpl {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! getNonce()
+            nonceToUse = try! await getNonce()
         }
         
         let validCalldata: Data
@@ -111,18 +111,11 @@ extension DeployerImpl {
 }
 
 extension DeployerImpl {
-    public func getNonce(_ at: ZkBlockParameterName) -> Promise<BigUInt> {
-        //444zkSync.web3.eth.getTransactionCountPromise(address: signer.address, onBlock: at.rawValue)
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
+    public func getNonce(at block: BlockNumber = .latest) async throws -> BigUInt {
+        try await web.eth.getTransactionCount(for: EthereumAddress(signer.address)!, onBlock: block)
     }
     
-    public func getNonce() throws -> BigUInt {
-        try getNonce(.committed).wait()
-    }
-    
-    public func getNonce() -> Promise<BigUInt> {
-        getNonce(.committed)
+    public func getNonce() async throws -> BigUInt {
+        try await getNonce(at: .latest)
     }
 }

@@ -41,27 +41,27 @@ public class EthereumClientImpl: EthereumClient {
     
     public func estimateGas(_ transaction: CodableTransaction,
                             completion: @escaping (Result<BigUInt>) -> Void) {
-//444        let parameters = [
-//            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
-//        ]
-//
-//        transport.send(method: "eth_estimateGas",
-//                       parameters: parameters,
-//                       completion: { (result: Result<String>) in
-//            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
-//        })
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+        ]
+
+        transport.send(method: "eth_estimateGas",
+                       parameters: parameters,
+                       completion: { (result: Result<String>) in
+            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
+        })
     }
     
     public func estimateGasL2(_ transaction: CodableTransaction, completion: @escaping (Result<BigUInt>) -> Void) {
-//444        let parameters = [
-//            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
-//        ]
-//
-//        transport.send(method: "eth_estimateGas",
-//                       parameters: parameters,
-//                       completion: { (result: Result<String>) in
-//            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
-//        })
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+        ]
+
+        transport.send(method: "eth_estimateGas",
+                       parameters: parameters,
+                       completion: { (result: Result<String>) in
+            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
+        })
     }
     
     public func transactionByHash(_ transactionHash: String,
@@ -107,54 +107,40 @@ public class EthereumClientImpl: EthereumClient {
                        completion: completion)
     }
     
-    public func blockNumber(completion: @escaping (Result<BigUInt>) -> Void) {
-//444        do {
-//            let blockNumber = try web3.eth.getBlockNumber()
-//
-//            completion(.success(blockNumber))
-//        } catch {
-//            completion(.failure(error))
-//        }
+    public func blockNumber() async throws -> BigUInt {
+        return try await web3.eth.blockNumber()
     }
     
-    public func peerCount(completion: @escaping (Result<BigUInt>) -> Void) {
-//444        do {
-//            let blockNumber = try web3.eth.getPeerCount()
-//
-//            completion(.success(blockNumber))
-//        } catch {
-//            completion(.failure(error))
-//        }
-    }
-    
-    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt? = nil, completion: @escaping (Result<Data>) -> Void) {
-//444        var transactionOptions = TransactionOptions.defaultOptions
-//        if let blockNumber = blockNumber {
-//            transactionOptions.callOnBlock = .exactBlockNumber(blockNumber)
-//        }
-//
-//        do {
-//            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
-//
-//            completion(.success(data))
-//        } catch {
-//            completion(.failure(error))
-//        }
+    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt? = nil, completion: @escaping (Result<Data>) -> Void) async {
+        var transaction = transaction
+        if let blockNumber = blockNumber {
+            transaction.callOnBlock = .exact(blockNumber)
+        }
+
+        do {
+            let data = try await web3.eth.callTransaction(transaction)
+
+            completion(.success(data))
+        } catch {
+            completion(.failure(error))
+        }
     }
     
     public func callContractL2(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) {
-//444        var transactionOptions = TransactionOptions.defaultOptions
-//        if let blockNumber = blockNumber {
-//            transactionOptions.callOnBlock = .exactBlockNumber(blockNumber)
-//        }
-//
-//        do {
-//            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
-//
-//            completion(.success(data))
-//        } catch {
-//            completion(.failure(error))
-//        }
+        var transaction = transaction
+        if let blockNumber = blockNumber {
+            transaction.callOnBlock = .exact(blockNumber)
+        }
+
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+        ]
+        
+        transport.send(method: "eth_call",
+                       parameters: parameters,
+                       completion: { (result: Result<Data>) in
+            completion(result)
+        })
     }
     
     public func callContractAtHash(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
@@ -181,30 +167,30 @@ public class EthereumClientImpl: EthereumClient {
 //        }
     }
     
-    public func pendingCallContract(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
-//444        var transactionOptions = TransactionOptions.defaultOptions
-//        transactionOptions.callOnBlock = .pending
-//
-//        do {
-//            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
-//
-//            completion(.success(data))
-//        } catch {
-//            completion(.failure(error))
-//        }
+    public func pendingCallContract(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void) {
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .string, value: "pending")
+        ]
+        
+        transport.send(method: "eth_call",
+                       parameters: parameters,
+                       completion: { (result: Result<Data>) in
+            completion(result)
+        })
     }
     
-    public func pendingCallContractL2(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
-//444        var transactionOptions = TransactionOptions.defaultOptions
-//        transactionOptions.callOnBlock = .pending
-//
-//        do {
-//            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
-//
-//            completion(.success(data))
-//        } catch {
-//            completion(.failure(error))
-//        }
+    public func pendingCallContractL2(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void) {
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .string, value: "pending")
+        ]
+        
+        transport.send(method: "eth_call",
+                       parameters: parameters,
+                       completion: { (result: Result<Data>) in
+            completion(result)
+        })
     }
     
     public func transactionReceipt(_ txHash: String, completion: @escaping (Result<TransactionReceipt>) -> Void) {
@@ -218,30 +204,35 @@ public class EthereumClientImpl: EthereumClient {
     }
     
     public func sendTransaction(_ transaction: CodableTransaction, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
-//444        do {
-//            let result = try web3.eth.sendTransaction(transaction, transactionOptions: transactionOptions)
-//
-//            completion(.success(result))
-//        } catch {
-//            completion(.failure(error))
-//        }
+        Task {
+            do {
+                let transactionSendingResult = try await web3.eth.send(transaction)
+                
+                completion(.success(transactionSendingResult))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
     public func sendRawTransaction(transaction: Data, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
-//444        do {
-//            let result = try web3.eth.sendRawTransaction(transaction)
-//
-//            completion(.success(result))
-//        } catch {
-//            completion(.failure(error))
-//        }
+        Task {
+            do {
+                let transactionSendingResult = try await web3.eth.send(raw: transaction)
+                
+                completion(.success(transactionSendingResult))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
-    public func chainID() -> Promise<BigUInt> {
-        //444web3.eth.getChainIdPromise()
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
+    public func chainID(completion: @escaping (Result<BigUInt>) -> Void) {
+        transport.send(method: "eth_chainId",
+                       parameters: [],
+                       completion: { (result: Result<BigUInt>) in
+            completion(result)
+        })
     }
     
     public func transactionSender(_ blockHash: String,
@@ -257,8 +248,8 @@ public class EthereumClientImpl: EthereumClient {
                        completion: completion)
     }
     
-    public func transactionCount(address: String, blockHash: String) throws -> BigUInt {
-        return .zero//444 try web3.eth.getTransactionCount(address: EthereumAddress(address)!, onBlock: blockHash)
+    public func transactionCount(address: String, blockNumber: BlockNumber) async throws -> BigUInt {
+        try await web3.eth.getTransactionCount(for: EthereumAddress(address)!, onBlock: blockNumber)
     }
     
     public func transactionInBlock(_ blockHash: String,
@@ -274,11 +265,11 @@ public class EthereumClientImpl: EthereumClient {
                        completion: completion)
     }
     
-    public func balanceAt(address: String, blockHash: String) throws -> BigUInt {
-        return .zero//444 try web3.eth.getBalance(address: EthereumAddress(address)!, onBlock: blockHash)
+    public func balanceAt(address: String, blockNumber: BlockNumber) async throws -> BigUInt {
+        try await web3.eth.getBalance(for: EthereumAddress(address)!, onBlock: blockNumber)
     }
     
-    public func codeAt(address: String, blockHash: String) throws -> String {
-        return ""//444 try web3.eth.getCodePromise(address: EthereumAddress(address)!, onBlock: blockHash).wait()
+    public func codeAt(address: String, blockNumber: BlockNumber) async throws -> String {
+        try await web3.eth.code(for: EthereumAddress(address)!, onBlock: blockNumber)
     }
 }

@@ -73,7 +73,7 @@ public extension ZkSyncClientImpl {
         }
     }
     
-    func ethEstimateGas(_ transaction: CodableTransaction) async throws -> BigUInt {
+    func estimateGas(_ transaction: CodableTransaction) async throws -> BigUInt {
         try await web3.eth.estimateGas(for: transaction)
     }
     

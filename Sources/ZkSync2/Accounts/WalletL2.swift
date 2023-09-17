@@ -31,16 +31,12 @@ public class WalletL2: AdapterL2 {
 }
 
 extension WalletL2 {
-    public func balance() {
-        //111
+    public func balanceAt(address: String, blockNumber: BlockNumber) async throws -> BigUInt {
+        try await ethClient.balanceAt(address: address, blockNumber: blockNumber)
     }
     
-    public func allBalances() {
-        //111
-    }
-    
-    public func l2BridgeContracts() {
-        //111
+    public func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
+        zkSync.allAccountBalances(address, completion: completion)
     }
     
     public func withdraw(_ to: String, amount: BigUInt) async -> TransactionSendingResult {
@@ -88,8 +84,7 @@ extension WalletL2 {
             
             var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
             
-            // TODO: Verify chainID value.
-            //444estimate.envelope.parameters.chainID = signer.domain.chainId
+            estimate.chainID = signer.domain.chainId
             
             return await AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
         } else {
@@ -135,8 +130,7 @@ extension WalletL2 {
             
             var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
             
-            // TODO: Verify chainID value.
-            //444estimate.envelope.parameters.chainID = signer.domain.chainId
+            estimate.chainID = signer.domain.chainId
             
             return await AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
         }
@@ -146,8 +140,47 @@ extension WalletL2 {
         await ethClient.callContract(transaction, blockNumber: blockNumber, completion: completion)
     }
     
-    public func populateTransaction(_ transaction: inout CodableTransaction) {
-        //111
+    public func populateTransaction(_ transaction: inout CodableTransaction) async {
+        if transaction.chainID == nil {
+            transaction.chainID = signer.domain.chainId
+        }
+        if transaction.nonce == .zero {
+            let nonce = try! await web.eth.getTransactionCount(
+                for: EthereumAddress(signer.address)!,
+                onBlock: .pending
+            )
+            
+            transaction.nonce = nonce
+        }
+        if transaction.maxFeePerGas == nil {
+            transaction.maxFeePerGas = try? await ethClient.suggestGasPrice()
+        }
+        if transaction.maxPriorityFeePerGas == nil {
+            transaction.maxPriorityFeePerGas = BigUInt(100_000_000)
+        }
+        if transaction.eip712Meta == nil {
+            transaction.eip712Meta = EIP712Meta(gasPerPubdata: BigUInt(50_000))
+        } else if transaction.eip712Meta?.gasPerPubdata == nil {
+            transaction.eip712Meta?.gasPerPubdata = BigUInt(50_000)
+        }
+        if transaction.gasLimit == .zero {
+            do {
+                let gasLimit = try await withCheckedThrowingContinuation { continuation in
+                    ethClient.estimateGasL2(transaction, completion: { result in
+                        switch result {
+                        case .success(let fee):
+                            continuation.resume(with: .success(fee))
+                        case .failure(let error):
+                            continuation.resume(with: .failure(error))
+                        }
+                    })
+                }
+                
+                transaction.gasLimit = gasLimit
+            } catch {
+                
+            }
+        }
     }
     
     public func sendTransaction(_ transaction: CodableTransaction, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
@@ -163,12 +196,12 @@ extension WalletL2 {
 //        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
     }
     
-    public func estimateGasWithdraw(_ transaction: CodableTransaction) -> Promise<BigUInt> {
-        return zkSync.estimateGasTransfer(transaction)
+    public func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt {
+        return try await zkSync.estimateGasWithdraw(transaction)
     }
     
-    public func estimateGasTransfer(_ transaction: CodableTransaction) -> Promise<BigUInt> {
-        return zkSync.estimateGasTransfer(transaction)
+    public func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt {
+        return try await zkSync.estimateGasTransfer(transaction)
     }
 }
 
@@ -243,8 +276,7 @@ extension WalletL2 {
         
         var estimate = CodableTransaction.createFunctionCallTransaction(from: from, to: to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: txAmount, data: calldata)
         
-        // TODO: Verify chainID value.
-        //444estimate.envelope.parameters.chainID = signer.domain.chainId
+        estimate.chainID = signer.domain.chainId
         
         return await AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
     }

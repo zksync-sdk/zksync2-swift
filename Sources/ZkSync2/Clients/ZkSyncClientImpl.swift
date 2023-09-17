@@ -27,13 +27,13 @@ public class ZkSyncClientImpl: ZkSyncClient {
     }
     
     public func estimateFee(_ transaction: CodableTransaction) async throws -> Fee {
-        await withCheckedContinuation { continuation in
+        try await withCheckedThrowingContinuation { continuation in
             estimateFee(transaction) { result in
                 switch result {
                 case .success(let fee):
                     continuation.resume(with: .success(fee))
                 case .failure(let error):
-                    continuation.resume(with: .failure(error as! Never))//444
+                    continuation.resume(with: .failure(error))
                 }
             }
         }
@@ -53,15 +53,15 @@ public class ZkSyncClientImpl: ZkSyncClient {
     
     public func estimateGasL1(_ transaction: CodableTransaction,
                             completion: @escaping (Result<Fee>) -> Void) {
-//444        let parameters = [
-//            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.parameters.from))
-//        ]
-//
-//        transport.send(
-//            method: "zks_estimateGasL1ToL2",
-//            parameters: parameters,
-//            completion: completion
-//        )
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+        ]
+
+        transport.send(
+            method: "zks_estimateGasL1ToL2",
+            parameters: parameters,
+            completion: completion
+        )
     }
     
     public func estimateGasL1(_ transaction: CodableTransaction) -> Promise<Fee> {
@@ -72,25 +72,12 @@ public class ZkSyncClientImpl: ZkSyncClient {
         }
     }
     
-    public func estimateGasTransfer(_ transaction: CodableTransaction) -> Promise<BigUInt> {
-        //444return web3.eth.estimateGasPromise(transaction, transactionOptions: TransactionOptions.defaultOptions)
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
+    public func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt {
+        return try await estimateGas(transaction)
     }
     
-    public func estimateGasWithdraw(_ transaction: CodableTransaction) -> Promise<BigUInt> {
-        //444return web3.eth.estimateGasPromise(transaction, transactionOptions: TransactionOptions.defaultOptions)
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
-    }
-    
-    public func estimateL1ToL2Execute(_ transaction: CodableTransaction) -> Promise<BigUInt> {
-        //444return web3.eth.estimateGasPromise(transaction, transactionOptions: TransactionOptions.defaultOptions)
-        Promise<BigUInt> { result in
-            result.fulfill(.zero)
-        }//444
+    public func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt {
+        try await web3.eth.estimateGas(for: transaction)
     }
     
     public func mainContract(_ completion: @escaping (Result<String>) -> Void) {
@@ -222,10 +209,6 @@ public class ZkSyncClientImpl: ZkSyncClient {
         )
     }
     
-    public func contractAccountInfo() {
-        //111
-    }
-    
     public func l1BatchNumber(_ completion: @escaping (Result<String>) -> Void) {
         transport.send(
             method: "zks_L1BatchNumber",
@@ -295,13 +278,5 @@ public class ZkSyncClientImpl: ZkSyncClient {
             parameters: parameters,
             completion: completion
         )
-    }
-    
-    public func l2TokenAddress() {
-        //111
-    }
-    
-    public func l1TokenAddress() {
-        //111
     }
 }

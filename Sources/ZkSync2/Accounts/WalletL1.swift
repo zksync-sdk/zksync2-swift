@@ -100,18 +100,6 @@ extension WalletL1 {
         }
     }
     
-    public func allowanceL1() {
-        //111
-    }
-    
-    public func l2TokenAddress() {
-        //111
-    }
-    
-    public func approveERC20() {
-        //111
-    }
-    
     public func baseCost(_ gasLimit: BigUInt,
                   gasPerPubdataByte: BigUInt = BigUInt(50000),
                          gasPrice: BigUInt?) async throws -> [String: Any] {
@@ -131,22 +119,6 @@ extension WalletL1 {
         }
 
         return try await transaction.callContractMethod()
-    }
-    
-    public func estimateGasDeposit() {
-        //111
-    }
-    
-    public func fullRequiredDepositFee() {
-        //111
-    }
-    
-    public func finalizeWithdraw() {
-        //111
-    }
-    
-    public func isWithdrawFinalized() {
-        //111
     }
     
     public func claimFailedDeposit(_ l1BridgeAddress: String,
@@ -183,14 +155,7 @@ extension WalletL1 {
         return try await web.eth.send(writeTransaction.transaction)
     }
 
-    public func requestExecute(_ contractAddress: String,
-                        l2Value: BigUInt,
-                        calldata: Data,
-                        gasLimit: BigUInt,
-                        factoryDeps: [Data]?,
-                        operatorTips: BigUInt?,
-                        gasPrice: BigUInt?,
-                               refundRecipient: String) async throws -> TransactionSendingResult {
+    public func requestExecute(_ contractAddress: String, l2Value: BigUInt, calldata: Data, gasLimit: BigUInt, factoryDeps: [Data]?, operatorTips: BigUInt?, gasPrice: BigUInt?, refundRecipient: String) async throws -> TransactionSendingResult {
         var gasPrice = gasPrice
         if gasPrice == nil {
             gasPrice = try! await web.eth.gasPrice()
@@ -242,10 +207,6 @@ extension WalletL1 {
         return try await web.eth.send(writeTransaction.transaction)
     }
     
-    public func estimateGasRequestExecute() {
-        //111
-    }
-    
     public func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void)) {
         zkSync.bridgeContracts { result in
             callback(result)
@@ -276,7 +237,7 @@ extension WalletL1 {
             semaphore.signal()
         }
 
-        semaphore.wait()//444
+        semaphore.wait()
 
         let zkSyncContract = web.contract(
             Web3.Utils.IZkSync,
@@ -325,17 +286,5 @@ extension WalletL1 {
 
             return try await web.eth.send(writeTransaction.transaction)
         }
-//444 remove?        let defaultEthereumProvider = DefaultEthereumProvider(
-//            web,
-//            l1ERC20Bridge: l1ERC20Bridge,
-//            zkSyncContract: zkSyncContract
-//        )
-//
-//        return try! defaultEthereumProvider.deposit(
-//            with: token ?? Token.ETH,
-//            amount: amount,
-//            address: to,
-//            operatorTips: BigUInt(0)
-//        )
     }
 }

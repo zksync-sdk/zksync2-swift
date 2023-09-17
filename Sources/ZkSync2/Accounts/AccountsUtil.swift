@@ -25,7 +25,6 @@ public class AccountsUtil {
         let fee = try! await zkSync.estimateFee(estimate)
 
         var transaction = transaction
-        //444transaction.type = .eip712
         transaction.chainID = chainID
         transaction.nonce = nonce
         transaction.to = transaction.to
@@ -43,10 +42,6 @@ public class AccountsUtil {
         print("gasPrice: \(gasPrice)")
 #endif
 
-//444        var ethereumParameters = EthereumParameters(from: transactionOptions)
-//
-//        ethereumParameters.EIP712Meta = (transaction.envelope as! EIP712Envelope).EIP712Meta
-
         var prepared = CodableTransaction(
             type: .eip712,
             to: transaction.to,
@@ -54,8 +49,8 @@ public class AccountsUtil {
             chainID: chainID,
             value: transaction.value,
             data: transaction.data
-            //444parameters: ethereumParameters
         )
+        prepared.eip712Meta = transaction.eip712Meta
 
         let domain = signer.domain
 //444        let signature = signer.signTypedData(domain, typedData: prepared)
@@ -70,9 +65,8 @@ public class AccountsUtil {
 
 #if DEBUG
         print("Transaction hash: \(String(describing: prepared.hash?.toHexString().addHexPrefix()))")
-        //444print("Signature: \(signature))")
         print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
 #endif
-        return try! await zkSync.web3.eth.send(prepared)//444 remove !
+        return try! await zkSync.web3.eth.send(prepared)
     }
 }

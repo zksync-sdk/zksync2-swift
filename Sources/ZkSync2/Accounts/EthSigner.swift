@@ -163,30 +163,29 @@ public class EthSignerImpl: ETHSigner {
     public func verifySignature(_ signature: String,
                                 message: Data,
                                 prefixed: Bool) -> Bool {
-        return true//444
-//444        let messageHash: Data
-//        if prefixed {
-//            guard let personalMessageHash = Web3.Utils.hashPersonalMessage(message) else {
-//                fatalError("Unable to hash message.")
-//            }
-//
-//            messageHash = personalMessageHash
-//        } else {
-//            messageHash = message
-//        }
-//
-//        guard let signatureData = Data.fromHex(signature) else {
-//            fatalError("Invalid signature.")
-//        }
-//
-//        let address = Web3.Utils.hashECRecover(hash: messageHash, signature: signatureData)
-//
-//#if DEBUG
-//        print("EthereumAddress: \(ethereumAddress)")
-//        print("Address: \(String(describing: address))")
-//#endif
-//
-//        return ethereumAddress == address
+        let messageHash: Data
+        if prefixed {
+            guard let personalMessageHash = Utilities.hashPersonalMessage(message) else {
+                fatalError("Unable to hash message.")
+            }
+
+            messageHash = personalMessageHash
+        } else {
+            messageHash = message
+        }
+
+        guard let signatureData = Data.fromHex(signature) else {
+            fatalError("Invalid signature.")
+        }
+
+        let address = Utilities.hashECRecover(hash: messageHash, signature: signatureData)
+
+#if DEBUG
+        print("EthereumAddress: \(ethereumAddress)")
+        print("Address: \(String(describing: address))")
+#endif
+
+        return ethereumAddress == address
     }
     
     func signMessage(_ message: Data,

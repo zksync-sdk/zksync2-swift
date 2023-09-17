@@ -66,7 +66,7 @@ extension JRPC {
             case .string:
                 try container.encode(value as! String)
             case .transactionParameters:
-                fatalError("")//444try container.encode(value as! TransactionParameters)
+                try container.encode(value as! TransactionParameters)
             }
         }
     }

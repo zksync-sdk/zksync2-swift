@@ -36,7 +36,7 @@ public protocol EthereumClient {
     // BlockNumber returns the most recent block number
     func blockNumber() async throws -> BigUInt
     // TransactionByHash returns the transaction with the given hash.
-    //444func transactionByHash(_ transactionHash: String, completion: @escaping (Result<TransactionResponse>) -> Void)
+    func transactionByHash(_ transactionHash: String, completion: @escaping (Result<TransactionResponse>) -> Void)
     // TransactionSender returns the sender address of the given transaction. The transaction
     // must be known to the remote node and included in the blockchain at the given block and
     // index. The sender is the one derived by the protocol at the time of inclusion.
@@ -84,7 +84,7 @@ public protocol EthereumClient {
     func pendingCallContractL2(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void)
     // SuggestGasPrice retrieves the currently suggested gas price to allow a timely
     // execution of a transaction.
-    func suggestGasPrice(completion: @escaping (Result<BigUInt>) -> Void)
+    func suggestGasPrice() async throws -> BigUInt
     // SuggestGasTipCap retrieves the currently suggested gas tip cap after 1559 to
     // allow a timely execution of a transaction.
     func suggestGasTipCap(completion: @escaping (Result<BigUInt>) -> Void)

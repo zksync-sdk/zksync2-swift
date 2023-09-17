@@ -25,14 +25,8 @@ public class EthereumClientImpl: EthereumClient {
         self.transport = HTTPTransport(self.web3.provider.url)
     }
     
-    public func suggestGasPrice(completion: @escaping (Result<BigUInt>) -> Void) {
-//444        do {
-//            let gasPrice = try web3.eth.getGasPrice()
-//
-//            completion(.success(gasPrice))
-//        } catch {
-//            completion(.failure(error))
-//        }
+    public func suggestGasPrice() async throws -> BigUInt {
+        return try await web3.eth.gasPrice()
     }
     
     public func suggestGasTipCap(completion: @escaping (Result<BigUInt>) -> Void) {
@@ -144,27 +138,29 @@ public class EthereumClientImpl: EthereumClient {
     }
     
     public func callContractAtHash(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
-//444        var transactionOptions = TransactionOptions.defaultOptions
-//
-//        do {
-//            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
-//
-//            completion(.success(data))
-//        } catch {
-//            completion(.failure(error))
-//        }
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .string, value: hash)
+        ]
+        
+        transport.send(method: "eth_call",
+                       parameters: parameters,
+                       completion: { (result: Result<Data>) in
+            completion(result)
+        })
     }
     
     public func callContractAtHashL2(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
-//444        var transactionOptions = TransactionOptions.defaultOptions
-//
-//        do {
-//            let data = try web3.eth.callPromise(transaction, transactionOptions: transactionOptions).wait()
-//
-//            completion(.success(data))
-//        } catch {
-//            completion(.failure(error))
-//        }
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .string, value: hash)
+        ]
+        
+        transport.send(method: "eth_call",
+                       parameters: parameters,
+                       completion: { (result: Result<Data>) in
+            completion(result)
+        })
     }
     
     public func pendingCallContract(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void) {
@@ -194,13 +190,15 @@ public class EthereumClientImpl: EthereumClient {
     }
     
     public func transactionReceipt(_ txHash: String, completion: @escaping (Result<TransactionReceipt>) -> Void) {
-//444        do {
-//            let transactionReceipt = try web3.eth.getTransactionReceipt(txHash)
-//
-//            completion(.success(transactionReceipt))
-//        } catch {
-//            completion(.failure(error))
-//        }
+        let parameters = [
+            JRPC.Parameter(type: .string, value: txHash)
+        ]
+        
+        transport.send(method: "eth_getTransactionReceipt",
+                       parameters: parameters,
+                       completion: { (result: Result<TransactionReceipt>) in
+            completion(result)
+        })
     }
     
     public func sendTransaction(_ transaction: CodableTransaction, completion: @escaping (Result<TransactionSendingResult>) -> Void) {

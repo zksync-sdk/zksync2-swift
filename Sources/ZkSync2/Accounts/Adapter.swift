@@ -27,12 +27,6 @@ public protocol AdapterL1 {
     // BalanceL1 returns the balance of the specified token on L1 that can be
     // either ETH or any ERC20 token.
     func balanceL1(token: Token) async -> BigUInt
-    // AllowanceL1 returns the amount of approved tokens for a specific L1 bridge.
-    func allowanceL1()
-    // L2TokenAddress returns the corresponding address on the L2 network for the token on the L1 network.
-    func l2TokenAddress()
-    // ApproveERC20 approves the specified amount of tokens for the specified L1 bridge.
-    func approveERC20()
     // BaseCost returns base cost for L2 transaction.
     func baseCost(_ gasLimit: BigUInt,
                          gasPerPubdataByte: BigUInt,
@@ -47,15 +41,6 @@ public protocol AdapterL1 {
     func deposit(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult
     func deposit(_ to: String, amount: BigUInt, token: Token) async throws -> TransactionSendingResult
     func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult
-    // EstimateGasDeposit estimates the amount of gas required for a deposit transaction on L1 network.
-    // Gas of approving ERC20 token is not included in estimation.
-    func estimateGasDeposit()
-    // FullRequiredDepositFee retrieves the full needed ETH fee for the deposit on both L1 and L2 networks.
-    func fullRequiredDepositFee()
-    // FinalizeWithdraw proves the inclusion of the L2 -> L1 withdrawal message.
-    func finalizeWithdraw()
-    // IsWithdrawFinalized checks if the withdrawal finalized on L1 network.
-    func isWithdrawFinalized()
     // ClaimFailedDeposit withdraws funds from the initiated deposit, which failed when finalizing on L2.
     // If the deposit L2 transaction has failed, it sends an L1 transaction calling ClaimFailedDeposit method
     // of the L1 bridge, which results in returning L1 tokens back to the depositor, otherwise throws the error.
@@ -68,14 +53,7 @@ public protocol AdapterL1 {
                             l2TxNumberInBlock: UInt,
                             proof: [Data]) async throws -> TransactionSendingResult
     // RequestExecute request execution of L2 transaction from L1.
-//444    func requestExecute(_ contractAddress: String,
-//                        l2Value: BigUInt,
-//                        calldata: Data,
-//                        gasLimit: BigUInt,
-//                        factoryDeps: [Data]?,
-//                        operatorTips: BigUInt?,
-//                        gasPrice: BigUInt?,
-//                        refundRecipient: String) throws -> Promise<TransactionSendingResult>
+    func requestExecute(_ contractAddress: String, l2Value: BigUInt, calldata: Data, gasLimit: BigUInt, factoryDeps: [Data]?, operatorTips: BigUInt?, gasPrice: BigUInt?, refundRecipient: String) async throws -> TransactionSendingResult
     // EstimateGasRequestExecute estimates the amount of gas required for a request execute transaction.
     func estimateGasRequestExecute()
 }
@@ -85,12 +63,10 @@ public protocol AdapterL1 {
 public protocol AdapterL2 {
     // Balance returns the balance of the specified token that can be either ETH or any ERC20 token.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-    func balance()
+    func balanceAt(address: String, blockNumber: BlockNumber) async throws -> BigUInt
     // AllBalances returns all balances for confirmed tokens given by an associated
     // account.
-    func allBalances()
-    // L2BridgeContracts returns L2 bridge contracts.
-    func l2BridgeContracts()
+    func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void)
     // Withdraw initiates the withdrawal process which withdraws ETH or any ERC20
     // token from the associated account on L2 network to the target account on L1
     // network.
@@ -99,7 +75,7 @@ public protocol AdapterL2 {
     func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async -> TransactionSendingResult
     // EstimateGasWithdraw estimates the amount of gas required for a withdrawal
     // transaction.
-    func estimateGasWithdraw(_ transaction: CodableTransaction) -> Promise<BigUInt>
+    func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt
     // Transfer moves the ETH or any ERC20 token from the associated account to the
     // target account.
     func transfer(_ to: String, amount: BigUInt) async -> TransactionSendingResult
@@ -107,7 +83,7 @@ public protocol AdapterL2 {
     func transfer(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async -> TransactionSendingResult
     // EstimateGasTransfer estimates the amount of gas required for a transfer
     // transaction.
-    func estimateGasTransfer(_ transaction: CodableTransaction) -> Promise<BigUInt>
+    func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt
     // CallContract executes a message call for EIP-712 transaction, which is
     // directly executed in the VM of the node, but never mined into the blockchain.
     //
@@ -120,7 +96,7 @@ public protocol AdapterL2 {
     // required fields are Transaction.To and either Transaction.Data or
     // Transaction.Value (or both, if the method is payable). Any other fields that
     // are not set will be prepared by this method.
-    func populateTransaction(_ transaction: inout CodableTransaction)
+    func populateTransaction(_ transaction: inout CodableTransaction) async
     // SignTransaction returns a signed transaction that is ready to be broadcast to
     // the network. The input transaction must be a valid transaction with all fields
     // having appropriate values. To obtain a valid transaction, you can use the

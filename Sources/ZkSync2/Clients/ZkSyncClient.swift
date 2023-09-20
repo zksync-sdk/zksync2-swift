@@ -42,7 +42,7 @@ public protocol ZkSyncClient {
     func blockDetails(_ blockNumber: BigUInt, returnFullTransactionObjects: Bool, completion: @escaping (Result<BlockDetails>) -> Void)
     // TransactionDetails returns data from a specific transaction given by the
     // transaction hash.
-    func transactionDetails(_ transactionHash: String, completion: @escaping (Result<TransactionDetails>) -> Void)
+    func transactionDetails(_ txHash: String) async throws -> TransactionDetails
     // LogProof returns the proof for a transaction's L2 to L1 log sent via the
     // L1Messenger system contract.
     func logProof(txHash: Data, logIndex: BigUInt, _ completion: @escaping (Result<String>) -> Void)

@@ -31,8 +31,8 @@ public class WalletL2: AdapterL2 {
 }
 
 extension WalletL2 {
-    public func balanceAt(address: String, blockNumber: BlockNumber) async throws -> BigUInt {
-        try await ethClient.balanceAt(address: address, blockNumber: blockNumber)
+    public func balance(at address: String, blockNumber: BlockNumber) async throws -> BigUInt {
+        try await ethClient.balance(at: address, blockNumber: blockNumber)
     }
     
     public func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
@@ -183,8 +183,8 @@ extension WalletL2 {
         }
     }
     
-    public func sendTransaction(_ transaction: CodableTransaction, completion: @escaping (Result<TransactionSendingResult>) -> Void) {
-        ethClient.sendTransaction(transaction, completion: completion)
+    public func sendTransaction(_ transaction: CodableTransaction) async throws -> TransactionSendingResult {
+        try await ethClient.sendTransaction(transaction)
     }
     
     public func signTransaction(_ transaction: inout CodableTransaction) {
@@ -197,11 +197,11 @@ extension WalletL2 {
     }
     
     public func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt {
-        return try await zkSync.estimateGasWithdraw(transaction)
+        try await zkSync.estimateGasWithdraw(transaction)
     }
     
     public func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt {
-        return try await zkSync.estimateGasTransfer(transaction)
+        try await zkSync.estimateGasTransfer(transaction)
     }
 }
 

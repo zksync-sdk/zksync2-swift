@@ -8,8 +8,6 @@
 import Foundation
 import Alamofire
 
-import Foundation
-
 protocol Transport {
     
     func send<Response: Decodable>(method: String,

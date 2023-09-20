@@ -23,16 +23,10 @@ public protocol EthereumClient {
     // ChainID retrieves the current chain ID for transaction replay protection.
     func chainID(completion: @escaping (Result<BigUInt>) -> Void)
     // BlockByHash returns the given full block.
-    //
-    // Note that loading full blocks requires two requests. Use HeaderByHash
-    // if you don't need all transactions or uncle headers.
-    func blockByHash(_ blockHash: String, returnFullTransactionObjects: Bool, completion: @escaping (Result<Block>) -> Void)
+    func blockByHash(_ blockHash: String, fullTransactions: Bool) async throws -> Block
     // BlockByNumber returns a block from the current canonical chain. If number is nil, the
     // latest known block is returned.
-    //
-    // Note that loading full blocks requires two requests. Use HeaderByNumber
-    // if you don't need all transactions or uncle headers.
-    func blockByNumber(_ block: DefaultBlockParameterName, returnFullTransactionObjects: Bool, completion: @escaping (Result<Block>) -> Void)
+    func blockByNumber(_ blockNumber: BlockNumber, fullTransactions: Bool) async throws -> Block
     // BlockNumber returns the most recent block number
     func blockNumber() async throws -> BigUInt
     // TransactionByHash returns the transaction with the given hash.
@@ -51,14 +45,14 @@ public protocol EthereumClient {
                             completion: @escaping (Result<Block>) -> Void)
     // TransactionReceipt returns the receipt of a transaction by transaction hash.
     // Note that the receipt is not available for pending transactions.
-    func transactionReceipt(_ txHash: String, completion: @escaping (Result<TransactionReceipt>) -> Void)
+    func transactionReceipt(_ txHash: String) async throws -> TransactionReceipt
     
     // BalanceAt returns the wei balance of the given account.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-    func balanceAt(address: String, blockNumber: BlockNumber) async throws -> BigUInt
+    func balance(at address: String, blockNumber: BlockNumber) async throws -> BigUInt
     // CodeAt returns the contract code of the given account.
     // The block number can be nil, in which case the code is taken from the latest known block.
-    func codeAt(address: String, blockNumber: BlockNumber) async throws -> String
+    func code(at address: String, blockNumber: BlockNumber) async throws -> String
     
     // CallContract executes a message call transaction, which is directly executed in the VM
     // of the node, but never mined into the blockchain.
@@ -92,14 +86,14 @@ public protocol EthereumClient {
     // the current pending state of the backend blockchain. There is no guarantee that this is
     // the true gas limit requirement as other transactions may be added or removed by miners,
     // but it should provide a basis for setting a reasonable default.
-    func estimateGas(_ transaction: CodableTransaction, completion: @escaping (Result<BigUInt>) -> Void)
+    func estimateGas(_ transaction: CodableTransaction) async throws -> BigUInt
     // EstimateGasL2 is almost the same as EstimateGas except that it executes an EIP-712 transaction.
     func estimateGasL2(_ transaction: CodableTransaction, completion: @escaping (Result<BigUInt>) -> Void)
     // SendTransaction injects a signed transaction into the pending pool for execution.
     //
     // If the transaction was a contract creation use the TransactionReceipt method to get the
     // contract address after the transaction has been mined.
-    func sendTransaction(_ transaction: CodableTransaction, completion: @escaping (Result<TransactionSendingResult>) -> Void)
+    func sendTransaction(_ transaction: CodableTransaction) async throws -> TransactionSendingResult
     // SendRawTransaction injects a signed raw transaction into the pending pool for execution.
-    func sendRawTransaction(transaction: Data, completion: @escaping (Result<TransactionSendingResult>) -> Void)
+    func sendRawTransaction(_ data: Data) async throws -> TransactionSendingResult
 }

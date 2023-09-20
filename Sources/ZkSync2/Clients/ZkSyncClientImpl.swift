@@ -73,7 +73,7 @@ public class ZkSyncClientImpl: ZkSyncClient {
     }
     
     public func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt {
-        return try await estimateGas(transaction)
+        try await estimateGas(transaction)
     }
     
     public func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt {
@@ -88,8 +88,7 @@ public class ZkSyncClientImpl: ZkSyncClient {
         )
     }
     
-    public func tokenPrice(_ tokenAddress: String,
-                          completion: @escaping (Result<Decimal>) -> Void) {
+    public func tokenPrice(_ tokenAddress: String, completion: @escaping (Result<Decimal>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .string, value: tokenAddress),
         ]
@@ -173,16 +172,8 @@ public class ZkSyncClientImpl: ZkSyncClient {
         )
     }
     
-    public func transactionDetails(_ transactionHash: String, completion: @escaping (Result<TransactionDetails>) -> Void) {
-        let parameters = [
-            JRPC.Parameter(type: .string, value: transactionHash),
-        ]
-        
-        transport.send(
-            method: "zks_getTransactionDetails",
-            parameters: parameters,
-            completion: completion
-        )
+    public func transactionDetails(_ txHash: String) async throws -> TransactionDetails {
+        try await web3.eth.transactionDetails(Data(hex: txHash))
     }
     
     public func blockDetails(_ block: Int, completion: @escaping (Result<BlockDetails>) -> Void) {

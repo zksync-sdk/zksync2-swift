@@ -54,8 +54,6 @@ public protocol AdapterL1 {
                             proof: [Data]) async throws -> TransactionSendingResult
     // RequestExecute request execution of L2 transaction from L1.
     func requestExecute(_ contractAddress: String, l2Value: BigUInt, calldata: Data, gasLimit: BigUInt, factoryDeps: [Data]?, operatorTips: BigUInt?, gasPrice: BigUInt?, refundRecipient: String) async throws -> TransactionSendingResult
-    // EstimateGasRequestExecute estimates the amount of gas required for a request execute transaction.
-    func estimateGasRequestExecute()
 }
 
 // AdapterL2 is associated with an account and provides common operations on the
@@ -63,7 +61,7 @@ public protocol AdapterL1 {
 public protocol AdapterL2 {
     // Balance returns the balance of the specified token that can be either ETH or any ERC20 token.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-    func balanceAt(address: String, blockNumber: BlockNumber) async throws -> BigUInt
+    func balance(at address: String, blockNumber: BlockNumber) async throws -> BigUInt
     // AllBalances returns all balances for confirmed tokens given by an associated
     // account.
     func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void)
@@ -104,7 +102,7 @@ public protocol AdapterL2 {
     func signTransaction(_ transaction: inout CodableTransaction)
     // SendTransaction injects a transaction into the pending pool for execution. Any
     // unset transaction fields are prepared using the PopulateTransaction method.
-    func sendTransaction(_ transaction: CodableTransaction, completion: @escaping (Result<TransactionSendingResult>) -> Void)
+    func sendTransaction(_ transaction: CodableTransaction) async throws -> TransactionSendingResult
     
     func execute(_ contractAddress: String, encodedFunction: Data, nonce: BigUInt?) async -> TransactionSendingResult
 }

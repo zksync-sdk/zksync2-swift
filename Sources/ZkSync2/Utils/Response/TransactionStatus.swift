@@ -7,13 +7,13 @@
 
 import Foundation
 
-extension TransactionDetails {
-    
-    public enum Status: String, Decodable {
-        
-        case pending
-        case included
-        case verified
-        case failed
-    }
-}
+//111extension TransactionDetails {
+//
+//    public enum Status: String, Decodable {
+//
+//        case pending
+//        case included
+//        case verified
+//        case failed
+//    }
+//}

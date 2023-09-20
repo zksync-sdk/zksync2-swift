@@ -43,8 +43,6 @@
 		FA88900E2AB4DDF50019CEA9 /* TransactionResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FED2AB4DDF40019CEA9 /* TransactionResponse.swift */; };
 		FA88900F2AB4DDF50019CEA9 /* L2ToL1Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FEE2AB4DDF40019CEA9 /* L2ToL1Log.swift */; };
 		FA8890102AB4DDF50019CEA9 /* L2ToL1Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FEE2AB4DDF40019CEA9 /* L2ToL1Log.swift */; };
-		FA8890112AB4DDF50019CEA9 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FEF2AB4DDF40019CEA9 /* Block.swift */; };
-		FA8890122AB4DDF50019CEA9 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FEF2AB4DDF40019CEA9 /* Block.swift */; };
 		FA8890132AB4DDF50019CEA9 /* L2ToL1MessageProof.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FF02AB4DDF40019CEA9 /* L2ToL1MessageProof.swift */; };
 		FA8890142AB4DDF50019CEA9 /* L2ToL1MessageProof.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FF02AB4DDF40019CEA9 /* L2ToL1MessageProof.swift */; };
 		FA8890152AB4DDF50019CEA9 /* TransactionDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FF12AB4DDF40019CEA9 /* TransactionDetails.swift */; };
@@ -240,7 +238,6 @@
 		FA888FEC2AB4DDF40019CEA9 /* JRPCResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JRPCResponse.swift; sourceTree = "<group>"; };
 		FA888FED2AB4DDF40019CEA9 /* TransactionResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionResponse.swift; sourceTree = "<group>"; };
 		FA888FEE2AB4DDF40019CEA9 /* L2ToL1Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = L2ToL1Log.swift; sourceTree = "<group>"; };
-		FA888FEF2AB4DDF40019CEA9 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		FA888FF02AB4DDF40019CEA9 /* L2ToL1MessageProof.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = L2ToL1MessageProof.swift; sourceTree = "<group>"; };
 		FA888FF12AB4DDF40019CEA9 /* TransactionDetails.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TransactionDetails.swift; sourceTree = "<group>"; };
 		FA888FF22AB4DDF40019CEA9 /* BridgeAddresses.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BridgeAddresses.swift; sourceTree = "<group>"; };
@@ -488,7 +485,6 @@
 				FA888FEC2AB4DDF40019CEA9 /* JRPCResponse.swift */,
 				FA888FED2AB4DDF40019CEA9 /* TransactionResponse.swift */,
 				FA888FEE2AB4DDF40019CEA9 /* L2ToL1Log.swift */,
-				FA888FEF2AB4DDF40019CEA9 /* Block.swift */,
 				FA888FF02AB4DDF40019CEA9 /* L2ToL1MessageProof.swift */,
 				FA888FF12AB4DDF40019CEA9 /* TransactionDetails.swift */,
 				FA888FF22AB4DDF40019CEA9 /* BridgeAddresses.swift */,
@@ -1075,7 +1071,6 @@
 				FAA27FFA2A5D4A0B0002CB6A /* PrimaryButton.swift in Sources */,
 				FA8890002AB4DDF50019CEA9 /* LToken.swift in Sources */,
 				FAA27FFD2A5D4A0B0002CB6A /* ZkBlockParameterName.swift in Sources */,
-				FA8890122AB4DDF50019CEA9 /* Block.swift in Sources */,
 				FA888FFE2AB4DDF50019CEA9 /* IZkSync.swift in Sources */,
 				FAA280012A5D4A0B0002CB6A /* BigUInt.swift in Sources */,
 				FA8890182AB4DDF50019CEA9 /* BridgeAddresses.swift in Sources */,
@@ -1164,7 +1159,6 @@
 				FAC997B82A5A39540067AA49 /* Paymaster.swift in Sources */,
 				FA888FFF2AB4DDF50019CEA9 /* LToken.swift in Sources */,
 				FA8FD8F42A4F94F400D0EB17 /* PrimaryButton.swift in Sources */,
-				FA8890112AB4DDF50019CEA9 /* Block.swift in Sources */,
 				FA888FFD2AB4DDF50019CEA9 /* IZkSync.swift in Sources */,
 				FAC997BD2A5A39540067AA49 /* ZkBlockParameterName.swift in Sources */,
 				FA8890172AB4DDF50019CEA9 /* BridgeAddresses.swift in Sources */,

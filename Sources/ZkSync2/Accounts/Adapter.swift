@@ -88,7 +88,7 @@ public protocol AdapterL2 {
     // blockNumber selects the block height at which the call runs. It can be nil, in
     // which case the code is taken from the latest known block. Note that state from
     // very old blocks might not be available.
-    func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) async
+    func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?) async throws -> Data
     // PopulateTransaction is designed for users who prefer a simplified approach by
     // providing only the necessary data to create a valid transaction. The only
     // required fields are Transaction.To and either Transaction.Data or

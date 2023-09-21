@@ -29,41 +29,34 @@ public class EthereumClientImpl: EthereumClient {
         try await web3.eth.gasPrice()
     }
     
-    public func suggestGasTipCap(completion: @escaping (Result<BigUInt>) -> Void) {
-        completion(.success(BigUInt(1_000_000_000)))
+    public func suggestGasTipCap() async throws -> BigUInt {
+        BigUInt(1_000_000_000)
     }
     
     public func estimateGas(_ transaction: CodableTransaction) async throws -> BigUInt {
         try await web3.eth.estimateGas(for: transaction)
     }
     
-    public func estimateGasL2(_ transaction: CodableTransaction, completion: @escaping (Result<BigUInt>) -> Void) {
+    public func estimateGasL2(_ transaction: CodableTransaction) async throws -> BigUInt {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
         ]
 
-        transport.send(method: "eth_estimateGas",
-                       parameters: parameters,
-                       completion: { (result: Result<String>) in
-            completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
-        })
+        let result: String = try await transport.send(method: "eth_estimateGas", parameters: parameters)
+
+        return BigUInt(result.stripHexPrefix(), radix: 16)!
     }
     
-    public func transactionByHash(_ transactionHash: String,
-                                     completion: @escaping (Result<TransactionResponse>) -> Void) {
+    public func transactionByHash(_ transactionHash: String) async throws -> TransactionResponse {
         let parameters = [
             JRPC.Parameter(type: .string, value: transactionHash),
         ]
         
-        transport.send(method: "eth_getTransactionByHash",
-                       parameters: parameters,
-                       completion: completion)
+        return try await transport.send(method: "eth_getTransactionByHash", parameters: parameters)
     }
     
-    public func getLogs(_ completion: @escaping (Result<Log>) -> Void) {
-        transport.send(method: "eth_getLogs",
-                       parameters: [],
-                       completion: completion)
+    public func getLogs() async throws -> Log {
+        try await transport.send(method: "eth_getLogs", parameters: [])
     }
     
     public func blockByHash(_ blockHash: String, fullTransactions: Bool) async throws -> Block {
@@ -78,22 +71,16 @@ public class EthereumClientImpl: EthereumClient {
         try await web3.eth.blockNumber()
     }
     
-    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt? = nil, completion: @escaping (Result<Data>) -> Void) async {
+    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt? = nil) async throws -> Data {
         var transaction = transaction
         if let blockNumber = blockNumber {
             transaction.callOnBlock = .exact(blockNumber)
         }
 
-        do {
-            let data = try await web3.eth.callTransaction(transaction)
-
-            completion(.success(data))
-        } catch {
-            completion(.failure(error))
-        }
+        return try await web3.eth.callTransaction(transaction)
     }
     
-    public func callContractL2(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) {
+    public func callContractL2(_ transaction: CodableTransaction, blockNumber: BigUInt?) async throws -> Data {
         var transaction = transaction
         if let blockNumber = blockNumber {
             transaction.callOnBlock = .exact(blockNumber)
@@ -103,63 +90,43 @@ public class EthereumClientImpl: EthereumClient {
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
         ]
         
-        transport.send(method: "eth_call",
-                       parameters: parameters,
-                       completion: { (result: Result<Data>) in
-            completion(result)
-        })
+        return try await transport.send(method: "eth_call", parameters: parameters)
     }
     
-    public func callContractAtHash(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
+    public func callContractAtHash(_ transaction: CodableTransaction, hash: String) async throws -> Data {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
             JRPC.Parameter(type: .string, value: hash)
         ]
         
-        transport.send(method: "eth_call",
-                       parameters: parameters,
-                       completion: { (result: Result<Data>) in
-            completion(result)
-        })
+        return try await transport.send(method: "eth_call", parameters: parameters)
     }
     
-    public func callContractAtHashL2(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void) {
+    public func callContractAtHashL2(_ transaction: CodableTransaction, hash: String) async throws -> Data {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
             JRPC.Parameter(type: .string, value: hash)
         ]
         
-        transport.send(method: "eth_call",
-                       parameters: parameters,
-                       completion: { (result: Result<Data>) in
-            completion(result)
-        })
+        return try await transport.send(method: "eth_call", parameters: parameters)
     }
     
-    public func pendingCallContract(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void) {
+    public func pendingCallContract(_ transaction: CodableTransaction) async throws -> Data {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
             JRPC.Parameter(type: .string, value: "pending")
         ]
         
-        transport.send(method: "eth_call",
-                       parameters: parameters,
-                       completion: { (result: Result<Data>) in
-            completion(result)
-        })
+        return try await transport.send(method: "eth_call", parameters: parameters)
     }
     
-    public func pendingCallContractL2(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void) {
+    public func pendingCallContractL2(_ transaction: CodableTransaction) async throws -> Data {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
             JRPC.Parameter(type: .string, value: "pending")
         ]
         
-        transport.send(method: "eth_call",
-                       parameters: parameters,
-                       completion: { (result: Result<Data>) in
-            completion(result)
-        })
+        return try await transport.send(method: "eth_call", parameters: parameters)
     }
     
     public func transactionReceipt(_ txHash: String) async throws -> TransactionReceipt {
@@ -174,25 +141,17 @@ public class EthereumClientImpl: EthereumClient {
         try await web3.eth.send(raw: data)
     }
     
-    public func chainID(completion: @escaping (Result<BigUInt>) -> Void) {
-        transport.send(method: "eth_chainId",
-                       parameters: [],
-                       completion: { (result: Result<BigUInt>) in
-            completion(result)
-        })
+    public func chainID() async throws -> BigUInt {
+        try await transport.send(method: "eth_chainId", parameters: [])
     }
     
-    public func transactionSender(_ blockHash: String,
-                            index: Int,
-                            completion: @escaping (Result<Block>) -> Void) {
+    public func transactionSender(_ blockHash: String, index: Int) async throws -> Block {
         let parameters = [
             JRPC.Parameter(type: .string, value: blockHash),
             JRPC.Parameter(type: .int, value: index)
         ]
         
-        transport.send(method: "eth_getTransactionByBlockHashAndIndex",
-                       parameters: parameters,
-                       completion: completion)
+        return try await transport.send(method: "eth_getTransactionByBlockHashAndIndex", parameters: parameters)
     }
     
     public func transactionCount(address: String, blockNumber: BlockNumber) async throws -> BigUInt {
@@ -200,16 +159,13 @@ public class EthereumClientImpl: EthereumClient {
     }
     
     public func transactionInBlock(_ blockHash: String,
-                                  index: Int,
-                                  completion: @escaping (Result<Block>) -> Void) {
+                                  index: Int) async throws -> Block {
         let parameters = [
             JRPC.Parameter(type: .string, value: blockHash),
             JRPC.Parameter(type: .int, value: index)
         ]
         
-        transport.send(method: "eth_getTransactionByBlockHashAndIndex",
-                       parameters: parameters,
-                       completion: completion)
+        return try await transport.send(method: "eth_getTransactionByBlockHashAndIndex", parameters: parameters)
     }
     
     public func balance(at address: String, blockNumber: BlockNumber) async throws -> BigUInt {

@@ -36,7 +36,15 @@ extension WalletL2 {
     }
     
     public func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
-        zkSync.allAccountBalances(address, completion: completion)
+        Task {
+            do {
+                let result = try await zkSync.allAccountBalances(address)
+                
+                completion(.success(result))
+            } catch {
+                completion(.failure(error))
+            }
+        }
     }
     
     public func withdraw(_ to: String, amount: BigUInt) async -> TransactionSendingResult {
@@ -113,20 +121,13 @@ extension WalletL2 {
             
             var l2Bridge: String = ""
             
-            let semaphore = DispatchSemaphore(value: 0)
-            
-            zkSync.bridgeContracts { result in
-                switch result {
-                case .success(let bridgeAddresses):
-                    l2Bridge = bridgeAddresses.l2Erc20DefaultBridge
-                case .failure(let error):
-                    fatalError("Failed with error: \(error.localizedDescription)")
-                }
+            do {
+                let bridgeAddresses = try await zkSync.bridgeContracts()
                 
-                semaphore.signal()
+                l2Bridge = bridgeAddresses.l2Erc20DefaultBridge
+            } catch {
+                fatalError("Failed with error: \(error.localizedDescription)")
             }
-            
-            semaphore.wait()
             
             var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
             
@@ -136,8 +137,8 @@ extension WalletL2 {
         }
     }
     
-    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) async {
-        await ethClient.callContract(transaction, blockNumber: blockNumber, completion: completion)
+    public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?) async throws -> Data {
+        try await ethClient.callContract(transaction, blockNumber: blockNumber)
     }
     
     public func populateTransaction(_ transaction: inout CodableTransaction) async {
@@ -165,20 +166,9 @@ extension WalletL2 {
         }
         if transaction.gasLimit == .zero {
             do {
-                let gasLimit = try await withCheckedThrowingContinuation { continuation in
-                    ethClient.estimateGasL2(transaction, completion: { result in
-                        switch result {
-                        case .success(let fee):
-                            continuation.resume(with: .success(fee))
-                        case .failure(let error):
-                            continuation.resume(with: .failure(error))
-                        }
-                    })
-                }
-                
-                transaction.gasLimit = gasLimit
+                transaction.gasLimit = try await self.ethClient.estimateGasL2(transaction)
             } catch {
-                
+
             }
         }
     }

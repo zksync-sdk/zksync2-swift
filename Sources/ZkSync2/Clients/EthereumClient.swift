@@ -21,7 +21,7 @@ public protocol EthereumClient {
     var web3: Web3 { get set }
     
     // ChainID retrieves the current chain ID for transaction replay protection.
-    func chainID(completion: @escaping (Result<BigUInt>) -> Void)
+    func chainID() async throws -> BigUInt
     // BlockByHash returns the given full block.
     func blockByHash(_ blockHash: String, fullTransactions: Bool) async throws -> Block
     // BlockByNumber returns a block from the current canonical chain. If number is nil, the
@@ -30,19 +30,15 @@ public protocol EthereumClient {
     // BlockNumber returns the most recent block number
     func blockNumber() async throws -> BigUInt
     // TransactionByHash returns the transaction with the given hash.
-    func transactionByHash(_ transactionHash: String, completion: @escaping (Result<TransactionResponse>) -> Void)
+    func transactionByHash(_ transactionHash: String) async throws -> TransactionResponse
     // TransactionSender returns the sender address of the given transaction. The transaction
     // must be known to the remote node and included in the blockchain at the given block and
     // index. The sender is the one derived by the protocol at the time of inclusion.
-    func transactionSender(_ blockHash: String,
-                           index: Int,
-                           completion: @escaping (Result<Block>) -> Void)
+    func transactionSender(_ blockHash: String, index: Int) async throws -> Block
     // TransactionCount returns the total number of transactions in the given block.
     func transactionCount(address: String, blockNumber: BlockNumber) async throws -> BigUInt
     // TransactionInBlock returns a single transaction at index in the given block.
-    func transactionInBlock(_ blockHash: String,
-                            index: Int,
-                            completion: @escaping (Result<Block>) -> Void)
+    func transactionInBlock(_ blockHash: String, index: Int) async throws -> Block
     // TransactionReceipt returns the receipt of a transaction by transaction hash.
     // Note that the receipt is not available for pending transactions.
     func transactionReceipt(_ txHash: String) async throws -> TransactionReceipt
@@ -60,35 +56,35 @@ public protocol EthereumClient {
     // blockNumber selects the block height at which the call runs. It can be nil, in which
     // case the code is taken from the latest known block. Note that state from very old
     // blocks might not be available.
-    func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void) async
+    func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?) async throws -> Data
     // CallContractL2 is almost the same as CallContract except that it executes a message call
     // for EIP-712 transaction.
-    func callContractL2(_ transaction: CodableTransaction, blockNumber: BigUInt?, completion: @escaping (Result<Data>) -> Void)
+    func callContractL2(_ transaction: CodableTransaction, blockNumber: BigUInt?) async throws -> Data
     // CallContractAtHash is almost the same as CallContract except that it selects
     // the block by block hash instead of block height.
-    func callContractAtHash(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void)
+    func callContractAtHash(_ transaction: CodableTransaction, hash: String) async throws -> Data
     // CallContractAtHashL2 is almost the same as CallContractL2 except that it selects
     // the block by block hash instead of block height.
-    func callContractAtHashL2(_ transaction: CodableTransaction, hash: String, completion: @escaping (Result<Data>) -> Void)
+    func callContractAtHashL2(_ transaction: CodableTransaction, hash: String) async throws -> Data
     // PendingCallContract executes a message call transaction using the EVM.
     // The state seen by the contract call is the pending state.
-    func pendingCallContract(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void)
+    func pendingCallContract(_ transaction: CodableTransaction) async throws -> Data
     // PendingCallContractL2 executes a message call for EIP-712 transaction using the EVM.
     // The state seen by the contract call is the pending state.
-    func pendingCallContractL2(_ transaction: CodableTransaction, completion: @escaping (Result<Data>) -> Void)
+    func pendingCallContractL2(_ transaction: CodableTransaction) async throws -> Data
     // SuggestGasPrice retrieves the currently suggested gas price to allow a timely
     // execution of a transaction.
     func suggestGasPrice() async throws -> BigUInt
     // SuggestGasTipCap retrieves the currently suggested gas tip cap after 1559 to
     // allow a timely execution of a transaction.
-    func suggestGasTipCap(completion: @escaping (Result<BigUInt>) -> Void)
+    func suggestGasTipCap() async throws -> BigUInt
     // EstimateGas tries to estimate the gas needed to execute a transaction based on
     // the current pending state of the backend blockchain. There is no guarantee that this is
     // the true gas limit requirement as other transactions may be added or removed by miners,
     // but it should provide a basis for setting a reasonable default.
     func estimateGas(_ transaction: CodableTransaction) async throws -> BigUInt
     // EstimateGasL2 is almost the same as EstimateGas except that it executes an EIP-712 transaction.
-    func estimateGasL2(_ transaction: CodableTransaction, completion: @escaping (Result<BigUInt>) -> Void)
+    func estimateGasL2(_ transaction: CodableTransaction) async throws -> BigUInt
     // SendTransaction injects a signed transaction into the pending pool for execution.
     //
     // If the transaction was a contract creation use the TransactionReceipt method to get the

@@ -11,13 +11,11 @@ import Alamofire
 protocol Transport {
     
     func send<Response: Decodable>(method: String,
-                                   parameters: [JRPC.Parameter]?,
-                                   completion: @escaping (Result<Response>) -> Void)
+                                   parameters: [JRPC.Parameter]?) async throws -> Response
     
     func send<Response: Decodable>(method: String,
                                    parameters: [JRPC.Parameter]?,
-                                   queue: DispatchQueue,
-                                   completion: @escaping (Result<Response>) -> Void)
+                                   queue: DispatchQueue) async throws -> Response
 }
 
 class HTTPTransport: Transport {
@@ -35,19 +33,13 @@ class HTTPTransport: Transport {
         self.session = Session(configuration: configuration)
     }
     
-    func send<R>(method: String,
-                 parameters: [JRPC.Parameter]?,
-                 completion: @escaping (Result<R>) -> Void) where R: Decodable {
-        send(method: method,
+    func send<R>(method: String, parameters: [JRPC.Parameter]?) async throws -> R where R : Decodable {
+        try await send(method: method,
              parameters: parameters,
-             queue: .main,
-             completion: completion)
+             queue: .main)
     }
     
-    func send<R>(method: String,
-                 parameters: [JRPC.Parameter]?,
-                 queue: DispatchQueue,
-                 completion: @escaping (Result<R>) -> Void) where R: Decodable {
+    func send<R>(method: String, parameters: [JRPC.Parameter]?, queue: DispatchQueue) async throws -> R where R : Decodable {
         let requestParameters = JRPC.Request(method: method, parameters: parameters)
         
 #if DEBUG
@@ -59,10 +51,11 @@ class HTTPTransport: Transport {
         }
 #endif
         
-        session.request(url,
-                        method: .post,
-                        parameters: requestParameters,
-                        encoder: JSONParameterEncoder.default)
+        return try await withCheckedThrowingContinuation({ continuation in
+            session.request(url,
+                            method: .post,
+                            parameters: requestParameters,
+                            encoder: JSONParameterEncoder.default)
             .validate()
             .responseDecodable(queue: queue, decoder: JRPCDecoder()) { [weak self] (response: DataResponse<R, AFError>) in
                 guard let self = self else { return }
@@ -70,16 +63,17 @@ class HTTPTransport: Transport {
 #if DEBUG
                 switch response.result {
                 case .success(let result):
-                    completion(.success(result))
+                    continuation.resume(with: .success(result))
                 case .failure(let error):
                     let error = self.processAFError(error)
-                    completion(.failure(error))
+                    continuation.resume(throwing: error)
                     break
                 }
 #else
                 completion(response.result.mapError({ self.processAFError($0) }))
 #endif
             }
+        })
     }
     
     private func processAFError(_ afError: AFError) -> Error {

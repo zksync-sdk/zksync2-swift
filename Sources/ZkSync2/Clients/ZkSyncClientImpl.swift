@@ -27,247 +27,149 @@ public class ZkSyncClientImpl: ZkSyncClient {
     }
     
     public func estimateFee(_ transaction: CodableTransaction) async throws -> Fee {
-        try await withCheckedThrowingContinuation { continuation in
-            estimateFee(transaction) { result in
-                switch result {
-                case .success(let fee):
-                    continuation.resume(with: .success(fee))
-                case .failure(let error):
-                    continuation.resume(with: .failure(error))
-                }
-            }
-        }
-    }
-    
-    public func estimateFee(_ transaction: CodableTransaction, completion: @escaping (Result<Fee>) -> Void) {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
         ]
 
-        transport.send(
-            method: "zks_estimateFee",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_estimateFee", parameters: parameters)
     }
     
-    public func estimateGasL1(_ transaction: CodableTransaction,
-                            completion: @escaping (Result<Fee>) -> Void) {
+    public func estimateGasL1(_ transaction: CodableTransaction) async throws -> Fee {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
         ]
 
-        transport.send(
-            method: "zks_estimateGasL1ToL2",
-            parameters: parameters,
-            completion: completion
-        )
-    }
-    
-    public func estimateGasL1(_ transaction: CodableTransaction) -> Promise<Fee> {
-        Promise { seal in
-            estimateGasL1(transaction) { fee in
-                seal.resolve(fee)
-            }
-        }
+        return try await transport.send(method: "zks_estimateGasL1ToL2", parameters: parameters)
     }
     
     public func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt {
-        try await estimateGas(transaction)
+        try await web3.eth.estimateGas(for: transaction)
     }
     
     public func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt {
         try await web3.eth.estimateGas(for: transaction)
     }
     
-    public func mainContract(_ completion: @escaping (Result<String>) -> Void) {
-        transport.send(
-            method: "zks_getMainContract",
-            parameters: [],
-            completion: completion
-        )
+    public func mainContract() async throws -> String {
+        try await transport.send(method: "zks_getMainContract", parameters: [])
     }
     
-    public func tokenPrice(_ tokenAddress: String, completion: @escaping (Result<Decimal>) -> Void) {
+    public func tokenPrice(_ tokenAddress: String) async throws -> Decimal {
         let parameters = [
             JRPC.Parameter(type: .string, value: tokenAddress),
         ]
         
-        transport.send(
-            method: "zks_getTokenPrice",
-            parameters: parameters,
-            completion: { result in
-                completion(result.map({ Decimal(string: $0)! }))
-            }
-        )
+        let result: String = try await transport.send(method: "zks_getTokenPrice", parameters: parameters)
+        
+        return Decimal(string: result)!
     }
     
-    public func L1ChainId(_ completion: @escaping (Result<BigUInt>) -> Void) {
-        transport.send(
-            method: "zks_L1ChainId",
-            parameters: [],
-            completion: { (result: Result<String>) in
-                completion(result.map({ BigUInt($0.stripHexPrefix(), radix: 16)! }))
-            }
-        )
+    public func L1ChainId() async throws -> BigUInt {
+        let result: String = try await transport.send(method: "zks_L1ChainId", parameters: [])
+        
+        return BigUInt(result.stripHexPrefix(), radix: 16)!
     }
     
-    public func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
+    public func allAccountBalances(_ address: String) async throws -> Dictionary<String, String> {
         let parameters = [
             JRPC.Parameter(type: .string, value: address)
         ]
         
-        transport.send(
-            method: "zks_getAllAccountBalances",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getAllAccountBalances", parameters: parameters)
     }
     
-    // TODO: implement l1 for l2 and l2 for l1
-    
-    public func bridgeContracts(_ completion: @escaping (Result<BridgeAddresses>) -> Void) {
-        transport.send(
-            method: "zks_getBridgeContracts",
-            parameters: [],
-            completion: completion
-        )
+    public func bridgeContracts() async throws -> BridgeAddresses {
+        try await transport.send(method: "zks_getBridgeContracts", parameters: [])
     }
     
     // FIXME: Should l2LogPosition be used?
-    public func getL2ToL1MsgProof(_ block: Int, sender: String, message: String, l2LogPosition: Int64?, completion: @escaping (Result<L2ToL1MessageProof>) -> Void) {
+    public func getL2ToL1MsgProof(_ block: Int, sender: String, message: String, l2LogPosition: Int64?) async throws -> L2ToL1MessageProof {
         let parameters = [
             JRPC.Parameter(type: .int, value: block),
             JRPC.Parameter(type: .string, value: sender),
             JRPC.Parameter(type: .string, value: message)
         ]
         
-        transport.send(
-            method: "zks_getL2ToL1MsgProof",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getL2ToL1MsgProof", parameters: parameters)
     }
     
-    public func getL2ToL1LogProof(_ txHash: String,
-                              logIndex: Int,
-                              completion: @escaping (Result<L2ToL1MessageProof>) -> Void) {
+    public func getL2ToL1LogProof(_ txHash: String, logIndex: Int) async throws -> L2ToL1MessageProof {
         let parameters = [
             JRPC.Parameter(type: .string, value: txHash),
             JRPC.Parameter(type: .int, value: logIndex),
         ]
         
-        transport.send(
-            method: "zks_getL2ToL1LogProof",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getL2ToL1LogProof", parameters: parameters)
     }
     
-    public func getTestnetPaymaster(_ completion: @escaping (Result<String>) -> Void) {
-        transport.send(
-            method: "zks_getTestnetPaymaster",
-            parameters: [],
-            completion: completion
-        )
+    public func getTestnetPaymaster() async throws -> String {
+        try await transport.send(method: "zks_getTestnetPaymaster", parameters: [])
     }
     
     public func transactionDetails(_ txHash: String) async throws -> TransactionDetails {
         try await web3.eth.transactionDetails(Data(hex: txHash))
     }
     
-    public func blockDetails(_ block: Int, completion: @escaping (Result<BlockDetails>) -> Void) {
+    public func blockDetails(_ block: Int) async throws -> BlockDetails {
         let parameters = [
             JRPC.Parameter(type: .int, value: block),
         ]
         
-        transport.send(
-            method: "zks_getBlockDetails",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getBlockDetails", parameters: parameters)
     }
     
-    public func blockDetails(_ blockNumber: BigUInt, returnFullTransactionObjects: Bool, completion: @escaping (Result<BlockDetails>) -> Void) {
+    public func blockDetails(_ blockNumber: BigUInt, returnFullTransactionObjects: Bool) async throws -> BlockDetails {
         let parameters = [
             JRPC.Parameter(type: .string, value: blockNumber.toHexString().addHexPrefix()),
         ]
         
-        transport.send(
-            method: "zks_getBlockDetails",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getBlockDetails", parameters: parameters)
     }
     
-    public func l1BatchNumber(_ completion: @escaping (Result<String>) -> Void) {
-        transport.send(
-            method: "zks_L1BatchNumber",
-            parameters: [],
-            completion: completion
-        )
+    public func l1BatchNumber() async throws -> String {
+        try await transport.send(method: "zks_L1BatchNumber", parameters: [])
     }
     
-    public func l1BatchBlockRange(l1BatchNumber: BigUInt, _ completion: @escaping (Result<String>) -> Void) {
+    public func l1BatchBlockRange(l1BatchNumber: BigUInt) async throws -> String {
         let parameters = [
             JRPC.Parameter(type: .int, value: l1BatchNumber)
         ]
         
-        transport.send(
-            method: "zks_getL1BatchBlockRange",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getL1BatchBlockRange", parameters: parameters)
     }
     
-    public func l1BatchDetails(l1BatchNumber: BigUInt, _ completion: @escaping (Result<String>) -> Void) {
+    public func l1BatchDetails(l1BatchNumber: BigUInt) async throws -> String {
         let parameters = [
             JRPC.Parameter(type: .int, value: l1BatchNumber)
         ]
         
-        transport.send(
-            method: "zks_getL1BatchDetails",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getL1BatchDetails", parameters: parameters)
     }
     
-    public func logProof(txHash: Data, logIndex: BigUInt, _ completion: @escaping (Result<String>) -> Void) {
+    public func logProof(txHash: Data, logIndex: BigUInt) async throws -> String {
         let parameters = [
             JRPC.Parameter(type: .string, value: txHash),
             JRPC.Parameter(type: .int, value: logIndex)
         ]
         
-        transport.send(
-            method: "zks_getL2ToL1LogProof",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getL2ToL1LogProof", parameters: parameters)
     }
     
-    public func msgProof(block: BigUInt, sender: String, _ completion: @escaping (Result<String>) -> Void) {
+    public func msgProof(block: BigUInt, sender: String) async throws -> String {
         let parameters = [
             JRPC.Parameter(type: .int, value: block),
             JRPC.Parameter(type: .string, value: sender)
         ]
         
-        transport.send(
-            method: "zks_getL2ToL1MsgProof",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getL2ToL1MsgProof", parameters: parameters)
     }
     
-    public func confirmedTokens(_ from: Int, limit: Int, completion: @escaping (Result<[Token]>) -> Void) {
+    public func confirmedTokens(_ from: Int, limit: Int) async throws -> [Token] {
         let parameters = [
             JRPC.Parameter(type: .int, value: from),
             JRPC.Parameter(type: .int, value: limit)
         ]
         
-        transport.send(
-            method: "zks_getConfirmedTokens",
-            parameters: parameters,
-            completion: completion
-        )
+        return try await transport.send(method: "zks_getConfirmedTokens", parameters: parameters)
     }
 }

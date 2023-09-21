@@ -77,16 +77,17 @@ extension WalletL1 {
     }
     
     public func mainContract(callback: @escaping ((Web3.Contract) -> Void)) {
-        zkSync.mainContract { result in
-            switch result {
-            case .success(let address):
+        Task {
+            do {
+                let address = try await self.zkSync.mainContract()
+                
                 let zkSyncContract = self.web.contract(
                     Web3.Utils.IZkSync,
                     at: EthereumAddress(address)
                 )!
                 
                 callback(zkSyncContract)
-            case .failure(let error):
+            } catch {
                 fatalError(error.localizedDescription)
             }
         }
@@ -208,8 +209,14 @@ extension WalletL1 {
     }
     
     public func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void)) {
-        zkSync.bridgeContracts { result in
-            callback(result)
+        Task {
+            do {
+                let bridgeContracts = try await self.zkSync.bridgeContracts()
+                
+                return Result.success(bridgeContracts)
+            } catch {
+                return Result.failure(error)
+            }
         }
     }
     
@@ -222,22 +229,15 @@ extension WalletL1 {
     }
     
     public func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult {
-        let semaphore = DispatchSemaphore(value: 0)
-
         var zkSyncAddress: String = ""
 
-        zkSync.mainContract { result in
-            switch result {
-            case .success(let address):
-                zkSyncAddress = address
-            case .failure(let error):
-                fatalError("Failed with error: \(error.localizedDescription)")
-            }
-
-            semaphore.signal()
+        do {
+            let address = try await self.zkSync.mainContract()
+            
+            zkSyncAddress = address
+        } catch {
+            fatalError("Failed with error: \(error.localizedDescription)")
         }
-
-        semaphore.wait()
 
         let zkSyncContract = web.contract(
             Web3.Utils.IZkSync,

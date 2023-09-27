@@ -15,7 +15,7 @@ import Web3Core
 import web3swift_zksync2
 #endif
 
-public class DeployerImpl: Deployer {
+public class BaseDeployer: Deployer {
     public let zkSync: ZkSyncClient
     public let web: Web3
     
@@ -28,7 +28,7 @@ public class DeployerImpl: Deployer {
     }
 }
 
-extension DeployerImpl {
+extension BaseDeployer {
     public func deploy(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) async -> TransactionSendingResult {
         let nonceToUse: BigUInt
         if let nonce = nonce {
@@ -110,7 +110,7 @@ extension DeployerImpl {
     }
 }
 
-extension DeployerImpl {
+extension BaseDeployer {
     public func getNonce(at block: BlockNumber = .latest) async throws -> BigUInt {
         try await web.eth.getTransactionCount(for: EthereumAddress(signer.address)!, onBlock: block)
     }

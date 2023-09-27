@@ -76,7 +76,7 @@ public protocol ETHSigner {
                          prefixed: Bool) -> Bool
 }
 
-public class EthSignerImpl: ETHSigner {
+public class BaseSigner: ETHSigner {
     public var address: String {
         return credentials.address
     }

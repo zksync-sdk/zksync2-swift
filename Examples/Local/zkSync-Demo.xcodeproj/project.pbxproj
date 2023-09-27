@@ -10,6 +10,8 @@
 		1B5C3BE5BF278D4C5D896D38 /* Pods_zkSync_Demo_Localhost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3C6D4F91E7648487CBA4618 /* Pods_zkSync_Demo_Localhost.framework */; };
 		96D042453E179996ED2A9C36 /* Pods_zkSync_Demo_Testnet.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 40267A43B454E97309AA50B8 /* Pods_zkSync_Demo_Testnet.framework */; };
 		BD92076D1263BA62677E2821 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		FA0EDBAE2AC38AC20076151F /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0EDBAD2AC38AC20076151F /* Wallet.swift */; };
+		FA0EDBAF2AC38AC20076151F /* Wallet.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA0EDBAD2AC38AC20076151F /* Wallet.swift */; };
 		FA7CBF072A110E3D005A7E58 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7CBF062A110E3D005A7E58 /* ContentViewModel.swift */; };
 		FA888FD62AB4DBE50019CEA9 /* EthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FD52AB4DBE50019CEA9 /* EthSigner.swift */; };
 		FA888FD72AB4DBE50019CEA9 /* EthSigner.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA888FD52AB4DBE50019CEA9 /* EthSigner.swift */; };
@@ -90,8 +92,8 @@
 		FA9245802AAFB1C700F0B282 /* WalletL1.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA92457E2AAFB1C700F0B282 /* WalletL1.swift */; };
 		FA9245822AAFB1D300F0B282 /* WalletL2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245812AAFB1D300F0B282 /* WalletL2.swift */; };
 		FA9245832AAFB1D300F0B282 /* WalletL2.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245812AAFB1D300F0B282 /* WalletL2.swift */; };
-		FA9245852AAFC2A800F0B282 /* Deployer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245842AAFC2A800F0B282 /* Deployer.swift */; };
-		FA9245862AAFC2A800F0B282 /* Deployer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245842AAFC2A800F0B282 /* Deployer.swift */; };
+		FA9245852AAFC2A800F0B282 /* BaseDeployer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245842AAFC2A800F0B282 /* BaseDeployer.swift */; };
+		FA9245862AAFC2A800F0B282 /* BaseDeployer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245842AAFC2A800F0B282 /* BaseDeployer.swift */; };
 		FA9245882AAFC44B00F0B282 /* AccountsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245872AAFC44B00F0B282 /* AccountsUtil.swift */; };
 		FA9245892AAFC44B00F0B282 /* AccountsUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA9245872AAFC44B00F0B282 /* AccountsUtil.swift */; };
 		FA92458B2AAFCB2900F0B282 /* EthereumClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA92458A2AAFCB2900F0B282 /* EthereumClient.swift */; };
@@ -213,6 +215,7 @@
 		A8FE77E00501FECA1B718FC6 /* Pods-zkSync-Demo-Testnet.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo-Testnet.debug.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo-Testnet/Pods-zkSync-Demo-Testnet.debug.xcconfig"; sourceTree = "<group>"; };
 		E3C6D4F91E7648487CBA4618 /* Pods_zkSync_Demo_Localhost.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_zkSync_Demo_Localhost.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5BD129B0F73644A440158C4 /* Pods-zkSync-Demo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-zkSync-Demo.release.xcconfig"; path = "Target Support Files/Pods-zkSync-Demo/Pods-zkSync-Demo.release.xcconfig"; sourceTree = "<group>"; };
+		FA0EDBAD2AC38AC20076151F /* Wallet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Wallet.swift; sourceTree = "<group>"; };
 		FA27DCE62A5DEFD000B94D42 /* Web3Utils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Web3Utils.swift; sourceTree = "<group>"; };
 		FA27DCE92A5DFF2B00B94D42 /* TransactionParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionParameters.swift; sourceTree = "<group>"; };
 		FA7CBF062A110E3D005A7E58 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
@@ -270,7 +273,7 @@
 		FA92457B2AAFAE5A00F0B282 /* Adapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Adapter.swift; sourceTree = "<group>"; };
 		FA92457E2AAFB1C700F0B282 /* WalletL1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletL1.swift; sourceTree = "<group>"; };
 		FA9245812AAFB1D300F0B282 /* WalletL2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletL2.swift; sourceTree = "<group>"; };
-		FA9245842AAFC2A800F0B282 /* Deployer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deployer.swift; sourceTree = "<group>"; };
+		FA9245842AAFC2A800F0B282 /* BaseDeployer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseDeployer.swift; sourceTree = "<group>"; };
 		FA9245872AAFC44B00F0B282 /* AccountsUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountsUtil.swift; sourceTree = "<group>"; };
 		FA92458A2AAFCB2900F0B282 /* EthereumClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumClient.swift; sourceTree = "<group>"; };
 		FA92458D2AAFCB7000F0B282 /* ZkSyncClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZkSyncClient.swift; sourceTree = "<group>"; };
@@ -621,7 +624,8 @@
 				FA92457B2AAFAE5A00F0B282 /* Adapter.swift */,
 				FA92457E2AAFB1C700F0B282 /* WalletL1.swift */,
 				FA9245812AAFB1D300F0B282 /* WalletL2.swift */,
-				FA9245842AAFC2A800F0B282 /* Deployer.swift */,
+				FA0EDBAD2AC38AC20076151F /* Wallet.swift */,
+				FA9245842AAFC2A800F0B282 /* BaseDeployer.swift */,
 				FA888FD52AB4DBE50019CEA9 /* EthSigner.swift */,
 				FA9245872AAFC44B00F0B282 /* AccountsUtil.swift */,
 			);
@@ -1081,6 +1085,7 @@
 				FAA280132A5D4A0B0002CB6A /* TertiaryButton.swift in Sources */,
 				FAA280142A5D4A0B0002CB6A /* TertiaryButtonStyle.swift in Sources */,
 				FAA280152A5D4A0B0002CB6A /* zkSync_DemoApp.swift in Sources */,
+				FA0EDBAF2AC38AC20076151F /* Wallet.swift in Sources */,
 				FAA280162A5D4A0B0002CB6A /* ZkSyncTransactionReceiptProcessor.swift in Sources */,
 				FAA280172A5D4A0B0002CB6A /* Structurable.swift in Sources */,
 				FA92458C2AAFCB2900F0B282 /* EthereumClient.swift in Sources */,
@@ -1107,7 +1112,7 @@
 				FA8890222AB4DDF50019CEA9 /* JRPCCounter.swift in Sources */,
 				FAA280322A5D4A0B0002CB6A /* WithdrawManager.swift in Sources */,
 				FA9245982AAFD61400F0B282 /* Fee.swift in Sources */,
-				FA9245862AAFC2A800F0B282 /* Deployer.swift in Sources */,
+				FA9245862AAFC2A800F0B282 /* BaseDeployer.swift in Sources */,
 				FA8890082AB4DDF50019CEA9 /* NonceHolder.swift in Sources */,
 				FAA280342A5D4A0B0002CB6A /* UIControl+ActivityIndicatorView .swift in Sources */,
 				FA88901C2AB4DDF50019CEA9 /* JRPCError.swift in Sources */,
@@ -1166,6 +1171,7 @@
 				FACC396A2A501CAC00DDE38D /* SmartContractManager.swift in Sources */,
 				FA8FD8F52A4F94F400D0EB17 /* TertiaryButton.swift in Sources */,
 				FA8FD8F12A4F94F400D0EB17 /* TertiaryButtonStyle.swift in Sources */,
+				FA0EDBAE2AC38AC20076151F /* Wallet.swift in Sources */,
 				FACC39572A501C7500DDE38D /* zkSync_DemoApp.swift in Sources */,
 				FAC997BA2A5A39540067AA49 /* ZkSyncTransactionReceiptProcessor.swift in Sources */,
 				FA92458B2AAFCB2900F0B282 /* EthereumClient.swift in Sources */,
@@ -1192,7 +1198,7 @@
 				FA8890212AB4DDF50019CEA9 /* JRPCCounter.swift in Sources */,
 				FACC39652A501CAC00DDE38D /* WithdrawManager.swift in Sources */,
 				FA9245972AAFD61400F0B282 /* Fee.swift in Sources */,
-				FA9245852AAFC2A800F0B282 /* Deployer.swift in Sources */,
+				FA9245852AAFC2A800F0B282 /* BaseDeployer.swift in Sources */,
 				FA8890072AB4DDF50019CEA9 /* NonceHolder.swift in Sources */,
 				FA8FD9022A4FA08400D0EB17 /* UIControl+ActivityIndicatorView .swift in Sources */,
 				FA88901B2AB4DDF50019CEA9 /* JRPCError.swift in Sources */,

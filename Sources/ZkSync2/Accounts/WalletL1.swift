@@ -76,21 +76,15 @@ extension WalletL1 {
         return allowance > (threshold ?? BigUInt.two.power(255))
     }
     
-    public func mainContract(callback: @escaping ((Web3.Contract) -> Void)) {
-        Task {
-            do {
-                let address = try await self.zkSync.mainContract()
-                
-                let zkSyncContract = self.web.contract(
-                    Web3.Utils.IZkSync,
-                    at: EthereumAddress(address)
-                )!
-                
-                callback(zkSyncContract)
-            } catch {
-                fatalError(error.localizedDescription)
-            }
-        }
+    public func mainContract() async throws -> Web3.Contract {
+        let address = try await self.zkSync.mainContract()
+        
+        let zkSyncContract = self.web.contract(
+            Web3.Utils.IZkSync,
+            at: EthereumAddress(address)
+        )!
+        
+        return zkSyncContract
     }
     
     public func balanceL1(token: Token) async -> BigUInt {
@@ -101,9 +95,7 @@ extension WalletL1 {
         }
     }
     
-    public func baseCost(_ gasLimit: BigUInt,
-                  gasPerPubdataByte: BigUInt = BigUInt(50000),
-                         gasPrice: BigUInt?) async throws -> [String: Any] {
+    public func baseCost(_ gasLimit: BigUInt, gasPerPubdataByte: BigUInt = BigUInt(50000), gasPrice: BigUInt?) async throws -> [String: Any] {
         var gasPrice = gasPrice
         if gasPrice == nil {
             gasPrice = try! await web.eth.gasPrice()
@@ -122,14 +114,7 @@ extension WalletL1 {
         return try await transaction.callContractMethod()
     }
     
-    public func claimFailedDeposit(_ l1BridgeAddress: String,
-                            depositSender: String,
-                            l1Token: String,
-                            l2TxHash: Data,
-                            l2BlockNumber: BigUInt,
-                            l2MessageIndex: BigUInt,
-                            l2TxNumberInBlock: UInt,
-                            proof: [Data]) async throws -> TransactionSendingResult {
+    public func claimFailedDeposit(_ l1BridgeAddress: String, depositSender: String, l1Token: String, l2TxHash: Data, l2BlockNumber: BigUInt, l2MessageIndex: BigUInt, l2TxNumberInBlock: UInt, proof: [Data]) async throws -> TransactionSendingResult {
         let l1Bridge = web.contract(Web3.Utils.IL1Bridge, at: EthereumAddress(l1BridgeAddress))!
 
         let parameters = [
@@ -208,16 +193,8 @@ extension WalletL1 {
         return try await web.eth.send(writeTransaction.transaction)
     }
     
-    public func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void)) {
-        Task {
-            do {
-                let bridgeContracts = try await self.zkSync.bridgeContracts()
-                
-                return Result.success(bridgeContracts)
-            } catch {
-                return Result.failure(error)
-            }
-        }
+    public func L1BridgeContracts() async throws -> BridgeAddresses {
+        try await self.zkSync.bridgeContracts()
     }
     
     public func deposit(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult {

@@ -21,16 +21,14 @@ public protocol AdapterL1 {
     func approveDeposit(with token: Token, limit: BigUInt?) async throws -> TransactionSendingResult
     func isDepositApproved(with token: Token, to address: String, threshold: BigUInt?) async throws -> Bool
     // MainContract returns the zkSync L1 smart contract.
-    func mainContract(callback: @escaping ((Web3.Contract) -> Void))
+    func mainContract() async throws -> Web3.Contract
     // L1BridgeContracts returns L1 bridge contracts.
-    func L1BridgeContracts(callback: @escaping ((Result<BridgeAddresses>) -> Void))
+    func L1BridgeContracts() async throws -> BridgeAddresses
     // BalanceL1 returns the balance of the specified token on L1 that can be
     // either ETH or any ERC20 token.
     func balanceL1(token: Token) async -> BigUInt
     // BaseCost returns base cost for L2 transaction.
-    func baseCost(_ gasLimit: BigUInt,
-                         gasPerPubdataByte: BigUInt,
-                         gasPrice: BigUInt?) async throws -> [String: Any]
+    func baseCost(_ gasLimit: BigUInt, gasPerPubdataByte: BigUInt, gasPrice: BigUInt?) async throws -> [String: Any]
     // Deposit transfers the specified token from the associated account on the L1 network
     // to the target account on the L2 network. The token can be either ETH or any ERC20 token.
     // For ERC20 tokens, enough approved tokens must be associated with the specified L1 bridge
@@ -44,14 +42,7 @@ public protocol AdapterL1 {
     // ClaimFailedDeposit withdraws funds from the initiated deposit, which failed when finalizing on L2.
     // If the deposit L2 transaction has failed, it sends an L1 transaction calling ClaimFailedDeposit method
     // of the L1 bridge, which results in returning L1 tokens back to the depositor, otherwise throws the error.
-    func claimFailedDeposit(_ l1BridgeAddress: String,
-                            depositSender: String,
-                            l1Token: String,
-                            l2TxHash: Data,
-                            l2BlockNumber: BigUInt,
-                            l2MessageIndex: BigUInt,
-                            l2TxNumberInBlock: UInt,
-                            proof: [Data]) async throws -> TransactionSendingResult
+    func claimFailedDeposit(_ l1BridgeAddress: String, depositSender: String, l1Token: String, l2TxHash: Data, l2BlockNumber: BigUInt, l2MessageIndex: BigUInt, l2TxNumberInBlock: UInt, proof: [Data]) async throws -> TransactionSendingResult
     // RequestExecute request execution of L2 transaction from L1.
     func requestExecute(_ contractAddress: String, l2Value: BigUInt, calldata: Data, gasLimit: BigUInt, factoryDeps: [Data]?, operatorTips: BigUInt?, gasPrice: BigUInt?, refundRecipient: String) async throws -> TransactionSendingResult
 }
@@ -118,4 +109,16 @@ public protocol Deployer {
     func deployAccount(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) async -> TransactionSendingResult
     // DeployAccountWithCreate deploys smart account using CREATE opcode.
     func deployAccountWithCreate(_ bytecode: Data, calldata: Data?, nonce: BigUInt?) async -> TransactionSendingResult
+}
+
+public struct Adapter {
+    public var adapterL1: AdapterL1
+    public var adapterL2: AdapterL2
+    public var deployer: Deployer
+    
+    public init(adapterL1: AdapterL1, adapterL2: AdapterL2, deployer: Deployer) {
+        self.adapterL1 = adapterL1
+        self.adapterL2 = adapterL2
+        self.deployer = deployer
+    }
 }

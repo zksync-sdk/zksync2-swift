@@ -1,5 +1,5 @@
 //
-//  ZkSyncClientImpl.swift
+//  BaseClient.swift
 //  zkSync-Demo
 //
 //  Created by Bojan on 12.9.23..
@@ -15,7 +15,7 @@ import Web3Core
 import web3swift_zksync2
 #endif
 
-public class ZkSyncClientImpl: ZkSyncClient {
+public class BaseClient: ZkSyncClient {
     
     public var web3: Web3
     

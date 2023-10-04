@@ -18,6 +18,10 @@ import web3swift_zksync2
 // AdapterL1 is associated with an account and provides common operations on the
 // L1 network for the associated account.
 public protocol AdapterL1 {
+    var zkSync: ZkSyncClient { get }
+    var ethClient: EthereumClient { get }
+    var web: Web3 { get }
+    
     func approveDeposit(with token: Token, limit: BigUInt?) async throws -> TransactionSendingResult
     func isDepositApproved(with token: Token, to address: String, threshold: BigUInt?) async throws -> Bool
     // MainContract returns the zkSync L1 smart contract.
@@ -50,18 +54,22 @@ public protocol AdapterL1 {
 // AdapterL2 is associated with an account and provides common operations on the
 // L2 network for the associated account.
 public protocol AdapterL2 {
+    var zkSync: ZkSyncClient { get }
+    var ethClient: EthereumClient { get }
+    var web: Web3 { get }
+    
     // Balance returns the balance of the specified token that can be either ETH or any ERC20 token.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-    func balance(at address: String, blockNumber: BlockNumber) async throws -> BigUInt
+    func balance(token: Token, blockNumber: BlockNumber) async throws -> BigUInt
     // AllBalances returns all balances for confirmed tokens given by an associated
     // account.
-    func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void)
+    func allBalances(_ address: String) async throws -> Dictionary<String, String>
     // Withdraw initiates the withdrawal process which withdraws ETH or any ERC20
     // token from the associated account on L2 network to the target account on L1
     // network.
-    func withdraw(_ to: String, amount: BigUInt) async -> TransactionSendingResult
-    func withdraw(_ to: String, amount: BigUInt, token: Token) async -> TransactionSendingResult
-    func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async -> TransactionSendingResult
+    func withdraw(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult
+    func withdraw(_ to: String, amount: BigUInt, token: Token) async throws -> TransactionSendingResult
+    func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult
     // EstimateGasWithdraw estimates the amount of gas required for a withdrawal
     // transaction.
     func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt

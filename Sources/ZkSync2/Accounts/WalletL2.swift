@@ -31,31 +31,23 @@ public class WalletL2: AdapterL2 {
 }
 
 extension WalletL2 {
-    public func balance(at address: String, blockNumber: BlockNumber) async throws -> BigUInt {
-        try await ethClient.balance(at: address, blockNumber: blockNumber)
+    public func balance(token: Token, blockNumber: BlockNumber) async throws -> BigUInt {
+        try await ethClient.balance(at: token.l2Address, blockNumber: blockNumber)
     }
     
-    public func allAccountBalances(_ address: String, completion: @escaping (Result<Dictionary<String, String>>) -> Void) {
-        Task {
-            do {
-                let result = try await zkSync.allAccountBalances(address)
-                
-                completion(.success(result))
-            } catch {
-                completion(.failure(error))
-            }
-        }
+    public func allBalances(_ address: String) async throws -> Dictionary<String, String> {
+        try await zkSync.allAccountBalances(address)
     }
     
-    public func withdraw(_ to: String, amount: BigUInt) async -> TransactionSendingResult {
-        await withdraw(to, amount: amount, token: nil, nonce: nil)
+    public func withdraw(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult {
+        try await withdraw(to, amount: amount, token: nil, nonce: nil)
     }
     
-    public func withdraw(_ to: String, amount: BigUInt, token: Token) async -> TransactionSendingResult {
-        await withdraw(to, amount: amount, token: token, nonce: nil)
+    public func withdraw(_ to: String, amount: BigUInt, token: Token) async throws -> TransactionSendingResult {
+        try await withdraw(to, amount: amount, token: token, nonce: nil)
     }
     
-    public func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async -> TransactionSendingResult {
+    public func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult {
         let tokenToUse: Token
         if let token = token {
             tokenToUse = token
@@ -67,7 +59,7 @@ extension WalletL2 {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! await getNonce()
+            nonceToUse = try await getNonce()
         }
         
         if tokenToUse.isETH {

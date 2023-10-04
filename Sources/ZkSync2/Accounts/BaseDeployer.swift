@@ -18,13 +18,18 @@ import web3swift_zksync2
 public class BaseDeployer: Deployer {
     public let zkSync: ZkSyncClient
     public let web: Web3
-    
     public let signer: ETHSigner
     
     public init(_ zkSync: ZkSyncClient, web3: Web3, ethSigner: ETHSigner) {
         self.zkSync = zkSync
         self.web = web3
         self.signer = ethSigner
+    }
+    
+    public init(adapterL2: AdapterL2, signer: ETHSigner) {
+        self.zkSync = adapterL2.zkSync
+        self.web = adapterL2.web
+        self.signer = signer
     }
 }
 
@@ -34,7 +39,7 @@ extension BaseDeployer {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! await getNonce()
+            nonceToUse = try! await self.nonce()
         }
         
         let validCalldata: Data
@@ -54,7 +59,7 @@ extension BaseDeployer {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! await getNonce()
+            nonceToUse = try! await self.nonce()
         }
         
         let validCalldata: Data
@@ -74,7 +79,7 @@ extension BaseDeployer {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! await getNonce()
+            nonceToUse = try! await self.nonce()
         }
         
         let validCalldata: Data
@@ -94,7 +99,7 @@ extension BaseDeployer {
         if let nonce = nonce {
             nonceToUse = nonce
         } else {
-            nonceToUse = try! await getNonce()
+            nonceToUse = try! await self.nonce()
         }
         
         let validCalldata: Data
@@ -111,11 +116,15 @@ extension BaseDeployer {
 }
 
 extension BaseDeployer {
-    public func getNonce(at block: BlockNumber = .latest) async throws -> BigUInt {
+    public func nonce(at block: BlockNumber = .latest) async throws -> BigUInt {
         try await web.eth.getTransactionCount(for: EthereumAddress(signer.address)!, onBlock: block)
     }
     
-    public func getNonce() async throws -> BigUInt {
-        try await getNonce(at: .latest)
+    public func nonce() async throws -> BigUInt {
+        try await nonce(at: .latest)
+    }
+    
+    func pendingNonce() async throws -> BigUInt {
+        try await nonce(at: .pending)
     }
 }

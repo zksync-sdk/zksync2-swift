@@ -40,8 +40,6 @@ public protocol AdapterL1 {
     // DepositTransaction.ApproveERC20 can be enabled to perform token approval.
     // If there are already enough approved tokens for the L1 bridge, token approval will be skipped.
     // To check the amount of approved tokens for a specific bridge, use the AdapterL1.AllowanceL1 method.
-    func deposit(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult
-    func deposit(_ to: String, amount: BigUInt, token: Token) async throws -> TransactionSendingResult
     func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult
     // ClaimFailedDeposit withdraws funds from the initiated deposit, which failed when finalizing on L2.
     // If the deposit L2 transaction has failed, it sends an L1 transaction calling ClaimFailedDeposit method
@@ -67,16 +65,12 @@ public protocol AdapterL2 {
     // Withdraw initiates the withdrawal process which withdraws ETH or any ERC20
     // token from the associated account on L2 network to the target account on L1
     // network.
-    func withdraw(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult
-    func withdraw(_ to: String, amount: BigUInt, token: Token) async throws -> TransactionSendingResult
     func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult
     // EstimateGasWithdraw estimates the amount of gas required for a withdrawal
     // transaction.
     func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt
     // Transfer moves the ETH or any ERC20 token from the associated account to the
     // target account.
-    func transfer(_ to: String, amount: BigUInt) async -> TransactionSendingResult
-    func transfer(_ to: String, amount: BigUInt, token: Token) async -> TransactionSendingResult
     func transfer(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async -> TransactionSendingResult
     // EstimateGasTransfer estimates the amount of gas required for a transfer
     // transaction.

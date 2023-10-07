@@ -50,13 +50,18 @@ public class AccountsUtil {
             value: transaction.value,
             data: transaction.data
         )
+        prepared.from = transaction.from
         prepared.eip712Meta = transaction.eip712Meta
+        prepared.value = transaction.value
+        prepared.gasLimit = transaction.gasLimit
+        prepared.maxPriorityFeePerGas = transaction.maxPriorityFeePerGas
+        prepared.maxFeePerGas = transaction.maxFeePerGas
 
         let domain = signer.domain
         let signature = signer.signTypedData(domain, typedData: prepared)
         let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(from: signature)!)!
-        prepared.r = BigUInt(unmarshalledSignature.r.toHexString().addHexPrefix())!
-        prepared.s = BigUInt(unmarshalledSignature.s.toHexString().addHexPrefix())!
+        prepared.r = BigUInt(from: unmarshalledSignature.r.toHexString().addHexPrefix())!
+        prepared.s = BigUInt(from: unmarshalledSignature.s.toHexString().addHexPrefix())!
         prepared.v = BigUInt(unmarshalledSignature.v)
 
         guard let message = prepared.encode(for: .transaction) else {

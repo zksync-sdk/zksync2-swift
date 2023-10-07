@@ -203,15 +203,7 @@ extension WalletL1 {
         try await self.zkSync.bridgeContracts()
     }
     
-    public func deposit(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult {
-        try await deposit(to, amount: amount, token: nil, nonce: nil)
-    }
-
-    public func deposit(_ to: String, amount: BigUInt, token: Token) async throws -> TransactionSendingResult {
-        try await deposit(to, amount: amount, token: token, nonce: nil)
-    }
-    
-    public func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult {
+    public func deposit(_ to: String, amount: BigUInt, token: Token? = nil, nonce: BigUInt? = nil) async throws -> TransactionSendingResult {
         let l1ERC20Bridge = zkSync.web3.contract(
             Web3.Utils.IL1Bridge,
             at: EthereumAddress(signer.address)

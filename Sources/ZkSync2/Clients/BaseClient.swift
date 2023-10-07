@@ -28,7 +28,7 @@ public class BaseClient: ZkSyncClient {
     
     public func estimateFee(_ transaction: CodableTransaction) async throws -> Fee {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
         ]
 
         return try await transport.send(method: "zks_estimateFee", parameters: parameters)
@@ -36,7 +36,7 @@ public class BaseClient: ZkSyncClient {
     
     public func estimateGasL1(_ transaction: CodableTransaction) async throws -> Fee {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
         ]
 
         return try await transport.send(method: "zks_estimateGasL1ToL2", parameters: parameters)
@@ -67,7 +67,7 @@ public class BaseClient: ZkSyncClient {
     public func L1ChainId() async throws -> BigUInt {
         let result: String = try await transport.send(method: "zks_L1ChainId", parameters: [])
         
-        return BigUInt(result.stripHexPrefix(), radix: 16)!
+        return BigUInt(from: result.stripHexPrefix())!
     }
     
     public func allAccountBalances(_ address: String) async throws -> Dictionary<String, String> {

@@ -39,12 +39,12 @@ public class EthereumClientImpl: EthereumClient {
     
     public func estimateGasL2(_ transaction: CodableTransaction) async throws -> BigUInt {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
         ]
 
         let result: String = try await transport.send(method: "eth_estimateGas", parameters: parameters)
 
-        return BigUInt(result.stripHexPrefix(), radix: 16)!
+        return BigUInt(from: result.stripHexPrefix())!
     }
     
     public func transactionByHash(_ transactionHash: String) async throws -> TransactionResponse {
@@ -87,7 +87,7 @@ public class EthereumClientImpl: EthereumClient {
         }
 
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction))
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
         ]
         
         return try await transport.send(method: "eth_call", parameters: parameters)
@@ -95,7 +95,7 @@ public class EthereumClientImpl: EthereumClient {
     
     public func callContractAtHash(_ transaction: CodableTransaction, hash: String) async throws -> Data {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from)),
             JRPC.Parameter(type: .string, value: hash)
         ]
         
@@ -104,7 +104,7 @@ public class EthereumClientImpl: EthereumClient {
     
     public func callContractAtHashL2(_ transaction: CodableTransaction, hash: String) async throws -> Data {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from)),
             JRPC.Parameter(type: .string, value: hash)
         ]
         
@@ -113,7 +113,7 @@ public class EthereumClientImpl: EthereumClient {
     
     public func pendingCallContract(_ transaction: CodableTransaction) async throws -> Data {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from)),
             JRPC.Parameter(type: .string, value: "pending")
         ]
         
@@ -122,7 +122,7 @@ public class EthereumClientImpl: EthereumClient {
     
     public func pendingCallContractL2(_ transaction: CodableTransaction) async throws -> Data {
         let parameters = [
-            JRPC.Parameter(type: .transactionParameters, value: transaction.encode(for: .transaction)),
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from)),
             JRPC.Parameter(type: .string, value: "pending")
         ]
         

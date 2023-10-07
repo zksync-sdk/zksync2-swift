@@ -39,15 +39,7 @@ extension WalletL2 {
         try await zkSync.allAccountBalances(address)
     }
     
-    public func withdraw(_ to: String, amount: BigUInt) async throws -> TransactionSendingResult {
-        try await withdraw(to, amount: amount, token: nil, nonce: nil)
-    }
-    
-    public func withdraw(_ to: String, amount: BigUInt, token: Token) async throws -> TransactionSendingResult {
-        try await withdraw(to, amount: amount, token: token, nonce: nil)
-    }
-    
-    public func withdraw(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult {
+    public func withdraw(_ to: String, amount: BigUInt, token: Token? = nil, nonce: BigUInt? = nil) async throws -> TransactionSendingResult {
         let tokenToUse: Token
         if let token = token {
             tokenToUse = token
@@ -173,8 +165,8 @@ extension WalletL2 {
         let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
 
         let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(from: signature)!)!
-        transaction.r = BigUInt(unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.s = BigUInt(unmarshalledSignature.s.toHexString().addHexPrefix())!
+        transaction.r = BigUInt(from: unmarshalledSignature.r.toHexString().addHexPrefix())!
+        transaction.s = BigUInt(from: unmarshalledSignature.s.toHexString().addHexPrefix())!
         transaction.v = BigUInt(unmarshalledSignature.v)
     }
     
@@ -188,15 +180,7 @@ extension WalletL2 {
 }
 
 extension WalletL2 {
-    public func transfer(_ to: String, amount: BigUInt) async -> TransactionSendingResult {
-        await transfer(to, amount: amount, token: nil, nonce: nil)
-    }
-    
-    public func transfer(_ to: String, amount: BigUInt, token: Token) async -> TransactionSendingResult {
-        await transfer(to, amount: amount, token: token, nonce: nil)
-    }
-    
-    public func transfer(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async -> TransactionSendingResult {
+    public func transfer(_ to: String, amount: BigUInt, token: Token? = nil, nonce: BigUInt? = nil) async -> TransactionSendingResult {
         let tokenToUse: Token
         if let token = token {
             tokenToUse = token

@@ -170,12 +170,12 @@ extension WalletL2 {
     }
     
     public func signTransaction(_ transaction: inout CodableTransaction) {
-//444        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-//
-//        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-//        transaction.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-//        transaction.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-//        transaction.envelope.v = BigUInt(unmarshalledSignature.v)
+        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
+
+        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(from: signature)!)!
+        transaction.r = BigUInt(unmarshalledSignature.r.toHexString().addHexPrefix())!
+        transaction.s = BigUInt(unmarshalledSignature.s.toHexString().addHexPrefix())!
+        transaction.v = BigUInt(unmarshalledSignature.v)
     }
     
     public func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt {

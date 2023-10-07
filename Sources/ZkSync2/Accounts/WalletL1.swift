@@ -26,8 +26,14 @@ public class WalletL1: AdapterL1 {
     public let zkSync: ZkSyncClient
     public let ethClient: EthereumClient
     public let web: Web3
-    var zkSyncContract: Web3.Contract!//111
-    var l1ERC20BridgeAddress: String!//111
+    
+    fileprivate func l1ERC20BridgeAddress() async throws -> EthereumAddress? {
+        let bridgeAddresses = try await zkSync.bridgeContracts()
+        
+        let erc20Bridge = web.contract(Web3.Utils.IL1Bridge, at: EthereumAddress(bridgeAddresses.l1Erc20DefaultBridge))
+        
+        return erc20Bridge?.contract.address
+    }
     
     public let signer: ETHSigner
     
@@ -43,7 +49,7 @@ extension WalletL1 {
     public func approveDeposit(with token: Token,
                                limit: BigUInt?) async throws -> TransactionSendingResult {
         guard let tokenAddress = EthereumAddress(token.l1Address),
-              let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
+              let spenderAddress = try await l1ERC20BridgeAddress() else {
             throw EthereumProviderError.invalidToken
         }
         
@@ -63,7 +69,7 @@ extension WalletL1 {
                                   threshold: BigUInt?) async throws -> Bool {
         guard let tokenAddress = EthereumAddress(token.l1Address),
               let ownerAddress = EthereumAddress(address),
-              let spenderAddress = EthereumAddress(l1ERC20BridgeAddress) else {
+              let spenderAddress = try await l1ERC20BridgeAddress() else {
             throw EthereumProviderError.invalidToken
         }
         
@@ -107,7 +113,7 @@ extension WalletL1 {
             gasPerPubdataByte
         ] as [AnyObject]
         
-        guard let transaction = zkSyncContract.createReadOperation("l2TransactionBaseCost", parameters: parameters) else {
+        guard let transaction = try await mainContract().createReadOperation("l2TransactionBaseCost", parameters: parameters) else {
             throw EthereumProviderError.invalidParameter
         }
 
@@ -177,12 +183,12 @@ extension WalletL1 {
 
         let nonce = try! await self.web.eth.getTransactionCount(for: EthereumAddress(contractAddress)!)
 
-        guard let writeTransaction = zkSyncContract.createWriteOperation("requestL2Transaction",
+        guard let writeTransaction = try await mainContract().createWriteOperation("requestL2Transaction",
                                                      parameters: parameters) else {
             throw EthereumProviderError.invalidParameter
         }
-        writeTransaction.transaction.from = EthereumAddress(l1ERC20BridgeAddress)!
-        writeTransaction.transaction.to = zkSyncContract.contract.address!
+        writeTransaction.transaction.from = try await l1ERC20BridgeAddress()
+        writeTransaction.transaction.to = try await mainContract().contract.address!
         writeTransaction.transaction.nonce = nonce
         writeTransaction.transaction.gasLimit = gasLimit
         writeTransaction.transaction.gasPrice = gasPrice
@@ -206,21 +212,6 @@ extension WalletL1 {
     }
     
     public func deposit(_ to: String, amount: BigUInt, token: Token?, nonce: BigUInt?) async throws -> TransactionSendingResult {
-        var zkSyncAddress: String = ""
-
-        do {
-            let address = try await self.zkSync.mainContract()
-            
-            zkSyncAddress = address
-        } catch {
-            fatalError("Failed with error: \(error.localizedDescription)")
-        }
-
-        let zkSyncContract = web.contract(
-            Web3.Utils.IZkSync,
-            at: EthereumAddress(zkSyncAddress)
-        )!
-
         let l1ERC20Bridge = zkSync.web3.contract(
             Web3.Utils.IL1Bridge,
             at: EthereumAddress(signer.address)

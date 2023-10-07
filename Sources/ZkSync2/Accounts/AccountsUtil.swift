@@ -53,11 +53,11 @@ public class AccountsUtil {
         prepared.eip712Meta = transaction.eip712Meta
 
         let domain = signer.domain
-//444        let signature = signer.signTypedData(domain, typedData: prepared)
-//        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(fromHex: signature)!)!
-//        prepared.envelope.r = BigUInt(fromHex: unmarshalledSignature.r.toHexString().addHexPrefix())!
-//        prepared.envelope.s = BigUInt(fromHex: unmarshalledSignature.s.toHexString().addHexPrefix())!
-//        prepared.envelope.v = BigUInt(unmarshalledSignature.v)
+        let signature = signer.signTypedData(domain, typedData: prepared)
+        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(from: signature)!)!
+        prepared.r = BigUInt(unmarshalledSignature.r.toHexString().addHexPrefix())!
+        prepared.s = BigUInt(unmarshalledSignature.s.toHexString().addHexPrefix())!
+        prepared.v = BigUInt(unmarshalledSignature.v)
 
         guard let message = prepared.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")

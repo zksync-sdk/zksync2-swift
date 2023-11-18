@@ -17,7 +17,7 @@ import web3swift_zksync2
 
 public class AccountsUtil {
     static func estimateAndSend(zkSync: ZkSyncClient, signer: ETHSigner, _ transaction: CodableTransaction, nonce: BigUInt) async -> TransactionSendingResult {
-        let chainID = signer.domain.chainId
+        let chainID = BigUInt(270)//222signer.domain.chainId
         let gasPrice = try! await zkSync.web3.eth.gasPrice()
 
         let estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)

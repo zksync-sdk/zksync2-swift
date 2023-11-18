@@ -227,44 +227,22 @@ public class ContractDeployer {
     }
     
     public static func hashBytecode(_ bytecode: Data, calldata: Data = Data(), salt: Data = Data(), version: AccountAbstractionVersion = .version1) -> Data {
-        let inputs = [
-            ABI.Element.InOut(name: "salt", type: .bytes(length: 32)),
-            ABI.Element.InOut(name: "bytecodeHash", type: .bytes(length: 32)),
-            ABI.Element.InOut(name: "input", type: .dynamicBytes),
-            ABI.Element.InOut(name: "aaVersion", type: .uint(bits: 8))
-        ]
+        var bytecodeHash = bytecode.sha256()
         
-        let function = ABI.Element.Function(name: "createAccount",
-                                            inputs: inputs,
-                                            outputs: [],
-                                            constant: false,
-                                            payable: false)
-
-        let elementFunction: ABI.Element = .function(function)
-
-        let salt = Data(capacity: 32)
-
-        let bytecodeHash = ContractDeployer.hashBytecode(bytecode, calldata: calldata, salt: salt, version: version)
-
-        let parameters: [AnyObject] = [
-            salt as AnyObject,
-            bytecodeHash as AnyObject,
-            calldata as AnyObject,
-            version.rawValue as AnyObject,
-        ]
-
-        guard let encodedCallData = elementFunction.encodeParameters(parameters) else {
-            fatalError("Failed to encode function.")
+        if bytecode.count % 32 != 0 {
+            fatalError("Bytecode length in bytes must be divisible by 32")
         }
-
-#if DEBUG
-        print("bytecode: \(bytecode.toHexString().addHexPrefix())")
-        print("bytecodeHash: \(bytecodeHash.toHexString().addHexPrefix())")
-        print("calldata: \(calldata.toHexString().addHexPrefix())")
-        print("version: \(version)")
-        print("encodedCallData: \(encodedCallData.toHexString().addHexPrefix())")
-#endif
-
-        return encodedCallData
+        
+        let length = BigUInt(bytecode.count / 32)
+        if length > ContractDeployer.MaxBytecodeSize {
+            fatalError("Bytecode length must be less than 2^16 bytes")
+        }
+        
+        let codeHashVersion = Data(from: "0x0100")!
+        let bytecodeLength = length.data2
+        
+        bytecodeHash.replaceSubrange(0...3, with: Data(codeHashVersion + bytecodeLength))
+        
+        return bytecodeHash
     }
 }

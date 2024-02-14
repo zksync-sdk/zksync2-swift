@@ -10,7 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
-import Web3Core
+import web3core
 #else
 import web3swift_zksync2
 #endif

@@ -7,6 +7,7 @@
 
 import XCTest
 import web3swift
+import Web3Core
 import BigInt
 @testable import ZkSync2
 
@@ -27,7 +28,7 @@ class ContractDeployerTests: XCTestCase {
         let sender = EthereumAddress("0xa909312acfc0ed4370b8bd20dfe41c8ff6595194")!
         
         let result = ContractDeployer.computeL2Create2Address(sender,
-                                                              bytecode: Data(fromHex: CounterContract.Binary)!,
+                                                              bytecode: Data(from: CounterContract.Binary)!,
                                                               constructor: Data(),
                                                               salt: salt)
         
@@ -45,9 +46,9 @@ class ContractDeployerTests: XCTestCase {
     }
     
     func testHashBytecode() {
-        let result = ContractDeployer.hashBytecode(Data(fromHex: CounterContract.Binary)!)
+        let result = ContractDeployer.hashBytecode(Data(from: CounterContract.Binary)!)
         
         let expected = "0x010000517112c421df08d7b49e4dc1312f4ee62268ee4f5683b11d9e2d33525a"
-        XCTAssertEqual(result.toHexString().addHexPrefix(), expected)
+        XCTAssertEqual(result.toHexString(), expected)
     }
 }

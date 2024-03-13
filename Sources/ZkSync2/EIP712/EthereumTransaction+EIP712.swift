@@ -14,26 +14,26 @@ import Web3Core
 import web3swift_zksync2
 #endif
 
-extension CodableTransaction: Structurable { refactor/refactor:Sources/ZkSync2/EIP712/EthereumTransaction+EIP712.swift
-    public func getTypeName() -> String {
-        "Transaction"
-    }
-    
-    public func eip712types() -> [EIP712.`Type`] {
-        return [
-            ("txType", EIP712.UInt256(type.rawValue)),
-            ("from", BigUInt(from!.addressData)),
-            ("to", BigUInt(to.addressData)),
-            ("gasLimit", gasLimit),
-            ("gasPerPubdataByteLimit", eip712Meta!.gasPerPubdata as Any),
-            ("maxFeePerGas", maxFeePerGas as Any),
-            ("maxPriorityFeePerGas", maxPriorityFeePerGas as Any),
-            ("paymaster", BigUInt(eip712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
-            ("nonce", nonce),
-            ("value", value as Any),
-            ("data", data),
-            ("factoryDeps", eip712Meta?.factoryDeps ?? []),
-            ("paymasterInput", eip712Meta?.paymasterParams?.paymasterInput ?? Data())
-        ]
-    }
-}
+//extension CodableTransaction: Structurable {
+//    public func getTypeName() -> String {
+//        "Transaction"
+//    }
+//    
+//    public func eip712types() -> [EIP712.`Type`] {
+//        return [
+//            ("txType", EIP712.UInt256(type.rawValue)),
+//            ("from", BigUInt(from!.addressData)),
+//            ("to", BigUInt(to.addressData)),
+//            ("gasLimit", gasLimit),
+//            ("gasPerPubdataByteLimit", eip712Meta!.gasPerPubdata as Any),
+//            ("maxFeePerGas", maxFeePerGas as Any),
+//            ("maxPriorityFeePerGas", maxPriorityFeePerGas as Any),
+//            ("paymaster", BigUInt(eip712Meta?.paymasterParams?.paymaster?.addressData ?? Data())),
+//            ("nonce", nonce),
+//            ("value", value as Any),
+//            ("data", data),
+//            ("factoryDeps", eip712Meta?.factoryDeps ?? []),
+//            ("paymasterInput", eip712Meta?.paymasterParams?.paymasterInput ?? Data())
+//        ]
+//    }
+//}

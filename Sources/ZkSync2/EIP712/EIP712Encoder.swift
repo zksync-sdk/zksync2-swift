@@ -32,7 +32,6 @@ class EIP712Encoder {
             guard let valueHash = try? EIP712HashableValue.hash() else {
                 fatalError("Unable to encode EIP712Hashable value.")
             }
-            
             return valueHash
         }
         
@@ -45,7 +44,7 @@ class EIP712Encoder {
         outputData.append(messageEIP712Prefix.data(using: .ascii)!)
         outputData.append(EIP712Encoder.encodeValue(domain))
         outputData.append(EIP712Encoder.encodeValue(typedData))
-        
+
         let data = Data(SHA3(variant: .keccak256).calculate(for: outputData.bytes))
         
         return data

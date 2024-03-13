@@ -92,4 +92,8 @@ public protocol EthereumClient {
     func sendTransaction(_ transaction: CodableTransaction) async throws -> TransactionSendingResult
     // SendRawTransaction injects a signed raw transaction into the pending pool for execution.
     func sendRawTransaction(_ data: Data) async throws -> TransactionSendingResult
+    func maxPriorityFeePerGas() async throws -> BigUInt
+    func sendRawTransactionTest(transaction: String) async throws -> TransactionResponse?
+    func waitforTransactionReceipt(transactionHash: String, timeout: TimeInterval?, pollLatency: TimeInterval?) async throws -> TransactionReceipt?
+
 }

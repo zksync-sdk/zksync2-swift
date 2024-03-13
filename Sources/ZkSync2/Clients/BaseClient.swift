@@ -16,10 +16,10 @@ import web3swift_zksync2
 #endif
 
 public class BaseClient: ZkSyncClient {
-    
     public var web3: Web3
     
     let transport: Transport
+    var mainContractAddress: String?
     
     public init(_ providerURL: URL) {
         self.web3 = Web3(provider: Web3HttpProvider(url: providerURL, network: .Mainnet))
@@ -34,12 +34,92 @@ public class BaseClient: ZkSyncClient {
         return try await transport.send(method: "zks_estimateFee", parameters: parameters)
     }
     
-    public func estimateGasL1(_ transaction: CodableTransaction) async throws -> Fee {
+    public func estimateGas(_ transaction: CodableTransaction) async throws -> BigUInt {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
         ]
+        let result: String? = try await transport.send(method: "eth_estimateGas", parameters: parameters)
+        return BigUInt((result?.stripHexPrefix())!, radix: 16)!
+    }
+    
+    public func getBalance(address: String, blockNumber: BlockNumber = .latest, token: String?) async throws -> BigUInt {
+        if token == nil || token == ZkSyncAddresses.EthAddress {
+            return try await web3.eth.getBalance(for: EthereumAddress(address)!, onBlock: blockNumber)
+        }
+        do {
+            let tokenContract = web3.contract(Web3Utils.IERC20, at: EthereumAddress(token!)!)
+            return try await tokenContract?.createReadOperation("balanceOf", parameters: [address])?.callContractMethod()["0"] as! BigUInt
+        } catch {
+            return BigUInt.zero
+        }
+    }
+    
+    public func l1TokenAddress(address: String) async throws -> String {
+        if address == ZkSyncAddresses.EthAddress {
+            return address
+        }
+        let bridgeAddress = try await bridgeContracts().l1Erc20DefaultBridge
+        let bridge = web3.contract(Web3Utils.IL1Bridge, at: EthereumAddress(bridgeAddress)!)
+        
+        return try await bridge?.createReadOperation("l2TokenAddress", parameters: [address])?.callContractMethod()["0"] as! String
+    }
+    
+    public func l2TokenAddress(address: String) async throws -> String {
+        if address == ZkSyncAddresses.EthAddress {
+            return address
+        }
+        let bridgeAddress = try await bridgeContracts().l2Erc20DefaultBridge
+        let bridge = web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(bridgeAddress)!)
+        let result = try await bridge?.createReadOperation("l2TokenAddress", parameters: [address])?.callContractMethod()["0"] as! EthereumAddress
+        return result.address
+    }
+    
+    public func estimateGasL1(_ transaction: CodableTransaction) async throws -> BigUInt {
+        let parameters = [
+            JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
+        ]
+        let result: String = try await transport.send(method: "zks_estimateGasL1ToL2", parameters: parameters)
 
-        return try await transport.send(method: "zks_estimateGasL1ToL2", parameters: parameters)
+        return BigUInt(from: result.stripHexPrefix())!
+    }
+    
+    public func sendRawTransaction(transaction: String) async throws -> TransactionResponse? {
+        let parameters = [
+            JRPC.Parameter(type: .string, value: transaction)
+        ]
+        return try await transport.send(method: "eth_sendRawTransaction", parameters: parameters)
+    }
+    
+    public func getL2HashFromPriorityOp(receipt: TransactionReceipt) async throws -> String? {
+        let mainContractAddress = try await mainContract()
+        let zkSyncContract = web3.contract(Web3Utils.IZkSync, at: EthereumAddress(mainContractAddress))!
+        for log in receipt.logs {
+            if log.address.address.lowercased() != mainContractAddress.lowercased(){
+                continue
+            }
+            let data = log.data.toHexString()
+            return "0x" + data[64..<128]
+        }
+        
+        return nil
+    }
+    public func estimateL1ToL2Execute(_ to: String, from: String, calldata: Data, amount: BigUInt, gasPerPubData: BigUInt = BigUInt(800)) async throws -> BigUInt {
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.gasPerPubdata = gasPerPubData
+        EIP712Meta.customSignature = nil
+        EIP712Meta.factoryDeps = nil
+        EIP712Meta.paymasterParams = nil
+
+        var transaction = CodableTransaction(
+            type: .eip1559,
+            to: EthereumAddress(from: to)!,
+            value: amount,
+            data: calldata
+        )
+        transaction.from = EthereumAddress(from: from)!
+        transaction.eip712Meta = EIP712Meta
+
+        return try await estimateGasL1(transaction)
     }
     
     public func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt {
@@ -51,7 +131,10 @@ public class BaseClient: ZkSyncClient {
     }
     
     public func mainContract() async throws -> String {
-        try await transport.send(method: "zks_getMainContract", parameters: [])
+        if mainContractAddress == nil {
+            mainContractAddress = try await transport.send(method: "zks_getMainContract", parameters: [])
+        }
+        return (mainContractAddress)!
     }
     
     public func tokenPrice(_ tokenAddress: String) async throws -> Decimal {
@@ -146,7 +229,7 @@ public class BaseClient: ZkSyncClient {
         return try await transport.send(method: "zks_getL1BatchDetails", parameters: parameters)
     }
     
-    public func logProof(txHash: Data, logIndex: BigUInt) async throws -> String {
+    public func logProof(txHash: String, logIndex: Int) async throws -> L2ToL1MessageProof {
         let parameters = [
             JRPC.Parameter(type: .string, value: txHash),
             JRPC.Parameter(type: .int, value: logIndex)

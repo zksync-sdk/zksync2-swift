@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/Alamofire/Alamofire.git",
         "state": {
           "branch": null,
-          "revision": "bc268c28fb170f494de9e9927c371b8342979ece",
-          "version": "5.7.1"
+          "revision": "3dc6a42c7727c49bf26508e29b0a0b35f9c7e1ad",
+          "version": "5.8.1"
         }
       },
       {
@@ -30,28 +30,19 @@
       },
       {
         "package": "PromiseKit",
-        "repositoryURL": "https://github.com/mxcl/PromiseKit.git",
+        "repositoryURL": "https://github.com/mxcl/PromiseKit",
         "state": {
           "branch": null,
-          "revision": "7b07b214dacecb22ca4b680531c7e981d52483f9",
-          "version": "6.16.3"
-        }
-      },
-      {
-        "package": "Starscream",
-        "repositoryURL": "https://github.com/daltoniam/Starscream.git",
-        "state": {
-          "branch": null,
-          "revision": "df8d82047f6654d8e4b655d1b1525c64e1059d21",
-          "version": "4.0.4"
+          "revision": "d2f7ba14bcdc45e18f4f60ad9df883fb9055f081",
+          "version": "6.15.3"
         }
       },
       {
         "package": "Web3swift",
-        "repositoryURL": "https://github.com/zksync-sdk/web3swift.git",
+        "repositoryURL": "/Users/petarkopestinskij/Documents/Projects/web3swift",
         "state": {
-          "branch": "2.6.5-zksync2",
-          "revision": "d18f523e6d121979ce7d83fa74f83bbc3ac84d54",
+          "branch": "zksync2-3.1.2",
+          "revision": "27110ac796ea7a264b2ae985fa5203da8d06a0e0",
           "version": null
         }
       }

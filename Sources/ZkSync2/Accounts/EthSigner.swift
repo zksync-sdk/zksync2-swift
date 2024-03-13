@@ -109,9 +109,14 @@ public class BaseSigner: ETHSigner {
         domain = EIP712Domain(zkSyncNetwork)
     }
     
+    public func signTransaction(){
+        
+    }
+    
     public func signTypedData<S>(_ domain: EIP712Domain,
                           typedData: S) -> String where S : Structurable {
-        return signMessage(EIP712Encoder.typedDataToSignedBytes(domain, typedData: typedData),
+        let a = EIP712Encoder.typedDataToSignedBytes(domain, typedData: typedData)
+        return signMessage(a,
                            addPrefix: false)
     }
     
@@ -196,15 +201,14 @@ public class BaseSigner: ETHSigner {
                      useExtraEntropy: Bool = false) throws -> Data? {
         var privateKey = try keystore.UNSAFE_getPrivateKeyData(password: password, account: account)
         defer { Data.zero(&privateKey) }
-        
+        print(privateKey.toHexString())
 #if DEBUG
         print("Message hash: \(message.sha3(.keccak256).toHexString().addHexPrefix())")
 #endif
-        
-        let (compressedSignature, _) = SECP256K1.signForRecovery(hash: needToHash ? message.sha3(.keccak256) : message,
+        let (compressedSignature, a) = SECP256K1.signForRecovery(hash: needToHash ? message.sha3(.keccak256) : message,
                                                                  privateKey: privateKey,
                                                                  useExtraEntropy: useExtraEntropy)
-        
+
         return compressedSignature
     }
 }

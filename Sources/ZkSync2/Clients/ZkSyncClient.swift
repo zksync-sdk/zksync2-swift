@@ -45,7 +45,7 @@ public protocol ZkSyncClient {
     func transactionDetails(_ txHash: String) async throws -> TransactionDetails
     // LogProof returns the proof for a transaction's L2 to L1 log sent via the
     // L1Messenger system contract.
-    func logProof(txHash: Data, logIndex: BigUInt) async throws -> String
+    func logProof(txHash: String, logIndex: Int) async throws -> L2ToL1MessageProof
     // Deprecated: Deprecated in favor of LogProof.
     func msgProof(block: BigUInt, sender: String) async throws -> String
     
@@ -62,11 +62,18 @@ public protocol ZkSyncClient {
     func estimateFee(_ transaction: CodableTransaction) async throws -> Fee
     // EstimateGasL1 estimates the amount of gas required to submit a transaction
     // from L1 to L2.
-    func estimateGasL1(_ transaction: CodableTransaction) async throws -> Fee
+    func estimateGasL1(_ transaction: CodableTransaction) async throws -> BigUInt
+    func estimateL1ToL2Execute(_ to: String, from: String, calldata: Data, amount: BigUInt, gasPerPubData: BigUInt) async throws -> BigUInt
     // EstimateGasTransfer estimates the amount of gas required for a transfer
     // transaction.
     func estimateGasTransfer(_ transaction: CodableTransaction) async throws -> BigUInt
     // EstimateGasWithdraw estimates the amount of gas required for a withdrawal
     // transaction.
     func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt
+    func sendRawTransaction(transaction: String) async throws -> TransactionResponse?
+    func getL2HashFromPriorityOp(receipt: TransactionReceipt) async throws -> String?
+    func getBalance(address: String, blockNumber: BlockNumber, token: String?) async throws -> BigUInt
+    func estimateGas(_ transaction: CodableTransaction) async throws -> BigUInt 
+    func l1TokenAddress(address: String) async throws -> String
+    func l2TokenAddress(address: String) async throws -> String
 }

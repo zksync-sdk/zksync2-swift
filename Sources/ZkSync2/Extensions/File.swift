@@ -14,12 +14,25 @@ import Web3Core
 import web3swift_zksync2
 #endif
 
-extension CodableTransaction {
+extension CodableTransaction{
     
     public static func createEthCallTransaction(from: EthereumAddress,
                                          to: EthereumAddress,
-                                         data: String) -> CodableTransaction {
-        fatalError("Implement.")
+                                         data: Data) -> CodableTransaction {
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.gasPerPubdata = BigUInt(800)
+        EIP712Meta.customSignature = nil
+        EIP712Meta.factoryDeps = nil
+        EIP712Meta.paymasterParams = nil
+        var transaction = CodableTransaction(
+            type: .eip1559,
+            to: to,
+            data: Data()
+        )
+        transaction.from = from
+        transaction.eip712Meta = EIP712Meta
+        
+        return transaction
     }
     
     public static func createContractTransaction(from: EthereumAddress,
@@ -122,7 +135,7 @@ extension CodableTransaction {
                                        value: BigUInt,
                                        chainID: BigUInt) -> CodableTransaction {
         var transaction = CodableTransaction(
-            type: .eip1559,
+            type: .eip712,
             to: to,
             nonce: nonce != nil ? nonce! : BigUInt.zero,
             chainID: chainID,
@@ -132,6 +145,35 @@ extension CodableTransaction {
         transaction.from = from
         transaction.gasLimit = gasLimit
         transaction.gasPrice = gasPrice
+        
+        return transaction
+    }
+    
+    public static func createEtherTransaction(from: EthereumAddress,
+                                              to: EthereumAddress,
+                                              value: BigUInt,
+                                              nonce: BigUInt,
+                                              gasPrice: BigUInt? = BigUInt.zero,
+                                              gasLimit: BigUInt? = BigUInt.zero,
+                                              paymasterParams: PaymasterParams? = nil) -> CodableTransaction {
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.gasPerPubdata = BigUInt(50000)
+        EIP712Meta.customSignature = nil
+        EIP712Meta.factoryDeps = nil
+        EIP712Meta.paymasterParams = paymasterParams
+
+        var transaction = CodableTransaction(
+            type: .eip712,
+            to: to,
+            nonce: nonce,
+            value: value,
+            eip712Meta: EIP712Meta
+        )
+        transaction.from = from
+        transaction.gasPrice = gasPrice!
+        transaction.gasLimit = gasLimit!
+        transaction.eip712Meta = EIP712Meta
+        transaction.value = value
         
         return transaction
     }

@@ -9,6 +9,8 @@ import XCTest
 @testable import ZkSync2
 import BigInt
 import web3swift
+import Web3Core
+import Foundation
 
 class BaseIntegrationEnv: XCTestCase {
     
@@ -17,13 +19,13 @@ class BaseIntegrationEnv: XCTestCase {
     
     let ethToken = Token.ETH
     
-    var l1Web3: web3!
+    var l1Web3: EthereumClient!
     
-    var zkSync: JsonRpc2_0ZkSync!
+    var zkSync: ZkSyncClient!
     
     let credentials = Credentials(BigUInt.one)
     
-    var signer: EthSigner!
+    var signer: ETHSigner!
     
     var feeProvider: ZkTransactionFeeProvider!
     
@@ -35,14 +37,9 @@ class BaseIntegrationEnv: XCTestCase {
         DispatchQueue.global().async { [weak self] in
             guard let self = self else { return }
             
-            self.l1Web3 = try! Web3.new(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
+            self.l1Web3 = EthereumClientImpl(ZKSyncWeb3RpcIntegrationTests.L1NodeUrl)
             
-            self.zkSync = JsonRpc2_0ZkSync(BaseIntegrationEnv.L2NodeUrl)
-            
-            self.chainId = try! self.zkSync.web3.eth.getChainIdPromise().wait()
-            
-            self.signer = PrivateKeyEthSigner(self.credentials,
-                                              chainId: self.chainId)
+            self.zkSync = BaseClient(BaseIntegrationEnv.L2NodeUrl)
             
             self.feeProvider = DefaultTransactionFeeProvider(zkSync: self.zkSync,
                                                              feeToken: self.ethToken)

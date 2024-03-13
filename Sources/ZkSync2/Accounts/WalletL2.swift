@@ -31,94 +31,45 @@ public class WalletL2: AdapterL2 {
 }
 
 extension WalletL2 {
-    public func balance(token: Token, blockNumber: BlockNumber) async throws -> BigUInt {
-        try await ethClient.balance(at: token.l2Address, blockNumber: blockNumber)
+    public func balance(token: String = ZkSyncAddresses.EthAddress, blockNumber: BlockNumber = .latest) async -> BigUInt {
+        try! await zkSync.getBalance(address: signer.address, blockNumber: blockNumber, token: token)
     }
     
     public func allBalances(_ address: String) async throws -> Dictionary<String, String> {
         try await zkSync.allAccountBalances(address)
     }
     
-    public func withdraw(_ to: String, amount: BigUInt, token: Token? = nil, nonce: BigUInt? = nil) async throws -> TransactionSendingResult {
-        let tokenToUse: Token
-        if let token = token {
-            tokenToUse = token
-        } else {
-            tokenToUse = Token.ETH
+    public func withdraw(_ amount: BigUInt, to: String?, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async throws -> TransactionSendingResult? {
+        let to = to ?? signer.address
+        var options = options
+        let nonce: BigUInt
+        if let optionsNonce = options?.nonce {
+            nonce = optionsNonce
+        }else{
+            nonce = try await getNonce()
         }
-        
-        let nonceToUse: BigUInt
-        if let nonce = nonce {
-            nonceToUse = nonce
-        } else {
-            nonceToUse = try await getNonce()
-        }
-        
-        if tokenToUse.isETH {
-            let inputs = [
-                ABI.Element.InOut(name: "_l1Receiver", type: .address)
-            ]
-            
-            let function = ABI.Element.Function(name: "withdraw",
-                                                inputs: inputs,
-                                                outputs: [],
-                                                constant: false,
-                                                payable: true)
-            
-            let withdrawFunction: ABI.Element = .function(function)
-            
-            let parameters: [AnyObject] = [
-                EthereumAddress(to) as AnyObject,
-            ]
-            
-            // TODO: Verify calldata.
-            let calldata = withdrawFunction.encodeParameters(parameters)!
-            
-            var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress.L2EthTokenAddress, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: amount, data: calldata)
-            
-            estimate.chainID = signer.domain.chainId
-            
-            return await AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
-        } else {
-            let inputs = [
-                ABI.Element.InOut(name: "_l1Receiver", type: .address),
-                ABI.Element.InOut(name: "_l2Token", type: .address),
-                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
-            ]
-            
-            let function = ABI.Element.Function(name: "withdraw",
-                                                inputs: inputs,
-                                                outputs: [],
-                                                constant: false,
-                                                payable: true)
-            
-            let withdrawFunction: ABI.Element = .function(function)
-            
-            let parameters: [AnyObject] = [
-                EthereumAddress(to) as AnyObject,
-                EthereumAddress(tokenToUse.l2Address) as AnyObject,
-                amount as AnyObject
-            ]
-            
-            // TODO: Verify calldata.
-            let calldata = withdrawFunction.encodeParameters(parameters)!
-            
-            var l2Bridge: String = ""
-            
-            do {
-                let bridgeAddresses = try await zkSync.bridgeContracts()
-                
-                l2Bridge = bridgeAddresses.l2Erc20DefaultBridge
-            } catch {
-                fatalError("Failed with error: \(error.localizedDescription)")
+        let prepared = CodableTransaction.createEtherTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(to)!, value: amount, nonce: nonce, paymasterParams: paymasterParams)
+        if token == ZkSyncAddresses.EthAddress {
+            if options?.value == nil {
+                options?.value = amount
             }
             
-            var estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: EthereumAddress(l2Bridge)!, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: calldata)
-            
-            estimate.chainID = signer.domain.chainId
-            
-            return await AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
+            let ethL2Token = zkSync.web3.contract(Web3Utils.IEthToken, at: EthereumAddress.L2EthTokenAddress, transaction: prepared)
+            var transaction = (ethL2Token?.createWriteOperation("withdraw", parameters: [to])!.transaction)!
+            transaction.chainID = signer.domain.chainId
+            await populateTransaction(&transaction)
+            let signed = signTransaction(transaction)
+            return try await sendTransaction(signed)
         }
+        let bridgeAddresses = try await zkSync.bridgeContracts()
+        let bridge = zkSync.web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(bridgeAddresses.l2Erc20DefaultBridge), transaction: prepared)
+        var transaction = (bridge?.createWriteOperation("withdraw", parameters: [to, token!, amount])!.transaction)!
+        transaction.chainID = signer.domain.chainId
+        transaction.value = BigUInt.zero
+        await populateTransaction(&transaction)
+        let signed = signTransaction(transaction)
+        
+        return try await sendTransaction(signed)
     }
     
     public func callContract(_ transaction: CodableTransaction, blockNumber: BigUInt?) async throws -> Data {
@@ -126,7 +77,7 @@ extension WalletL2 {
     }
     
     public func populateTransaction(_ transaction: inout CodableTransaction) async {
-        if transaction.chainID == nil {
+        if transaction.chainID == nil || transaction.chainID != signer.domain.chainId {
             transaction.chainID = signer.domain.chainId
         }
         if transaction.nonce == .zero {
@@ -137,11 +88,13 @@ extension WalletL2 {
             
             transaction.nonce = nonce
         }
-        if transaction.maxFeePerGas == nil {
-            transaction.maxFeePerGas = try? await ethClient.suggestGasPrice()
+        
+        let fee = try! await zkSync.estimateFee(transaction)
+        if transaction.maxFeePerGas == nil || transaction.maxFeePerGas == .zero {
+            transaction.maxFeePerGas = fee.maxFeePerGas
         }
-        if transaction.maxPriorityFeePerGas == nil {
-            transaction.maxPriorityFeePerGas = BigUInt(100_000_000)
+        if transaction.maxPriorityFeePerGas == nil || transaction.maxPriorityFeePerGas == .zero {
+            transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
         }
         if transaction.eip712Meta == nil {
             transaction.eip712Meta = EIP712Meta(gasPerPubdata: BigUInt(50_000))
@@ -149,25 +102,22 @@ extension WalletL2 {
             transaction.eip712Meta?.gasPerPubdata = BigUInt(50_000)
         }
         if transaction.gasLimit == .zero {
-            do {
-                transaction.gasLimit = try await self.ethClient.estimateGasL2(transaction)
-            } catch {
-
-            }
+            transaction.gasLimit = fee.gasLimit
         }
     }
     
     public func sendTransaction(_ transaction: CodableTransaction) async throws -> TransactionSendingResult {
-        try await ethClient.sendTransaction(transaction)
+        try await zkSync.web3.eth.send(raw: transaction.encode(for: .transaction)!)
     }
     
-    public func signTransaction(_ transaction: inout CodableTransaction) {
-        let signature = signer.signTypedData(signer.domain, typedData: transaction).addHexPrefix()
-
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(from: signature)!)!
-        transaction.r = BigUInt(from: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        transaction.s = BigUInt(from: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        transaction.v = BigUInt(unmarshalledSignature.v)
+    public func signTransaction(_ transaction: CodableTransaction) -> CodableTransaction{
+        let domain = signer.domain
+        let signature = signer.signTypedData(signer.domain, typedData: transaction)
+        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(hex: signature))
+        let r = BigUInt(from: unmarshalledSignature!.r.toHexString().addHexPrefix())!
+        let s = BigUInt(from: unmarshalledSignature!.s.toHexString().addHexPrefix())!
+        let v = BigUInt(unmarshalledSignature!.v)
+        return CodableTransaction(type: transaction.type, to: transaction.to, nonce: transaction.nonce, chainID: transaction.chainID!, value: transaction.value, data: transaction.data, gasLimit: transaction.gasLimit, maxFeePerGas: transaction.maxFeePerGas, maxPriorityFeePerGas: transaction.maxPriorityFeePerGas, gasPrice: transaction.gasPrice, accessList: transaction.accessList, v: v, r: r, s: s, eip712Meta: transaction.eip712Meta, from: transaction.from)
     }
     
     public func estimateGasWithdraw(_ transaction: CodableTransaction) async throws -> BigUInt {
@@ -180,71 +130,23 @@ extension WalletL2 {
 }
 
 extension WalletL2 {
-    public func transfer(_ to: String, amount: BigUInt, token: Token? = nil, nonce: BigUInt? = nil) async -> TransactionSendingResult {
-        let tokenToUse: Token
-        if let token = token {
-            tokenToUse = token
-        } else {
-            tokenToUse = Token.ETH
+    public func transfer(_ to: String, amount: BigUInt, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async -> TransactionSendingResult {
+        let from = signer.address
+        let nonce = try! await getNonce()
+        var prepared = CodableTransaction.createEtherTransaction(from: EthereumAddress(from)!, to: EthereumAddress(to)!, value: amount, nonce: nonce, paymasterParams: paymasterParams)
+        
+        if token == nil || token == ZkSyncAddresses.EthAddress{
+            await populateTransaction(&prepared)
+            let signed = signTransaction(prepared)
+            return try! await sendTransaction(signed)
         }
-        
-        let calldata: Data
-        let txTo: String
-        let txAmount: BigUInt?
-        
-        if tokenToUse.isETH {
-            calldata = Data(hex: "0x")
-            txTo = to
-            txAmount = amount
-        } else {
-            let inputs = [
-                ABI.Element.InOut(name: "_to", type: .address),
-                ABI.Element.InOut(name: "_amount", type: .uint(bits: 256))
-            ]
-            
-            let function = ABI.Element.Function(name: "transfer",
-                                                inputs: inputs,
-                                                outputs: [],
-                                                constant: false,
-                                                payable: false)
-            
-            let elementFunction: ABI.Element = .function(function)
-            
-            let parameters: [AnyObject] = [
-                EthereumAddress(to) as AnyObject,
-                amount as AnyObject
-            ]
-            
-            guard let encodedCallData = elementFunction.encodeParameters(parameters) else {
-                fatalError("Failed to encode function.")
-            }
-            
-            // TODO: Verify calldata.
-            calldata = encodedCallData
-            
-#if DEBUG
-            print("Calldata: \(calldata.toHexString().addHexPrefix())")
-#endif
-            
-            txTo = tokenToUse.l2Address
-            txAmount = nil
-        }
-        
-        let from = EthereumAddress(signer.address)!
-        let to = EthereumAddress(txTo)!
-        
-        let nonceToUse: BigUInt
-        if let nonce = nonce {
-            nonceToUse = nonce
-        } else {
-            nonceToUse = try! await getNonce()
-        }
-        
-        var estimate = CodableTransaction.createFunctionCallTransaction(from: from, to: to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, value: txAmount, data: calldata)
-        
-        estimate.chainID = signer.domain.chainId
-        
-        return await AccountsUtil.estimateAndSend(zkSync: zkSync, signer: signer, estimate, nonce: nonceToUse)
+        let tokenContract = zkSync.web3.contract(Web3Utils.IERC20, at: EthereumAddress(token!)!, transaction: prepared)
+        let writeOperation = tokenContract?.createWriteOperation("transfer", parameters: [to, amount])
+        var transaction = writeOperation!.transaction
+        transaction.value = BigUInt.zero
+        await populateTransaction(&transaction)
+        let signed = signTransaction(transaction)
+        return try! await sendTransaction(signed)
     }
 }
 

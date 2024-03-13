@@ -7,6 +7,7 @@
 
 import Foundation
 import web3swift
+import Web3Core
 @testable import ZkSync2
 
 struct Person: Structurable {

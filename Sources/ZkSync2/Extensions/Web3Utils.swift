@@ -7,6 +7,7 @@
 
 import BigInt
 import PromiseKit
+import Foundation
 #if canImport(web3swift)
 import web3swift
 import Web3Core
@@ -86,5 +87,95 @@ public extension Web3.Utils {
         let sha3 = stipped.sha3(.keccak256)
         let addressData = sha3[12...31]
         return addressData
+    }
+    
+    static let ADDRESS_MODULO = BigUInt(2).power(160)
+    static let L1_TO_L2_ALIAS_OFFSET = "0x1111000000000000000000000000000000001111"
+    
+    static func applyL1ToL2Alias(address: String) -> String{
+        let k = BigUInt(address.stripHexPrefix(), radix: 16)
+        return ((BigUInt(address.stripHexPrefix(), radix: 16)! + BigUInt(L1_TO_L2_ALIAS_OFFSET.stripHexPrefix(), radix: 16)!) % ADDRESS_MODULO).toHexString().addHexPrefix()
+    }
+    
+    static let L1_FEE_ESTIMATION_COEF_NUMERATOR = BigUInt(12)
+    static let L1_FEE_ESTIMATION_COEF_DENOMINATOR = BigUInt(10)
+
+    static func scaleGasLimit(gas: BigUInt) -> BigUInt{
+        return gas.multiplied(by: L1_FEE_ESTIMATION_COEF_NUMERATOR)/L1_FEE_ESTIMATION_COEF_DENOMINATOR
+    }
+    
+    static func isL1ChainLondonReady(provider: Web3) async -> BigUInt?{
+        let block = try! await provider.eth.block(by: .latest)
+        if let baseFeePerGas = block.baseFeePerGas {
+            return baseFeePerGas
+        }
+        return nil
+    }
+    
+    static func getERC20DefaultBridgeData(l1TokenAddress: String, provider: Web3) async -> Data?{
+        let token = provider.contract(
+            Web3.Utils.IERC20,
+            at: EthereumAddress(l1TokenAddress)
+        )!
+
+        let name = try! await token.createWriteOperation("name")?.callContractMethod()["0"] as? String
+        let symbol = try! await token.createWriteOperation("symbol")?.callContractMethod()["0"] as? String
+        let decimals = try! await token.createWriteOperation("decimals")?.callContractMethod()["0"] as? BigUInt
+        
+        let encodedName = ABIEncoder.encode(types: [ABI.Element.ParameterType.string], values: [name!])
+        let encodedSymbol = ABIEncoder.encode(types: [ABI.Element.ParameterType.string], values: [symbol!])
+        let encodedDecimals = ABIEncoder.encode(types: [ABI.Element.ParameterType.uint(bits: 256)], values: [decimals!])
+
+        return ABIEncoder.encode(types: [ABI.Element.ParameterType.dynamicBytes, ABI.Element.ParameterType.dynamicBytes, ABI.Element.ParameterType.dynamicBytes], values: [encodedName!, encodedSymbol!, encodedDecimals!])
+    }
+    
+    static func insertGasPrice(options: TransactionOption?, provider: EthereumClient) async -> TransactionOption{
+        var options = options ?? TransactionOption()
+        
+        let baseFeePerGas: BigUInt? = await Web3.Utils.isL1ChainLondonReady(provider: provider.web3)
+        
+        if options.gasPrice == nil && options.maxFeePerGas == nil {
+            if let baseFee = baseFeePerGas {
+                let maxPriorityFeePerGas = try! await provider.maxPriorityFeePerGas()
+                options.maxPriorityFeePerGas = maxPriorityFeePerGas
+                
+                let additionalFee = baseFee * 3 / 2
+                options.maxFeePerGas = maxPriorityFeePerGas + additionalFee
+            } else {
+                let gasPrice = try! await provider.suggestGasPrice()
+                options.gasPrice = gasPrice
+            }
+        }
+        
+        return options
+    }
+        
+    static func estimateCustomBridgeDepositL2Gas(provider: ZkSyncClient,
+                                                 l1BridgeAddress: EthereumAddress,
+                                                 l2BridgeAddress: EthereumAddress,
+                                                 token: EthereumAddress,
+                                                 amount: BigUInt,
+                                                 to: EthereumAddress,
+                                                 bridgeData: Data,
+                                                 from: EthereumAddress,
+                                                 gasPerPubdataByte: BigUInt? = BigUInt(800),
+                                                 l2Value: BigUInt? = nil) async throws -> BigUInt{
+        let calldata = try Web3Utils.getERC20BridgeCalldata(provider: provider, l1TokenAddress: token, l1Sender: from, l2Receiver: to, amount: amount, bridgeData: bridgeData)
+        return try await provider.estimateL1ToL2Execute(l2BridgeAddress.address, from: Web3Utils.applyL1ToL2Alias(address: l1BridgeAddress.address), calldata: calldata, amount: BigUInt.zero, gasPerPubData: gasPerPubdataByte!)
+    }
+    
+    static func getERC20BridgeCalldata(provider: ZkSyncClient ,l1TokenAddress: EthereumAddress, l1Sender: EthereumAddress, l2Receiver: EthereumAddress, amount: BigUInt, bridgeData: Data) throws -> Data {
+        let bridge = provider.web3.contract(Web3.Utils.IL2Bridge)!
+        return bridge.contract.method("finalizeDeposit", parameters: [l1Sender, l2Receiver, l1TokenAddress, amount, bridgeData], extraData: Data())!
+    }
+    
+    static func estimateDefaultBridgeDepositL2Gas(providerL1: Web3, providerL2: ZkSyncClient, token: String, amount: BigUInt, to: String, from: String, gasPerPubDataByte: BigUInt = BigUInt(800)) async throws -> BigUInt{
+        if token == ZkSyncAddresses.EthAddress {
+            return try await providerL2.estimateL1ToL2Execute(to, from: from, calldata: Data(hex: "0x"), amount: amount, gasPerPubData: gasPerPubDataByte)
+        }
+        let bridgeAddresses = try await providerL2.bridgeContracts()
+        let bridgeData = await Web3.Utils.getERC20DefaultBridgeData(l1TokenAddress: token, provider: providerL1)
+        
+        return try await Web3.Utils.estimateCustomBridgeDepositL2Gas(provider: providerL2, l1BridgeAddress: EthereumAddress(bridgeAddresses.l1Erc20DefaultBridge)!, l2BridgeAddress: EthereumAddress(bridgeAddresses.l2Erc20DefaultBridge)!, token: EthereumAddress(token)!, amount: amount, to: EthereumAddress(to)!, bridgeData: bridgeData!, from: EthereumAddress(from)!)
     }
 }

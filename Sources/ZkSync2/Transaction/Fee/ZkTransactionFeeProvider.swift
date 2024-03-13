@@ -17,9 +17,9 @@ import web3swift_zksync2
 
 public protocol ZkTransactionFeeProvider: ContractGasProvider {
     
-    func getFee(for transaction: CodableTransaction) -> Promise<Fee>
+    func getFee(for transaction: CodableTransaction) async throws-> Fee
     
-    func getGasLimit(for transaction: CodableTransaction) -> Promise<BigUInt>
+    func getGasLimit(for transaction: CodableTransaction) async throws -> BigUInt
     
     func getFeeToken() -> Token
 }

@@ -34,7 +34,6 @@ public extension EthereumKeystoreV3 {
         guard let privateKey = try? UNSAFE_getPrivateKeyData(password: "web3swift", account: ethereumAddress) else {
             fatalError("Private key was not found")
         }
-        
         return privateKey
     }
     

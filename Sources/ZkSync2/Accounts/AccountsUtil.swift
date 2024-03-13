@@ -22,23 +22,23 @@ public class AccountsUtil {
 
         let estimate = CodableTransaction.createFunctionCallTransaction(from: EthereumAddress(signer.address)!, to: transaction.to, gasPrice: BigUInt.zero, gasLimit: BigUInt.zero, data: transaction.data)
 
-        let fee = try! await zkSync.estimateFee(estimate)
+        //let fee = try! await zkSync.estimateFee(estimate)
 
         var transaction = transaction
         transaction.chainID = chainID
         transaction.nonce = nonce
-        transaction.to = transaction.to
-        transaction.value = transaction.value
-        transaction.gasLimit = fee.gasLimit
-        transaction.maxPriorityFeePerGas = fee.maxPriorityFeePerGas
-        transaction.maxFeePerGas = fee.maxFeePerGas
+        transaction.gasPrice = BigUInt(250000000)
+        let fee = try! await zkSync.estimateFee(transaction)
 
-        let gas = try! await zkSync.web3.eth.estimateGas(for: transaction)
+//        transaction.gasLimit = fee.gasLimit
+        transaction.maxPriorityFeePerGas = BigUInt(100000000)
+        transaction.maxFeePerGas = fee.maxFeePerGas
+        let gas = try! await zkSync.estimateGas(transaction)
         transaction.gasLimit = gas
 
 #if DEBUG
         print("chainID: \(chainID)")
-        print("gas: \(gas)")
+        print("gas: \(0)")
         print("gasPrice: \(gasPrice)")
 #endif
 
@@ -48,23 +48,31 @@ public class AccountsUtil {
             nonce: nonce,
             chainID: chainID,
             value: transaction.value,
-            data: transaction.data
+            data: transaction.data,
+            eip712Meta: EIP712Meta(gasPerPubdata: BigUInt(50000), customSignature: nil, paymasterParams: nil, factoryDeps: nil),
+            from: transaction.from
         )
-        prepared.from = transaction.from
+        prepared.gasPrice = BigUInt(250000000)
+        prepared.from = EthereumAddress(from: signer.address)
         prepared.eip712Meta = transaction.eip712Meta
         prepared.value = transaction.value
         prepared.gasLimit = transaction.gasLimit
-        prepared.maxPriorityFeePerGas = transaction.maxPriorityFeePerGas
-        prepared.maxFeePerGas = transaction.maxFeePerGas
+        prepared.maxPriorityFeePerGas = BigUInt(100000000)
+        prepared.maxFeePerGas = BigUInt(250000000)
 
         let domain = signer.domain
-        let signature = signer.signTypedData(domain, typedData: prepared)
-        let unmarshalledSignature = SECP256K1.unmarshalSignature(signatureData: Data(from: signature)!)!
-        prepared.r = BigUInt(from: unmarshalledSignature.r.toHexString().addHexPrefix())!
-        prepared.s = BigUInt(from: unmarshalledSignature.s.toHexString().addHexPrefix())!
-        prepared.v = BigUInt(unmarshalledSignature.v)
-
-        guard let message = prepared.encode(for: .transaction) else {
+        let msg = signer.signTypedData(domain, typedData: prepared)
+        let pls = SECP256K1.unmarshalSignature(signatureData: Data(hex: msg))
+        let r = BigUInt(from: pls!.r.toHexString().addHexPrefix())!
+        let s = BigUInt(from: pls!.s.toHexString().addHexPrefix())!
+        let v = BigUInt(pls!.v)
+        var a = CodableTransaction(type: prepared.type, to: prepared.to, nonce: prepared.nonce, chainID: prepared.chainID!, value: prepared.value, data: prepared.data, gasLimit: prepared.gasLimit, maxFeePerGas: prepared.maxFeePerGas, maxPriorityFeePerGas: prepared.maxPriorityFeePerGas, gasPrice: prepared.gasPrice, accessList: prepared.accessList, v: v, r: r, s: s, eip712Meta: prepared.eip712Meta, from: prepared.from)
+        
+//        a.eip712Meta = prepared.eip712Meta
+//        a.maxFeePerGas = prepared.maxFeePerGas
+//        a.maxPriorityFeePerGas = prepared.maxPriorityFeePerGas
+        
+        guard let message = a.encode(for: .transaction) else {
             fatalError("Failed to encode transaction.")
         }
 
@@ -72,6 +80,12 @@ public class AccountsUtil {
         print("Transaction hash: \(String(describing: prepared.hash?.toHexString().addHexPrefix()))")
         print("Encoded and signed transaction: \(message.toHexString().addHexPrefix())")
 #endif
-        return try! await zkSync.web3.eth.send(prepared)
+//        do {
+//            let response = try await zkSync.sendRawTransaction(transaction: message.toHexString().addHexPrefix())
+//            print("response is \(response)")
+//        } catch {
+//            print("error is \(error)")
+//        }
+        return try! await zkSync.web3.eth.send(raw: message)
     }
 }

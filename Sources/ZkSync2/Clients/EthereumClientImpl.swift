@@ -37,6 +37,12 @@ public class EthereumClientImpl: EthereumClient {
         try await web3.eth.estimateGas(for: transaction)
     }
     
+    public func maxPriorityFeePerGas() async throws -> BigUInt {
+        let result: String = try await transport.send(method: "eth_maxPriorityFeePerGas", parameters: [])
+
+        return BigUInt(from: result.stripHexPrefix())!
+    }
+    
     public func estimateGasL2(_ transaction: CodableTransaction) async throws -> BigUInt {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))
@@ -142,7 +148,8 @@ public class EthereumClientImpl: EthereumClient {
     }
     
     public func chainID() async throws -> BigUInt {
-        try await transport.send(method: "eth_chainId", parameters: [])
+        var result: String = try await transport.send(method: "eth_chainId", parameters: [])
+        return BigUInt(from: result.stripHexPrefix())!
     }
     
     public func transactionSender(_ blockHash: String, index: Int) async throws -> Block {
@@ -152,6 +159,13 @@ public class EthereumClientImpl: EthereumClient {
         ]
         
         return try await transport.send(method: "eth_getTransactionByBlockHashAndIndex", parameters: parameters)
+    }
+    
+    public func sendRawTransactionTest(transaction: String) async throws -> TransactionResponse? {
+        let parameters = [
+            JRPC.Parameter(type: .string, value: transaction)
+        ]
+        return try await transport.send(method: "eth_sendRawTransaction", parameters: parameters)
     }
     
     public func transactionCount(address: String, blockNumber: BlockNumber) async throws -> BigUInt {
@@ -174,5 +188,19 @@ public class EthereumClientImpl: EthereumClient {
     
     public func code(at address: String, blockNumber: BlockNumber) async throws -> String {
         try await web3.eth.code(for: EthereumAddress(address)!, onBlock: blockNumber)
+    }
+    
+    public func waitforTransactionReceipt(transactionHash: String, timeout: TimeInterval? = 120, pollLatency: TimeInterval? = 0.1) async throws -> TransactionReceipt? {
+        let deadline = Date().addingTimeInterval(timeout!)
+        while Date() < deadline {
+            do {
+                let txReceipt = try await transactionReceipt(transactionHash)
+                return txReceipt
+            } catch {
+                try await Task.sleep(nanoseconds: UInt64(pollLatency! * 1_000_000_000))
+                continue
+            }
+        }
+        return nil
     }
 }

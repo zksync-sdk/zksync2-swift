@@ -151,7 +151,7 @@ public extension EIP712Hashable {
             
             parameters.append(result)
         }
-        
+
         let encoded = parameters.flatMap { $0.bytes }
         return EIP712.keccak256(encoded)
     }

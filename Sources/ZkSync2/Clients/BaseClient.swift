@@ -270,4 +270,25 @@ public class BaseClient: ZkSyncClient {
         let tx = try await getWithdrawTx(amount, from: from, to: to, token: token, options: options, paymasterParams: paymasterParams)
         return try await web3.eth.estimateGas(for: tx)
     }
+    
+    public func getTransferTx(_ to: String, amount: BigUInt, from:String, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async -> CodableTransaction {
+        let nonce = try! await web3.eth.getTransactionCount(for: EthereumAddress(from)!)
+        let prepared = CodableTransaction.createEtherTransaction(from: EthereumAddress(from)!, to: EthereumAddress(to)!, value: amount, nonce: nonce, paymasterParams: paymasterParams)
+        
+        if token == nil || token == ZkSyncAddresses.EthAddress{
+            return prepared
+        }
+        let tokenContract = web3.contract(Web3Utils.IERC20, at: EthereumAddress(token!)!, transaction: prepared)
+        let writeOperation = tokenContract?.createWriteOperation("transfer", parameters: [to, amount])
+        var transaction = writeOperation!.transaction
+        transaction.value = BigUInt.zero
+
+        return transaction
+    }
+    
+    public func estimateGasTransfer(_ to: String, amount: BigUInt, from:String, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async -> BigUInt {
+        let transaction = await getTransferTx(to, amount: amount, from: from, token: token, options: options, paymasterParams: paymasterParams)
+
+        return try! await web3.eth.estimateGas(for: transaction)
+    }
 }

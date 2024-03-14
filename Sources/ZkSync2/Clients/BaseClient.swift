@@ -217,4 +217,23 @@ public class BaseClient: ZkSyncClient {
         
         return nil
     }
+    
+    public func estimateL1ToL2Execute(_ to: String, from: String, calldata: Data, amount: BigUInt, gasPerPubData: BigUInt = BigUInt(800)) async throws -> BigUInt {
+        var EIP712Meta = EIP712Meta()
+        EIP712Meta.gasPerPubdata = gasPerPubData
+        EIP712Meta.customSignature = nil
+        EIP712Meta.factoryDeps = nil
+        EIP712Meta.paymasterParams = nil
+
+        var transaction = CodableTransaction(
+            type: .eip1559,
+            to: EthereumAddress(from: to)!,
+            value: amount,
+            data: calldata
+        )
+        transaction.from = EthereumAddress(from: from)!
+        transaction.eip712Meta = EIP712Meta
+
+        return try await estimateGasL1(transaction)
+    }
 }

@@ -305,6 +305,71 @@ extension WalletL1 {
         }
         return try await web.eth.send(writeTransaction.transaction)
     }
+    
+    public func getRequestExecute(transaction: RequestExecuteTransaction) async throws -> CodableTransaction{
+        var tx = transaction
+        let address = try await getAddress()
+        tx.l2Value = tx.l2Value ?? BigUInt(0)
+        tx.operatorTip = tx.operatorTip ?? BigUInt(0)
+        tx.factoryDeps = tx.factoryDeps ?? []
+        tx.options = tx.options ?? TransactionOption()
+        if tx.options?.from == nil {
+            tx.options?.from = address
+        }
+        if tx.options!.nonce == nil{
+            tx.options?.nonce = try await ethClient.web3.eth.getTransactionCount(for: EthereumAddress(address)!)
+        }
+
+        if tx.refundRecipient == nil {
+            tx.refundRecipient = address
+        }
+        tx.gasPerPubdataByte = tx.gasPerPubdataByte ?? BigUInt(800)
+        
+        if tx.l2GasLimit == nil {
+            tx.l2GasLimit = try! await zkSync.estimateL1ToL2Execute(tx.contractAddress, from: (tx.options?.from)!, calldata: tx.calldata, amount: tx.l2Value!, gasPerPubData: tx.gasPerPubdataByte!)
+        }
+        
+        tx.options = await Web3Utils.insertGasPrice(options: tx.options, provider: ethClient)
+        let gasPriceForEstimation = tx.options?.maxFeePerGas ?? tx.options?.gasPrice
+        
+        guard let baseCost = try await baseCost(tx.l2GasLimit!, gasPrice: gasPriceForEstimation)["0"] as? BigUInt else {
+            throw EthereumProviderError.invalidParameter
+        }
+        
+        if tx.options?.value == nil {
+            tx.options?.value = baseCost + (tx.operatorTip ?? BigUInt.zero) + tx.l2Value!
+        }
+        
+        let parameters = [
+            EthereumAddress(tx.contractAddress)!,
+            tx.l2Value!,
+            tx.calldata,
+            tx.l2GasLimit!,
+            tx.gasPerPubdataByte!,
+            tx.factoryDeps!,
+            tx.refundRecipient!
+        ] as [AnyObject]
+        var prepared = CodableTransaction.createEthCallTransaction(from: EthereumAddress((tx.options?.from)!)!, to: EthereumAddress(tx.contractAddress)!, data: Data(hex: "0x"))
+        prepared.maxFeePerGas = tx.options?.maxFeePerGas
+        prepared.maxPriorityFeePerGas = tx.options?.maxPriorityFeePerGas
+        prepared.value = (tx.options?.value)!
+        prepared.gasLimit = tx.options?.gasLimit ?? BigUInt.zero
+        prepared.nonce = (tx.options?.nonce)!
+        
+        let writeOperation = try! await mainContract(transaction: prepared).createWriteOperation("requestL2Transaction", parameters: parameters)
+        writeOperation?.transaction.chainID = try await ethClient.chainID()
+        
+        return writeOperation!.transaction
+    }
+    
+    public func estimateGasRequestExecute(transaction: CodableTransaction) async throws -> BigUInt?{
+        return try! await ethClient.estimateGas(transaction)
+    }
+    
+    public func estimateGasRequestExecute(transaction: RequestExecuteTransaction) async throws -> BigUInt?{
+        let requestExecuteTx = try! await getRequestExecute(transaction: transaction)
+        return try! await ethClient.estimateGas(requestExecuteTx)
+    }
 
     public func requestExecute(transaction: RequestExecuteTransaction) async throws -> TransactionSendingResult {
         var tx = try await getRequestExecute(transaction: transaction)

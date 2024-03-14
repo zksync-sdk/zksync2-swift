@@ -30,53 +30,49 @@ class ContentViewModel: ObservableObject {
     let tokenAddress = "0xbc6b677377598a79fa1885e02df1894b05bc8b33"
     
     func refreshBalance() {
-        let balance = try! baseManager.wallet.getBalance().wait()
-        
-        let decimalBalance = Token.ETH.intoDecimal(balance)
-        
-        DispatchQueue.main.async {
-            self.balance = decimalBalance
+        Task {
+            let balance = try! await self.baseManager.walletL2.getBalance()
+            
+            let decimalBalance = Token.ETH.intoDecimal(balance)
+
+            DispatchQueue.main.async {
+                self.balance = decimalBalance
+            }
         }
     }
     
     func deploySmartAccount() {
         smartAccountManager.deploySmartAccount(tokenAddress: tokenAddress, callback: {
-            
+
         })
     }
     
     func deploySmartContract() {
         smartContractManager.deploySmartContract(callback: {
-            
+
         })
     }
     
     func deploySmartContractViaWallet() {
         smartContractManager.deploySmartContractViaWallet(callback: {
-            
+
         })
     }
     
     func testSmartContract() {
         smartContractManager.testSmartContract(smartContractAddress: smartContractAddress, callback: {
-            
+
         })
     }
     
     func transfer() {
         transferManager.transfer(toAddress: transferToAddress, value: value, callback: {
-            refreshBalance()
+            self.refreshBalance()
         })
     }
     
     func transferViaWallet() {
         transferManager.transferViaWallet(toAddress: transferToAddress, value: value, callback: {
-            refreshBalance()
-        })
-    }
-    
-    func deposit() {
-        depositManager.deposit(callback: { 
             self.refreshBalance()
         })
     }
@@ -107,19 +103,19 @@ class ContentViewModel: ObservableObject {
     
     func mintToken() {
         tokenManager.mintToken(tokenAddress: tokenAddress, callback: {
-            
+
         })
     }
     
     func getAllTokens() {
         tokenManager.getAllTokens(callback: {
-            
+
         })
     }
     
     func tokenBalance() {
         tokenManager.tokenBalance(tokenAddress: tokenAddress, callback: {
-            
+
         })
     }
 }

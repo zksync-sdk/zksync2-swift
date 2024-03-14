@@ -10,6 +10,7 @@ import BigInt
 import PromiseKit
 #if canImport(web3swift)
 import web3swift
+import Web3Core
 #else
 import web3swift_zksync2
 #endif
@@ -23,20 +24,20 @@ public class ZkSyncTransactionReceiptProcessor {
     var sleepDuration = TimeInterval(Double(DEFAULT_POLLING_FREQUENCY) / 100.0)
     var attempts = DEFAULT_POLLING_ATTEMPTS_PER_TX_HASH
     
-    let zkSync: ZkSync
+    let zkSync: ZkSyncClient
     
-    public init(zkSync: ZkSync) {
+    public init(zkSync: ZkSyncClient) {
         self.zkSync = zkSync
     }
     
-    public func waitForTransactionReceipt(hash: String) -> TransactionReceipt? {
+    public func waitForTransactionReceipt(hash: String) async -> TransactionReceipt? {
         var receipt: TransactionReceipt?
         
         for _ in 0..<attempts {
-            Thread.sleep(forTimeInterval: sleepDuration)
+            try! await Task.sleep(nanoseconds: UInt64(sleepDuration * 1_000_000_000))
             
-            receipt = try? zkSync.web3.eth.getTransactionReceipt(hash)
-            
+            receipt = try? await zkSync.web3.eth.transactionReceipt(Data(hex: hash))
+
             if receipt != nil {
                 break
             }

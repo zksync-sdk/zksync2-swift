@@ -59,6 +59,26 @@ public class BaseClient: ZkSyncClient {
         }
     }
     
+    public func l1TokenAddress(address: String) async throws -> String {
+        if address == ZkSyncAddresses.EthAddress {
+            return address
+        }
+        let bridgeAddress = try await bridgeContracts().l1Erc20DefaultBridge
+        let bridge = web3.contract(Web3Utils.IL1Bridge, at: EthereumAddress(bridgeAddress)!)
+        
+        return try await bridge?.createReadOperation("l2TokenAddress", parameters: [address])?.callContractMethod()["0"] as! String
+    }
+    
+    public func l2TokenAddress(address: String) async throws -> String {
+        if address == ZkSyncAddresses.EthAddress {
+            return address
+        }
+        let bridgeAddress = try await bridgeContracts().l2Erc20DefaultBridge
+        let bridge = web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(bridgeAddress)!)
+        let result = try await bridge?.createReadOperation("l2TokenAddress", parameters: [address])?.callContractMethod()["0"] as! EthereumAddress
+        return result.address
+    }
+    
     public func estimateGasL1(_ transaction: CodableTransaction) async throws -> BigUInt {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))

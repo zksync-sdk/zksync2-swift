@@ -66,12 +66,6 @@ struct ContentView: View {
     @ViewBuilder
     var basicView: some View {
         VStack(spacing: 15) {
-            PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deposit", action: {
-                DispatchQueue.global().async {
-                    viewModel.deposit()
-                }
-            }))
-            
             PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Deposit via Wallet", action: {
                 DispatchQueue.global().async {
                     viewModel.depositViaWallet()
@@ -86,7 +80,7 @@ struct ContentView: View {
             
             PrimaryButton(viewModel: ButtonViewModel(style: PrimaryButtonStyle.primary, fullWidth: true, title: "Transfer via Wallet", action: {
                 DispatchQueue.global().async {
-                    viewModel.transferViaWallet()
+                    self.viewModel.transferViaWallet()
                 }
             }))
             

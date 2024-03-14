@@ -236,4 +236,38 @@ public class BaseClient: ZkSyncClient {
 
         return try await estimateGasL1(transaction)
     }
+    
+    public func getWithdrawTx(_ amount: BigUInt, from: String, to: String?, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async throws -> CodableTransaction{
+        let to = to ?? from
+        var options = options
+        let nonce: BigUInt
+        if let optionsNonce = options?.nonce {
+            nonce = optionsNonce
+        }else{
+            nonce = try await web3.eth.getTransactionCount(for: EthereumAddress(from)!)
+        }
+        let prepared = CodableTransaction.createEtherTransaction(from: EthereumAddress(from)!, to: EthereumAddress(to)!, value: amount, nonce: nonce, paymasterParams: paymasterParams)
+        if token == ZkSyncAddresses.EthAddress || token == nil {
+            if options?.value == nil {
+                options?.value = amount
+            }
+            
+            let ethL2Token = web3.contract(Web3Utils.IEthToken, at: EthereumAddress.L2EthTokenAddress, transaction: prepared)
+            var transaction = (ethL2Token?.createWriteOperation("withdraw", parameters: [to])!.transaction)!
+            transaction.chainID = try await chainID()
+            return transaction
+        }
+        let bridgeAddresses = try await bridgeContracts()
+        let bridge = web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(bridgeAddresses.l2Erc20DefaultBridge), transaction: prepared)
+        var transaction = (bridge?.createWriteOperation("withdraw", parameters: [to, token!, amount])!.transaction)!
+        transaction.chainID = try await chainID()
+        transaction.value = BigUInt.zero
+
+        return transaction
+    }
+    
+    public func estimateGasWithdraw(_ amount: BigUInt, from: String, to: String?, token: String?, options: TransactionOption?, paymasterParams: PaymasterParams?) async throws -> BigUInt?{
+        let tx = try await getWithdrawTx(amount, from: from, to: to, token: token, options: options, paymasterParams: paymasterParams)
+        return try await web3.eth.estimateGas(for: tx)
+    }
 }

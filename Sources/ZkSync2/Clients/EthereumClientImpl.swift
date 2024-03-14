@@ -37,6 +37,12 @@ public class EthereumClientImpl: EthereumClient {
         try await web3.eth.estimateGas(for: transaction)
     }
     
+    public func maxPriorityFeePerGas() async throws -> BigUInt {
+        let result: String = try await transport.send(method: "eth_maxPriorityFeePerGas", parameters: [])
+
+        return BigUInt(from: result.stripHexPrefix())!
+    }
+    
     public func estimateGasL2(_ transaction: CodableTransaction) async throws -> BigUInt {
         let parameters = [
             JRPC.Parameter(type: .transactionParameters, value: transaction.encodeAsDictionary(from: transaction.from))

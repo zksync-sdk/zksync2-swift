@@ -33,25 +33,16 @@
         "repositoryURL": "https://github.com/mxcl/PromiseKit.git",
         "state": {
           "branch": null,
-          "revision": "7b07b214dacecb22ca4b680531c7e981d52483f9",
-          "version": "6.16.3"
-        }
-      },
-      {
-        "package": "Starscream",
-        "repositoryURL": "https://github.com/daltoniam/Starscream.git",
-        "state": {
-          "branch": null,
-          "revision": "df8d82047f6654d8e4b655d1b1525c64e1059d21",
-          "version": "4.0.4"
+          "revision": "d2f7ba14bcdc45e18f4f60ad9df883fb9055f081",
+          "version": "6.15.3"
         }
       },
       {
         "package": "Web3swift",
-        "repositoryURL": "https://github.com/zksync-sdk/web3swift.git",
+        "repositoryURL": "https://github.com/zksync-sdk/web3swift",
         "state": {
-          "branch": "2.6.5-zksync2",
-          "revision": "d18f523e6d121979ce7d83fa74f83bbc3ac84d54",
+          "branch": "zksync2-3.1.2",
+          "revision": "0728f7291f84245dbb29bf4e9ef1d910747d9554",
           "version": null
         }
       }

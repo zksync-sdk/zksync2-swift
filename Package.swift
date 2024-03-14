@@ -6,7 +6,8 @@ import PackageDescription
 let package = Package(
     name: "zkSync2-swift",
     platforms: [
-        .iOS(.v13)
+        .iOS(.v13),
+        .macOS(.v10_15)
     ],
     products: [
         .library(
@@ -14,10 +15,8 @@ let package = Package(
             targets: ["ZkSync2"]),
     ],
     dependencies: [
-        .package(
-            url: "https://github.com/zksync-sdk/web3swift.git",
-            .branch("2.6.5-zksync2")
-        ),
+        .package(url: "https://github.com/zksync-sdk/web3swift", .branch("zksync2-3.1.2")),
+        .package(url: "https://github.com/mxcl/PromiseKit", .exact("6.15.3")),
         .package(
             url: "https://github.com/Alamofire/Alamofire.git",
             from: "5.4.3"
@@ -28,7 +27,8 @@ let package = Package(
             name: "ZkSync2",
             dependencies: [
                 .product(name: "web3swift", package: "Web3swift"),
-                "Alamofire"
+                "Alamofire",
+                "PromiseKit",
             ]),
         .testTarget(
             name: "ZkSync2Tests",

@@ -203,5 +203,18 @@ public class BaseClient: ZkSyncClient {
         
         return try await transport.send(method: "zks_getL2ToL1MsgProof", parameters: parameters)
     }
-
+    
+    public func getL2HashFromPriorityOp(receipt: TransactionReceipt) async throws -> String? {
+        let mainContractAddress = try await mainContract()
+        let zkSyncContract = web3.contract(Web3Utils.IZkSync, at: EthereumAddress(mainContractAddress))!
+        for log in receipt.logs {
+            if log.address.address.lowercased() != mainContractAddress.lowercased(){
+                continue
+            }
+            let data = log.data.toHexString()
+            return "0x" + data[64..<128]
+        }
+        
+        return nil
+    }
 }

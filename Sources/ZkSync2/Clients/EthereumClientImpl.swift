@@ -182,4 +182,18 @@ public class EthereumClientImpl: EthereumClient {
     public func code(at address: String, blockNumber: BlockNumber) async throws -> String {
         try await web3.eth.code(for: EthereumAddress(address)!, onBlock: blockNumber)
     }
+    
+    public func waitforTransactionReceipt(transactionHash: String, timeout: TimeInterval? = 120, pollLatency: TimeInterval? = 0.1) async throws -> TransactionReceipt? {
+        let deadline = Date().addingTimeInterval(timeout!)
+        while Date() < deadline {
+            do {
+                let txReceipt = try await transactionReceipt(transactionHash)
+                return txReceipt
+            } catch {
+                try await Task.sleep(nanoseconds: UInt64(pollLatency! * 1_000_000_000))
+                continue
+            }
+        }
+        return nil
+    }
 }

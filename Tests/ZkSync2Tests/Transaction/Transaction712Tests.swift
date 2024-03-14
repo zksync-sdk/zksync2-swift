@@ -4,10 +4,10 @@
 //
 //  Created by Maxim Makhun on 9/25/22.
 //
-
 import XCTest
 @testable import ZkSync2
 import web3swift
+import Web3Core
 import BigInt
 
 class Transaction712Tests: XCTestCase {
@@ -24,7 +24,7 @@ class Transaction712Tests: XCTestCase {
     }
     
     func testEncodeToEIP712TypeString() {
-        let transactionRequest = buildTransaction()
+        var transactionRequest = buildTransaction()
         let encodedType = transactionRequest.encodeType()
         
         XCTAssertEqual(encodedType, "Transaction(uint256 txType,uint256 from,uint256 to,uint256 gasLimit,uint256 gasPerPubdataByteLimit,uint256 maxFeePerGas,uint256 maxPriorityFeePerGas,uint256 paymaster,uint256 nonce,uint256 value,bytes data,bytes32[] factoryDeps,bytes paymasterInput)")
@@ -34,9 +34,9 @@ class Transaction712Tests: XCTestCase {
         let transactionRequest = buildTransaction()
         let encodedTransaction = EIP712Encoder.encodeValue(transactionRequest)
         
-        print("Encoded transaction: \(encodedTransaction.toHexString().addHexPrefix())")
+        print("Encoded transaction: \(encodedTransaction.toHexString())")
         
-        XCTAssertEqual(encodedTransaction.toHexString().addHexPrefix(), "0x1e40bcee418db11047ffefb27b304f8ec1b5d644c35c56878f5cc12988b3162d")
+        XCTAssertEqual(encodedTransaction.toHexString(), "442474a5c1a73e28924933ac99ffc13ee6ef77f4051ca6d665d27bcaacf56d07")
     }
     
     func testSerializeToEIP712Message() {
@@ -45,12 +45,12 @@ class Transaction712Tests: XCTestCase {
         let encoded = EIP712Encoder.typedDataToSignedBytes(EIP712Domain,
                                                            typedData: transactionRequest)
         
-        print("Encoded EIP712Domain: \(encoded.toHexString().addHexPrefix())")
+        print("Encoded EIP712Domain: \(encoded.toHexString())")
         
-        XCTAssertEqual(encoded.toHexString().addHexPrefix(), "0x7519adb6e67031ee048d921120687e4fbdf83961bcf43756f349d689eed2b80c")
+        XCTAssertEqual(encoded.toHexString(), "0x7519adb6e67031ee048d921120687e4fbdf83961bcf43756f349d689eed2b80c")
     }
     
-    func buildTransaction() -> EthereumTransaction {
+    func buildTransaction() -> CodableTransaction {
         var transactionOptions = TransactionOptions.defaultOptions
         transactionOptions.type = .eip712
         let chainID = BigUInt(42)
@@ -71,21 +71,22 @@ class Transaction712Tests: XCTestCase {
         EIP712Meta.customSignature = nil
         EIP712Meta.factoryDeps = nil
         EIP712Meta.paymasterParams = PaymasterParams()
-        ethereumParameters.EIP712Meta = EIP712Meta
+        ethereumParameters.eip712Meta = EIP712Meta
         
         ethereumParameters.from = Transaction712Tests.Sender
         
         let encodedFunction = CounterContract.encodeIncrement(BigUInt(42))
-        XCTAssertEqual(encodedFunction.toHexString().addHexPrefix(), "0x7cf5dab0000000000000000000000000000000000000000000000000000000000000002a")
+        XCTAssertEqual(encodedFunction.toHexString(), "0x7cf5dab0000000000000000000000000000000000000000000000000000000000000002a")
         
-        let ethereumTransaction = EthereumTransaction(type: .eip712,
-                                                      to: Transaction712Tests.Receiver,
-                                                      nonce: nonce,
-                                                      chainID: chainID,
-                                                      value: value,
-                                                      data: encodedFunction,
-                                                      parameters: ethereumParameters)
-        
+        var ethereumTransaction = CodableTransaction(type: .eip712,
+                                                     to: Transaction712Tests.Receiver,
+                                                     nonce: nonce,
+                                                     chainID: chainID,
+                                                     value: value,
+                                                     data: encodedFunction,
+                                                     from: Transaction712Tests.Sender)
+        ethereumTransaction.from = EthereumAddress.Default
+        ethereumTransaction.eip712Meta = EIP712Meta
         return ethereumTransaction
     }
 }

@@ -381,6 +381,106 @@ extension WalletL1 {
         try await self.zkSync.bridgeContracts()
     }
     
+    public func getDepositTransaction(transaction: DepositTransaction) async throws-> DepositTransaction{
+        var tx = transaction
+        let address = try! await self.getAddress()
+        if tx.to == nil {
+            tx.to = address
+        }
+        tx.operatorTip = tx.operatorTip ?? BigUInt(0)
+        tx.options = tx.options ?? TransactionOption()
+        if tx.options?.from == nil {
+            tx.options?.from = address
+        }
+        if tx.options?.chainID == nil{
+            tx.options?.chainID = try await ethClient.chainID()
+        }
+        tx.refundRecipient = tx.refundRecipient ?? address
+        tx.gasPerPubdataByte = tx.gasPerPubdataByte ?? BigUInt(800)
+        
+        if tx.bridgeAddress != nil{
+            var customBridgeData: Data
+            if let txCustomBridgeData = tx.customBridgeData {
+                customBridgeData = txCustomBridgeData
+            } else {
+                customBridgeData = await Web3Utils.getERC20DefaultBridgeData(l1TokenAddress: tx.token, provider: ethClient.web3)!
+            }
+            let l1ERC20Bridge = zkSync.web3.contract(
+                Web3.Utils.IL1Bridge,
+                at: EthereumAddress(tx.bridgeAddress!)
+            )!
+            let l2Address = try await l1ERC20Bridge.createWriteOperation("l2Bridge")?.callContractMethod()["0"] as? String
+            
+            if tx.l2GasLimit == nil{
+                tx.l2GasLimit = try await Web3Utils.estimateCustomBridgeDepositL2Gas(provider: zkSync, l1BridgeAddress: EthereumAddress(tx.bridgeAddress!)!, l2BridgeAddress: EthereumAddress(l2Address!)!, token: EthereumAddress(tx.token)!, amount: tx.amount, to: EthereumAddress(tx.to!)!, bridgeData: customBridgeData, from: EthereumAddress((tx.options?.from)!)!)
+            }
+        } else {
+            if tx.l2GasLimit == nil {
+                tx.l2GasLimit = try! await Web3Utils.estimateDefaultBridgeDepositL2Gas(providerL1: ethClient.web3, providerL2: zkSync, token: tx.token, amount: tx.amount, to: tx.to!, from: tx.options!.from!, gasPerPubDataByte: tx.gasPerPubdataByte!)
+            }
+        }
+        
+        tx.options = await Web3Utils.insertGasPrice(options: tx.options, provider: ethClient )
+        let gasPriceForEstimation = tx.options?.maxFeePerGas ?? tx.options?.gasPrice
+        
+        guard let baseCost = try await baseCost(tx.l2GasLimit!, gasPrice: gasPriceForEstimation)["0"] as? BigUInt else {
+            throw EthereumProviderError.invalidParameter
+        }
+        
+        if tx.token == ZkSyncAddresses.EthAddress{
+            tx.options?.value = baseCost + (tx.operatorTip ?? BigUInt.zero) + tx.amount
+
+            return tx
+        }
+        tx.refundRecipient = tx.refundRecipient ?? ZkSyncAddresses.EthAddress
+        tx.options?.value = baseCost + tx.operatorTip!
+        
+        return tx
+    }
+    
+    public func estimateGasdepositTransaction(transaction: DepositTransaction) async throws -> BigUInt {
+        var tx = try await getDepositTransaction(transaction: transaction)
+        
+        if tx.token == ZkSyncAddresses.EthAddress {
+            let requestTx = RequestExecuteTransaction(contractAddress: tx.to!, calldata: Data(hex: "0x"), from: tx.options?.from, l2Value: tx.amount, l2GasLimit: tx.l2GasLimit, operatorTip: tx.operatorTip, gasPerPubdataByte: tx.gasPerPubdataByte, refundRecipient: tx.refundRecipient, options: tx.options)
+            var prepared = try await getRequestExecute(transaction: requestTx)
+            let baseLimit = try await estimateGasRequestExecute(transaction: prepared)!
+            return Web3Utils.scaleGasLimit(gas: baseLimit)
+        }
+        if tx.bridgeAddress == nil{
+            tx.bridgeAddress = try await L1BridgeContracts().l1Erc20DefaultBridge
+        }
+        var bridge = web.contract(Web3Utils.IL1Bridge, at: EthereumAddress(tx.bridgeAddress!))
+        
+        var prepared = CodableTransaction.createEthCallTransaction(from: EthereumAddress((tx.options?.from)!)!, to: EthereumAddress(tx.to!)!, data: Data(hex: "0x"))
+        prepared.maxFeePerGas = tx.options?.maxFeePerGas
+        prepared.maxPriorityFeePerGas = tx.options?.maxPriorityFeePerGas
+        prepared.value = (tx.options?.value)!
+        prepared.gasLimit = tx.options?.gasLimit ?? BigUInt.zero
+        if tx.options?.nonce == nil{
+            tx.options?.nonce = try await ethClient.web3.eth.getTransactionCount(for: EthereumAddress(signer.address)!)
+        }
+        prepared.nonce = (tx.options?.nonce)!
+        
+        
+        let parameters = [
+            tx.to!,
+            tx.token,
+            tx.amount,
+            tx.l2GasLimit!,
+            tx.gasPerPubdataByte!,
+            tx.refundRecipient!
+        ] as [AnyObject]
+        bridge = web.contract(Web3Utils.IL1Bridge, at: EthereumAddress(tx.bridgeAddress!), transaction: prepared)
+        
+        
+        prepared = (bridge?.createWriteOperation("deposit", parameters: parameters)!.transaction)!
+        prepared.chainID = tx.options?.chainID
+        
+        let baseLimit = try await ethClient.web3.eth.estimateGas(for: prepared)
+        return Web3Utils.scaleGasLimit(gas: baseLimit)
+    }
+    
     public func deposit(transaction: DepositTransaction) async throws -> TransactionSendingResult {
         var tx = try await getDepositTransaction(transaction: transaction)
         
@@ -388,7 +488,7 @@ extension WalletL1 {
             let requestTx = RequestExecuteTransaction(contractAddress: tx.to!, calldata: Data(hex: "0x"), from: tx.options?.from, l2Value: tx.amount, l2GasLimit: tx.l2GasLimit, operatorTip: tx.operatorTip, gasPerPubdataByte: tx.gasPerPubdataByte, refundRecipient: tx.refundRecipient, options: tx.options)
             var prepared = try await getRequestExecute(transaction: requestTx)
             if prepared.gasLimit == BigUInt.zero {
-                let baseLimit = try await estimateRequestExecute(transaction: prepared)!
+                let baseLimit = try await estimateGasRequestExecute(transaction: prepared)!
                 let gasLimit = Web3Utils.scaleGasLimit(gas: baseLimit)
                 prepared.gasLimit = gasLimit
             }

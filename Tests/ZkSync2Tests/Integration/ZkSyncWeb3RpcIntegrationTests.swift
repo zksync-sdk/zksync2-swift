@@ -62,4 +62,6 @@ class ZKSyncWeb3RpcIntegrationTests: BaseIntegrationEnv {
         let gas = await self.zkSync.estimateGasTransfer(BaseIntegrationEnv.RECEIVER, amount: BigUInt(7_000_000_000), from: self.credentials.address, token: nil, options: nil, paymasterParams: nil)
         XCTAssertGreaterThan(gas, BigUInt.zero)
     }
+    
+    
 }

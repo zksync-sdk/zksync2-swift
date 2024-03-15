@@ -438,6 +438,78 @@ extension WalletL1 {
         return tx
     }
     
+    public func getFullRequiredDepositFee(transaction: DepositTransaction) async throws -> FullDepositFee{
+        let dummyAmount = BigUInt.one
+        var tx = transaction
+        let options = await Web3Utils.insertGasPrice(options: tx.options, provider: ethClient)
+        tx.options = options
+        
+        var gasPriceForMessages = tx.options?.maxFeePerGas ?? tx.options?.gasPrice
+        tx.to = tx.to ?? signer.address
+        tx.options?.from = signer.address
+        tx.gasPerPubdataByte = BigUInt(800)
+        
+        if tx.bridgeAddress != nil{
+            var customBridgeData: Data
+            if let txCustomBridgeData = tx.customBridgeData {
+                customBridgeData = txCustomBridgeData
+            } else {
+                customBridgeData = await Web3Utils.getERC20DefaultBridgeData(l1TokenAddress: tx.token, provider: ethClient.web3)!
+            }
+            let l1ERC20Bridge = zkSync.web3.contract(
+                Web3.Utils.IL1Bridge,
+                at: EthereumAddress(tx.bridgeAddress!)
+            )!
+            let l2Address = try! await l1ERC20Bridge.createWriteOperation("l2Bridge")?.callContractMethod()["0"] as? String
+            
+            if tx.l2GasLimit == nil{
+                tx.l2GasLimit = try! await Web3Utils.estimateCustomBridgeDepositL2Gas(provider: zkSync, l1BridgeAddress: EthereumAddress(tx.bridgeAddress!)!, l2BridgeAddress: EthereumAddress(l2Address!)!, token: EthereumAddress(tx.token)!, amount: tx.amount, to: EthereumAddress(tx.to!)!, bridgeData: customBridgeData, from: EthereumAddress((tx.options?.from)!)!)
+            }
+        } else {
+            if tx.l2GasLimit == nil {
+                tx.l2GasLimit = try! await Web3Utils.estimateDefaultBridgeDepositL2Gas(providerL1: ethClient.web3, providerL2: zkSync, token: tx.token, amount: tx.amount, to: tx.to!, from: tx.options!.from!, gasPerPubDataByte: tx.gasPerPubdataByte!)
+            }
+        }
+        
+        guard let baseCost = try! await baseCost(tx.l2GasLimit!, gasPrice: gasPriceForMessages)["0"] as? BigUInt else {
+            throw EthereumProviderError.invalidParameter
+        }
+        
+        let selfBalanceETH = await balanceL1()
+        
+        if (baseCost >= selfBalanceETH + dummyAmount){
+            let recommendedAmount = (tx.token == ZkSyncAddresses.EthAddress ? BigUInt(200_000) : BigUInt(400_000)) *
+            ((gasPriceForMessages ?? BigUInt.zero) + baseCost)
+        }
+        
+        let amountForEstimate = dummyAmount
+        if tx.token != ZkSyncAddresses.EthAddress {
+            let allowance = try! await getAllowanceL1(token: tx.token)
+            if allowance < amountForEstimate {
+                fatalError("Not enough allowance to cover the deposit!")
+            }
+        }
+        
+        tx.options?.gasPrice = nil
+        tx.options?.maxFeePerGas = nil
+        tx.options?.maxPriorityFeePerGas = nil
+        
+        tx.amount = amountForEstimate
+        
+        let l1GasLimit = try! await estimateGasdepositTransaction(transaction: tx)
+        
+        var fullCost = FullDepositFee(baseCost: baseCost, l1GasLimit: l1GasLimit, l2GasLimit: tx.l2GasLimit!)
+        
+        if (options.gasPrice != nil) {
+            fullCost.gasPrice = options.gasPrice
+        } else {
+            fullCost.maxFeePerGas = options.maxFeePerGas
+            fullCost.maxPriorityFeePerGas = options.maxPriorityFeePerGas
+        }
+        
+        return fullCost
+    }
+    
     public func estimateGasdepositTransaction(transaction: DepositTransaction) async throws -> BigUInt {
         var tx = try await getDepositTransaction(transaction: transaction)
         

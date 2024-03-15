@@ -47,7 +47,7 @@ class Transaction712Tests: XCTestCase {
         
         print("Encoded EIP712Domain: \(encoded.toHexString())")
         
-        XCTAssertEqual(encoded.toHexString(), "0x7519adb6e67031ee048d921120687e4fbdf83961bcf43756f349d689eed2b80c")
+        XCTAssertEqual(encoded.toHexString(), "7519adb6e67031ee048d921120687e4fbdf83961bcf43756f349d689eed2b80c")
     }
     
     func buildTransaction() -> CodableTransaction {
@@ -76,7 +76,7 @@ class Transaction712Tests: XCTestCase {
         ethereumParameters.from = Transaction712Tests.Sender
         
         let encodedFunction = CounterContract.encodeIncrement(BigUInt(42))
-        XCTAssertEqual(encodedFunction.toHexString(), "0x7cf5dab0000000000000000000000000000000000000000000000000000000000000002a")
+        XCTAssertEqual(encodedFunction.toHexString(), "7cf5dab0000000000000000000000000000000000000000000000000000000000000002a")
         
         var ethereumTransaction = CodableTransaction(type: .eip712,
                                                      to: Transaction712Tests.Receiver,

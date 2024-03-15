@@ -49,6 +49,7 @@ public protocol AdapterL1 {
     func claimFailedDeposit(_ l1BridgeAddress: String, depositSender: String, l1Token: String, l2TxHash: Data, l2BlockNumber: BigUInt, l2MessageIndex: BigUInt, l2TxNumberInBlock: UInt, proof: [Data]) async throws -> TransactionSendingResult
     // RequestExecute request execution of L2 transaction from L1.
     func getRequestExecute(transaction: RequestExecuteTransaction) async throws -> CodableTransaction
+    func getFullRequiredDepositFee(transaction: DepositTransaction) async throws -> FullDepositFee
     func estimateGasRequestExecute(transaction: RequestExecuteTransaction) async throws -> BigUInt?
     func requestExecute(transaction: RequestExecuteTransaction) async throws -> TransactionSendingResult
     func getAllowanceL1(token: String, bridgeAddress: String?) async throws -> BigUInt

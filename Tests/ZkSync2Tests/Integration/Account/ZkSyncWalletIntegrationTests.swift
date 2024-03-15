@@ -71,10 +71,19 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         let mainContractAddress = try! await zkSync.mainContract()
         let txRequest = RequestExecuteTransaction(contractAddress: mainContractAddress, calldata: Data(hex: "0x"), l2Value: BigUInt(7000000000))
         
-        let result = try! await wallet.walletL1.estimateRequestExecute(transaction: txRequest)
+        let result = try! await wallet.walletL1.estimateGasRequestExecute(transaction: txRequest)
         
         XCTAssertNotNil(result)
         XCTAssertGreaterThan(result!, BigUInt.zero)
+    }
+    
+    func testGetFullRequiredDepositFee() async {
+        let expectedFee = FullDepositFee(baseCost: BigUInt(285_096_500_000_000), l1GasLimit: BigUInt(132711), l2GasLimit: BigUInt(570193), maxPriorityFeePerGas: BigUInt(1500000000), maxFeePerGas:BigUInt(1500000010))
+        let tx = DepositTransaction(token: ZkSyncAddresses.EthAddress, amount: BigUInt.one)
+        let result = try! await wallet.walletL1.getFullRequiredDepositFee(transaction: tx)
+        
+        XCTAssertEqual(expectedFee, result)
+        XCTAssertNotNil(result)
     }
     
     func testDepositETH() async {

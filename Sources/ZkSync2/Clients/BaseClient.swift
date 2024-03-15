@@ -204,6 +204,16 @@ public class BaseClient: ZkSyncClient {
         return try await transport.send(method: "zks_getL2ToL1MsgProof", parameters: parameters)
     }
     
+    public func getProof(address: String, keys: [String], l1BatchNumber: BigUInt) async throws -> Proof{
+        let parameters = [
+            JRPC.Parameter(type: .string, value: address),
+            JRPC.Parameter(type: .string, value: keys),
+            JRPC.Parameter(type: .uint, value: l1BatchNumber)
+        ]
+        
+        return try await transport.send(method: "zks_getProof", parameters: parameters)
+    }
+    
     public func getL2HashFromPriorityOp(receipt: TransactionReceipt) async throws -> String? {
         let mainContractAddress = try await mainContract()
         let zkSyncContract = web3.contract(Web3Utils.IZkSync, at: EthereumAddress(mainContractAddress))!

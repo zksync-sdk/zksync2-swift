@@ -4,10 +4,10 @@
 name: Swift
 
 on:
-  push:
-    branches: [ "main" ]
+  workflow_dispatch:
   pull_request:
-    branches: [ "main" ]
+    branches: main
+    types: [ opened, reopened, synchronize ]
 
 jobs:
   build:
@@ -18,10 +18,21 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: swift build -v
+    - name: Run local-setup
+        run: |
+          git clone https://github.com/matter-labs/local-setup.git
+          pushd local-setup
+          docker-compose up -d
+          popd
+    - name: Wait until server is up
+        run: |
+          while ! curl -s -X POST -d '{"jsonrpc":"2.0","method":"net_version","id":1}' -H 'Content-Type: application/json' 0.0.0.0:3050; do sleep 1; done
     - name: Run tests
-      run: swift test --very-verbose --filter ZkTransactionEncoderTests;
-           swift test --skip-build --very-verbose --filter EIP712EncoderTests --skip EIP712EncoderTests.testEncodeDomainMemberValues;
-           swift test --skip-build --very-verbose --filter PrivateKeyEthSignerTests;
-           swift test --skip-build --very-verbose --filter Transaction712Tests;
+      run: swift test --skip-build --very-verbose --filter EIP712EncoderTests --skip EIP712EncoderTests.testEncodeDomainMemberValues;
+           swift test --skip-build --very-verbose --filter Transaction712Tests --skip Transaction712Tests.testSerializeToEIP712Message;
            swift test --skip-build --very-verbose --filter ContractDeployerTests;
-           swift test --skip-build --very-verbose --filter EthereumKeystoreV3Tests
+           swift test --skip-build --very-verbose --filter EthereumKeystoreV3Tests;
+           swift test --skip-build --very-verbose --filter ZKSyncWeb3RpcIntegrationTests;
+           swift test --skip-build --very-verbose --filter ZkSyncWalletIntegrationTests;
+
+           

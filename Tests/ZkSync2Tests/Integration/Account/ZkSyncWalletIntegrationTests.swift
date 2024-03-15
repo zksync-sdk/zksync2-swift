@@ -26,31 +26,23 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     var wallet: Wallet!
     var zkSync: ZkSyncClient!
     
-    override func setUpWithError() throws {
-        let expectation = expectation(description: "Expectation.")
-        DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
-            
-            self.zkSync = BaseClient(ZkSyncWalletIntegrationTests.L2NodeUrl)
-            
-            let l1Web3 = EthereumClientImpl(ZkSyncWalletIntegrationTests.L1NodeUrl)
-            
-            
-            let chainId = BigUInt(9)
-            
-            let signer = BaseSigner(self.credentials,
-                                    chainId: chainId)
-            let signerL2 = BaseSigner(self.credentials,
-                                      chainId: BigUInt(270))
-            let walletL1 = WalletL1(zkSync, ethClient: l1Web3, web3: l1Web3.web3, ethSigner: signer)
-            let walletL2 = WalletL2(zkSync, ethClient: l1Web3, web3: zkSync.web3, ethSigner: signerL2)
-            let baseDeployer = BaseDeployer(adapterL2: walletL2, signer: signerL2)
-            self.wallet = Wallet(walletL1: walletL1, walletL2: walletL2, deployer: baseDeployer)
-            
-            expectation.fulfill()
-        }
+    override func setUp() async throws {
+        self.zkSync = BaseClient(ZkSyncWalletIntegrationTests.L2NodeUrl)
         
-        wait(for: [expectation], timeout: 10.0)
+        let l1Web3 = EthereumClientImpl(ZkSyncWalletIntegrationTests.L1NodeUrl)
+        
+        
+        let chainId = BigUInt(9)
+        
+        let signer = BaseSigner(self.credentials,
+                                chainId: chainId)
+        let signerL2 = BaseSigner(self.credentials,
+                                  chainId: BigUInt(270))
+        let walletL1 = WalletL1(zkSync, ethClient: l1Web3, web3: l1Web3.web3, ethSigner: signer)
+        let walletL2 = WalletL2(zkSync, ethClient: l1Web3, web3: zkSync.web3, ethSigner: signerL2)
+        let baseDeployer = BaseDeployer(adapterL2: walletL2, signer: signerL2)
+        self.wallet = Wallet(walletL1: walletL1, walletL2: walletL2, deployer: baseDeployer)
+        
     }
     
     func testBalance() async {
@@ -64,6 +56,11 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     func testBaseCost() async{
         let result = try! await wallet.walletL1.baseCost(BigUInt(100000), gasPrice: nil)
         
+        XCTAssertNotNil(result)
+    }
+    
+    func testApprove() async{
+        let result = try! await wallet.walletL1.approveERC20(token: ZkSyncWalletIntegrationTests.L1DAI, amount: BigUInt(50))
         XCTAssertNotNil(result)
     }
     
@@ -108,7 +105,7 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     }
     
     func testDepositERC20() async {
-        let amount = BigUInt(10)
+        let amount = BigUInt(20)
         let l2DAI = try! await zkSync.l2TokenAddress(address: ZkSyncWalletIntegrationTests.L1DAI)
         
         let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1()

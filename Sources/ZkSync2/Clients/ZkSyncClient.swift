@@ -73,6 +73,8 @@ public protocol ZkSyncClient {
     
     func l2TokenAddress(address: String) async throws -> String
     
+    func getProof(address: String, keys: [String], l1BatchNumber: BigUInt) async throws -> Proof
+    
     func getWithdrawTx(_ amount: BigUInt, from: String, to: String?, token: String?, options: TransactionOption?, paymasterParams: PaymasterParams?) async throws -> CodableTransaction
     // EstimateGasWithdraw estimates the amount of gas required for a withdrawal
     // transaction.

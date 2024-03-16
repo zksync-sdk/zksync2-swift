@@ -50,9 +50,9 @@ class BaseIntegrationEnv: XCTestCase {
                                     chainId: chainId)
             self.signerL2 = BaseSigner(self.credentials,
                                       chainId: BigUInt(270))
-            let walletL1 = WalletL1(zkSync, ethClient: l1Web3, web3: l1Web3.web3, ethSigner: signer)
-            let walletL2 = WalletL2(zkSync, ethClient: l1Web3, web3: zkSync.web3, ethSigner: signerL2)
-            let baseDeployer = BaseDeployer(adapterL2: walletL2, signer: signerL2)
+            let walletL1 = WalletL1(self.zkSync, ethClient: self.l1Web3, web3: self.l1Web3.web3, ethSigner: self.signer)
+            let walletL2 = WalletL2(self.zkSync, ethClient: self.l1Web3, web3: self.zkSync.web3, ethSigner: self.signerL2)
+            let baseDeployer = BaseDeployer(adapterL2: walletL2, signer: self.signerL2)
             self.wallet = Wallet(walletL1: walletL1, walletL2: walletL2, deployer: baseDeployer)
             
             expectation.fulfill()

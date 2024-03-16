@@ -18,8 +18,16 @@ jobs:
     - uses: actions/checkout@v3
     - name: Build
       run: swift build -v
-    - name: Install Docker Compose
-      run: brew install docker-compose
+    - name: Install Docker
+      run: |
+          brew install docker
+          brew install docker-compose
+    - name: Install Colima
+      run: |
+          brew install colima
+    - name: Initialize Colima with Docker
+      run: |
+          colima start
     - name: Run local-setup
       run: |
           git clone https://github.com/matter-labs/local-setup.git
@@ -30,11 +38,9 @@ jobs:
       run: |
           while ! curl -s -X POST -d '{"jsonrpc":"2.0","method":"net_version","id":1}' -H 'Content-Type: application/json' 0.0.0.0:3050; do sleep 1; done
     - name: Run tests
-      run: swift test --skip-build --very-verbose --filter EIP712EncoderTests --skip EIP712EncoderTests.testEncodeDomainMemberValues;
-           swift test --skip-build --very-verbose --filter Transaction712Tests --skip Transaction712Tests.testSerializeToEIP712Message;
-           swift test --skip-build --very-verbose --filter ContractDeployerTests;
-           swift test --skip-build --very-verbose --filter EthereumKeystoreV3Tests;
-           swift test --skip-build --very-verbose --filter ZKSyncWeb3RpcIntegrationTests;
-           swift test --skip-build --very-verbose --filter ZkSyncWalletIntegrationTests;
-
-           
+      run: swift test --skip-build --filter EIP712EncoderTests --skip EIP712EncoderTests.testEncodeDomainMemberValues;
+           swift test --skip-build --filter Transaction712Tests --skip Transaction712Tests.testSerializeToEIP712Message;
+           swift test --skip-build --filter ContractDeployerTests;
+           swift test --skip-build --filter EthereumKeystoreV3Tests;
+           swift test --skip-build --filter ZKSyncWeb3RpcIntegrationTests;
+           swift test --skip-build --filter ZkSyncWalletIntegrationTests;

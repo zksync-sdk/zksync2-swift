@@ -38,9 +38,9 @@ jobs:
       run: |
           while ! curl -s -X POST -d '{"jsonrpc":"2.0","method":"net_version","id":1}' -H 'Content-Type: application/json' 0.0.0.0:3050; do sleep 1; done
     - name: Run tests
-      run: swift test --skip-build --filter EIP712EncoderTests --skip EIP712EncoderTests.testEncodeDomainMemberValues;
-           swift test --skip-build --filter Transaction712Tests --skip Transaction712Tests.testSerializeToEIP712Message;
-           swift test --skip-build --filter ContractDeployerTests;
-           swift test --skip-build --filter EthereumKeystoreV3Tests;
-           swift test --skip-build --filter ZKSyncWeb3RpcIntegrationTests;
-           swift test --skip-build --filter ZkSyncWalletIntegrationTests;
+      run: swift test --filter EIP712EncoderTests --skip EIP712EncoderTests.testEncodeDomainMemberValues;
+           swift test --filter Transaction712Tests --skip Transaction712Tests.testSerializeToEIP712Message;
+           swift test --filter ContractDeployerTests;
+           swift test --filter EthereumKeystoreV3Tests;
+           swift test --filter ZKSyncWeb3RpcIntegrationTests;
+           swift test --filter ZkSyncWalletIntegrationTests;

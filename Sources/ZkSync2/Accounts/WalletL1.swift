@@ -213,7 +213,7 @@ extension WalletL1 {
     public func approveERC20(token: String, amount: BigUInt?, bridgeAddress: String? = nil) async throws -> TransactionSendingResult {
         var bridgeAddress = bridgeAddress
         if bridgeAddress == nil {
-            bridgeAddress = try await L1BridgeContracts().l1Erc20DefaultBridge
+            bridgeAddress = try await getL1BridgeContracts().l1Erc20DefaultBridge
         }
         
         let prepared = CodableTransaction(type: .eip1559, to: EthereumAddress(bridgeAddress!)!, from: EthereumAddress(signer.address))
@@ -235,7 +235,7 @@ extension WalletL1 {
     public func getAllowanceL1(token: String, bridgeAddress: String? = nil) async throws -> BigUInt {
         var bridgeAddress = bridgeAddress
         if bridgeAddress == nil {
-            bridgeAddress = try await L1BridgeContracts().l1Erc20DefaultBridge
+            bridgeAddress = try await getL1BridgeContracts().l1Erc20DefaultBridge
         }
         
         let tokenContract = ERC20(web3: web,
@@ -377,7 +377,7 @@ extension WalletL1 {
         return try await ethClient.web3.eth.send(raw: tx.encode()!)
     }
     
-    public func L1BridgeContracts() async throws -> BridgeAddresses {
+    public func getL1BridgeContracts() async throws -> BridgeAddresses {
         try await self.zkSync.bridgeContracts()
     }
     
@@ -496,7 +496,7 @@ extension WalletL1 {
         
         tx.amount = amountForEstimate
         
-        let l1GasLimit = try! await estimateGasdepositTransaction(transaction: tx)
+        let l1GasLimit = try! await estimateGasDeposit(transaction: tx)
         
         var fullCost = FullDepositFee(baseCost: baseCost, l1GasLimit: l1GasLimit, l2GasLimit: tx.l2GasLimit!)
         
@@ -510,17 +510,17 @@ extension WalletL1 {
         return fullCost
     }
     
-    public func estimateGasdepositTransaction(transaction: DepositTransaction) async throws -> BigUInt {
+    public func estimateGasDeposit(transaction: DepositTransaction) async throws -> BigUInt {
         var tx = try await getDepositTransaction(transaction: transaction)
         
         if tx.token == ZkSyncAddresses.EthAddress {
             let requestTx = RequestExecuteTransaction(contractAddress: tx.to!, calldata: Data(hex: "0x"), from: tx.options?.from, l2Value: tx.amount, l2GasLimit: tx.l2GasLimit, operatorTip: tx.operatorTip, gasPerPubdataByte: tx.gasPerPubdataByte, refundRecipient: tx.refundRecipient, options: tx.options)
-            var prepared = try await getRequestExecute(transaction: requestTx)
+            let prepared = try await getRequestExecute(transaction: requestTx)
             let baseLimit = try await estimateGasRequestExecute(transaction: prepared)!
             return Web3Utils.scaleGasLimit(gas: baseLimit)
         }
         if tx.bridgeAddress == nil{
-            tx.bridgeAddress = try await L1BridgeContracts().l1Erc20DefaultBridge
+            tx.bridgeAddress = try await getL1BridgeContracts().l1Erc20DefaultBridge
         }
         var bridge = web.contract(Web3Utils.IL1Bridge, at: EthereumAddress(tx.bridgeAddress!))
         
@@ -568,7 +568,7 @@ extension WalletL1 {
             return try await ethClient.web3.eth.send(raw: prepared.encode()!)
         }
         if tx.bridgeAddress == nil{
-            tx.bridgeAddress = try await L1BridgeContracts().l1Erc20DefaultBridge
+            tx.bridgeAddress = try await getL1BridgeContracts().l1Erc20DefaultBridge
         }
         var bridge = web.contract(Web3Utils.IL1Bridge, at: EthereumAddress(tx.bridgeAddress!))
         

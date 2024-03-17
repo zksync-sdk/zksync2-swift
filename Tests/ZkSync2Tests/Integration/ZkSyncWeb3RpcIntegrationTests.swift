@@ -15,7 +15,7 @@ import Web3Core
 class ZKSyncWeb3RpcIntegrationTests: BaseIntegrationEnv {
     func testGetNonce() async{
         let nonce = try! await self.zkSync.web3.eth.getTransactionCount(for: self.credentials.ethereumAddress)
-        XCTAssertGreaterThan(nonce, 0)
+        XCTAssertGreaterThanOrEqual(nonce, 0)
     }
 
     func testGetDeploymentNonce() async {

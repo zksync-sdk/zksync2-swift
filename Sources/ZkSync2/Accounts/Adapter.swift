@@ -26,8 +26,8 @@ public protocol AdapterL1 {
     func approveERC20(token: String, amount: BigUInt?, bridgeAddress: String?) async throws -> TransactionSendingResult
     // MainContract returns the zkSync L1 smart contract.
     func mainContract(transaction: CodableTransaction) async throws -> Web3.Contract
-    // L1BridgeContracts returns L1 bridge contracts.
-    func L1BridgeContracts() async throws -> BridgeAddresses
+    // getL1BridgeContracts returns L1 bridge contracts.
+    func getL1BridgeContracts() async throws -> BridgeAddresses
     // BalanceL1 returns the balance of the specified token on L1 that can be
     // either ETH or any ERC20 token.
     func balanceL1() async -> BigUInt
@@ -41,7 +41,7 @@ public protocol AdapterL1 {
     // If there are already enough approved tokens for the L1 bridge, token approval will be skipped.
     // To check the amount of approved tokens for a specific bridge, use the AdapterL1.AllowanceL1 method.
     func deposit(transaction: DepositTransaction) async throws -> TransactionSendingResult
-    func estimateGasdepositTransaction(transaction: DepositTransaction) async throws -> BigUInt
+    func estimateGasDeposit(transaction: DepositTransaction) async throws -> BigUInt
     func getDepositTransaction(transaction: DepositTransaction) async throws -> DepositTransaction
     // ClaimFailedDeposit withdraws funds from the initiated deposit, which failed when finalizing on L2.
     // If the deposit L2 transaction has failed, it sends an L1 transaction calling ClaimFailedDeposit method

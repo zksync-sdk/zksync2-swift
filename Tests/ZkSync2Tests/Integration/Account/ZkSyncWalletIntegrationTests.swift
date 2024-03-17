@@ -59,6 +59,12 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         XCTAssertNotNil(result)
     }
     
+    func testMainContract() async{
+        let result = try! await wallet.walletL1.mainContract()
+        
+        XCTAssertNotNil(result)
+    }
+    
     func testApprove() async{
         let result = try! await wallet.walletL1.approveERC20(token: ZkSyncWalletIntegrationTests.L1DAI, amount: BigUInt(50))
         XCTAssertNotNil(result)

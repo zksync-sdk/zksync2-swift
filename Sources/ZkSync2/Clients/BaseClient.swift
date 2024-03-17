@@ -51,12 +51,9 @@ public class BaseClient: ZkSyncClient {
         if token == nil || token == ZkSyncAddresses.EthAddress {
             return try await web3.eth.getBalance(for: EthereumAddress(address)!, onBlock: blockNumber)
         }
-        do {
-            let tokenContract = web3.contract(Web3Utils.IERC20, at: EthereumAddress(token!)!)
-            return try await tokenContract?.createReadOperation("balanceOf", parameters: [address])?.callContractMethod()["0"] as! BigUInt
-        } catch {
-            return BigUInt.zero
-        }
+        
+        let tokenContract = web3.contract(Web3Utils.IERC20, at: EthereumAddress(token!)!)
+        return try await tokenContract?.createReadOperation("balanceOf", parameters: [address])?.callContractMethod()["0"] as? BigUInt ?? BigUInt.zero
     }
     
     public func l1TokenAddress(address: String) async throws -> String {
@@ -239,7 +236,9 @@ public class BaseClient: ZkSyncClient {
             type: .eip1559,
             to: EthereumAddress(from: to)!,
             value: amount,
-            data: calldata
+            data: calldata,
+            eip712Meta: EIP712Meta,
+            from: EthereumAddress(from: from)!
         )
         transaction.from = EthereumAddress(from: from)!
         transaction.eip712Meta = EIP712Meta

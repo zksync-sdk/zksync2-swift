@@ -47,4 +47,8 @@ jobs:
            swift test --filter ZkSyncWalletIntegrationTests;
 =======
            swift test --filter ZkSyncWalletIntegrationTests;
+<<<<<<< HEAD
 >>>>>>> 9411574 (ci: update swift.yml)
+=======
+>>>>>>> 55750a3 ('ci: fix tests run')
+>>>>>>> ba95ae8 ('ci: fix tests run')

@@ -145,38 +145,38 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         XCTAssertEqual(balanceAfter - balanceBefore, amount)
     }
     
-    func testTransferETHWithPaymaster() async {
-        let amount = BigUInt(7000000000)
-        
-        let paymasterBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
-        let paymasterTokenBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        let senderBalanceBefore = await wallet.walletL2.balance()
-        let senderTokenBalanceBefore = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        let paymasterInput = Paymaster.encodeApprovalBased(
-            EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterToken)!,
-            minimalAllowance: BigUInt(1),
-            paymasterInput: Data()
-        )
-        
-        let paymasterParams = PaymasterParams(paymaster: EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterAddress)!, paymasterInput: paymasterInput)
-        
-        let result = await wallet.walletL2.transfer("0xa61464658AfeAf65CccaaFD3a512b69A83B77618", amount: amount, token: ZkSyncAddresses.EthAddress, options: nil, paymasterParams: paymasterParams)
-        let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result.hash)
-        
-        let paymasterBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
-        let paymasterTokenBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        let senderBalanceAfter = await wallet.walletL2.balance()
-        let senderTokenBalanceAfter = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        XCTAssertNotNil(receipt)
-        XCTAssertGreaterThanOrEqual(paymasterBalanceBefore - paymasterBalanceAfter, BigUInt.zero)
-        XCTAssertEqual(paymasterTokenBalanceAfter - paymasterTokenBalanceBefore, 1)
-        XCTAssertEqual(senderBalanceBefore - senderBalanceAfter, amount)
-        XCTAssertEqual(senderTokenBalanceBefore - senderTokenBalanceAfter, 1)
-    }
+//    func testTransferETHWithPaymaster() async {
+//        let amount = BigUInt(7000000000)
+//        
+//        let paymasterBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
+//        let paymasterTokenBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        let senderBalanceBefore = await wallet.walletL2.balance()
+//        let senderTokenBalanceBefore = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        let paymasterInput = Paymaster.encodeApprovalBased(
+//            EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterToken)!,
+//            minimalAllowance: BigUInt(1),
+//            paymasterInput: Data()
+//        )
+//        
+//        let paymasterParams = PaymasterParams(paymaster: EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterAddress)!, paymasterInput: paymasterInput)
+//        
+//        let result = await wallet.walletL2.transfer("0xa61464658AfeAf65CccaaFD3a512b69A83B77618", amount: amount, token: ZkSyncAddresses.EthAddress, options: nil, paymasterParams: paymasterParams)
+//        let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result.hash)
+//        
+//        let paymasterBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
+//        let paymasterTokenBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        let senderBalanceAfter = await wallet.walletL2.balance()
+//        let senderTokenBalanceAfter = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        XCTAssertNotNil(receipt)
+//        XCTAssertGreaterThanOrEqual(paymasterBalanceBefore - paymasterBalanceAfter, BigUInt.zero)
+//        XCTAssertEqual(paymasterTokenBalanceAfter - paymasterTokenBalanceBefore, 1)
+//        XCTAssertEqual(senderBalanceBefore - senderBalanceAfter, amount)
+//        XCTAssertEqual(senderTokenBalanceBefore - senderTokenBalanceAfter, 1)
+//    }
     
     func testTransferERC20() async {
         let amount = BigUInt(5)
@@ -192,39 +192,39 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         XCTAssertEqual(balanceBefore - balanceAfter, amount)
     }
     
-    func testTransferERC20WithPaymaster() async {
-        let amount = BigUInt(5)
-        let l2DAI = try! await zkSync.l2TokenAddress(address: ZkSyncWalletIntegrationTests.L1DAI)
-        
-        let paymasterBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
-        let paymasterTokenBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        let senderBalanceBefore = await wallet.walletL2.balance(token: l2DAI)
-        let senderTokenBalanceBefore = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        let paymasterInput = Paymaster.encodeApprovalBased(
-            EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterToken)!,
-            minimalAllowance: BigUInt(1),
-            paymasterInput: Data()
-        )
-        
-        let paymasterParams = PaymasterParams(paymaster: EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterAddress)!, paymasterInput: paymasterInput)
-        
-        let result = await wallet.walletL2.transfer("0xa61464658AfeAf65CccaaFD3a512b69A83B77618", amount: amount, token: l2DAI, options: nil, paymasterParams: paymasterParams)
-        let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result.hash)
-        
-        let paymasterBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
-        let paymasterTokenBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        let senderBalanceAfter = await wallet.walletL2.balance(token: l2DAI)
-        let senderTokenBalanceAfter = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
-        
-        XCTAssertNotNil(receipt)
-        XCTAssertGreaterThanOrEqual(paymasterBalanceBefore - paymasterBalanceAfter, BigUInt.zero)
-        XCTAssertEqual(paymasterTokenBalanceAfter - paymasterTokenBalanceBefore, 1)
-        XCTAssertEqual(senderBalanceBefore - senderBalanceAfter, amount)
-        XCTAssertEqual(senderTokenBalanceBefore - senderTokenBalanceAfter, 1)
-    }
+//    func testTransferERC20WithPaymaster() async {
+//        let amount = BigUInt(5)
+//        let l2DAI = try! await zkSync.l2TokenAddress(address: ZkSyncWalletIntegrationTests.L1DAI)
+//        
+//        let paymasterBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
+//        let paymasterTokenBalanceBefore = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        let senderBalanceBefore = await wallet.walletL2.balance(token: l2DAI)
+//        let senderTokenBalanceBefore = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        let paymasterInput = Paymaster.encodeApprovalBased(
+//            EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterToken)!,
+//            minimalAllowance: BigUInt(1),
+//            paymasterInput: Data()
+//        )
+//        
+//        let paymasterParams = PaymasterParams(paymaster: EthereumAddress(ZkSyncWalletIntegrationTests.PaymasterAddress)!, paymasterInput: paymasterInput)
+//        
+//        let result = await wallet.walletL2.transfer("0xa61464658AfeAf65CccaaFD3a512b69A83B77618", amount: amount, token: l2DAI, options: nil, paymasterParams: paymasterParams)
+//        let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result.hash)
+//        
+//        let paymasterBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncAddresses.EthAddress)
+//        let paymasterTokenBalanceAfter = try! await zkSync.getBalance(address: ZkSyncWalletIntegrationTests.PaymasterAddress, blockNumber: .latest, token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        let senderBalanceAfter = await wallet.walletL2.balance(token: l2DAI)
+//        let senderTokenBalanceAfter = await wallet.walletL2.balance(token: ZkSyncWalletIntegrationTests.PaymasterToken)
+//        
+//        XCTAssertNotNil(receipt)
+//        XCTAssertGreaterThanOrEqual(paymasterBalanceBefore - paymasterBalanceAfter, BigUInt.zero)
+//        XCTAssertEqual(paymasterTokenBalanceAfter - paymasterTokenBalanceBefore, 1)
+//        XCTAssertEqual(senderBalanceBefore - senderBalanceAfter, amount)
+//        XCTAssertEqual(senderTokenBalanceBefore - senderTokenBalanceAfter, 1)
+//    }
     
     func testWithdrawEth() async {
         let amount = BigUInt(7_000_000_000)

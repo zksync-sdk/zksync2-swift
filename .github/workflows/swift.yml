@@ -43,4 +43,8 @@ jobs:
            swift test --filter ContractDeployerTests;
            swift test --filter EthereumKeystoreV3Tests;
            swift test --filter ZKSyncWeb3RpcIntegrationTests;
+<<<<<<< HEAD
            swift test --filter ZkSyncWalletIntegrationTests;
+=======
+           swift test --filter ZkSyncWalletIntegrationTests;
+>>>>>>> 9411574 (ci: update swift.yml)

@@ -20,6 +20,14 @@ public protocol ZkSyncClient {
     
     // MainContractAddress returns the address of the zkSync Era contract.
     func mainContract() async throws -> String
+    // Returns the Bridgehub smart contract address.
+    func getBridgehubContractAddress() async throws -> String
+    // Returns the L1 base token address.
+    func getBaseTokenContractAddress() async throws -> String
+    // Returns whether the chain is ETH-based.
+    func isEthBasedChain() async throws -> Bool
+    // Returns whether the `token` is the base token.
+    func isBaseToken(tokenAddress: String) async throws -> Bool
     // TestnetPaymaster returns the testnet paymaster address if available, or nil.
     func getTestnetPaymaster() async throws -> String
     // BridgeContracts returns the addresses of the default zkSync Era bridge

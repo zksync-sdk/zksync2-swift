@@ -200,7 +200,6 @@ public class BaseSigner: ETHSigner {
                      useExtraEntropy: Bool = false) throws -> Data? {
         var privateKey = try keystore.UNSAFE_getPrivateKeyData(password: password, account: account)
         defer { Data.zero(&privateKey) }
-        print(privateKey.toHexString())
 #if DEBUG
         print("Message hash: \(message.sha3(.keccak256).toHexString().addHexPrefix())")
 #endif

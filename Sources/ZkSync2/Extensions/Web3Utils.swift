@@ -93,7 +93,15 @@ public extension Web3.Utils {
     static let L1_TO_L2_ALIAS_OFFSET = "0x1111000000000000000000000000000000001111"
     
     static func applyL1ToL2Alias(address: String) -> String{
-        return ((BigUInt(address.stripHexPrefix(), radix: 16)! + BigUInt(L1_TO_L2_ALIAS_OFFSET.stripHexPrefix(), radix: 16)!) % ADDRESS_MODULO).toHexString().addHexPrefix()
+        return padTo42Characters(((BigUInt(address.stripHexPrefix(), radix: 16)! + BigUInt(L1_TO_L2_ALIAS_OFFSET.stripHexPrefix(), radix: 16)!) % ADDRESS_MODULO).toHexString().addHexPrefix())
+    }
+    
+    static func padTo42Characters(_ address: String) -> String {
+        var paddedAddress = address.stripHexPrefix()
+        while paddedAddress.count < 40 {
+            paddedAddress = "0" + paddedAddress
+        }
+        return "0x" + paddedAddress
     }
     
     static let L1_FEE_ESTIMATION_COEF_NUMERATOR = BigUInt(12)
@@ -112,19 +120,26 @@ public extension Web3.Utils {
     }
     
     static func getERC20DefaultBridgeData(l1TokenAddress: String, provider: Web3) async -> Data?{
+        var l1TokenAddress = l1TokenAddress
+        if ZkSyncAddresses.isAddressEq(a: l1TokenAddress, b: ZkSyncAddresses.LEGACY_ETH_ADDRESS){
+            l1TokenAddress = ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS
+        }
         let token = provider.contract(
             Web3.Utils.IERC20,
             at: EthereumAddress(l1TokenAddress)
         )!
 
-        let name = try! await token.createWriteOperation("name")?.callContractMethod()["0"] as? String
-        let symbol = try! await token.createWriteOperation("symbol")?.callContractMethod()["0"] as? String
-        let decimals = try! await token.createWriteOperation("decimals")?.callContractMethod()["0"] as? BigUInt
+        let name = ZkSyncAddresses.isAddressEq(a: l1TokenAddress, b: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS) ?
+            "Ether" : try! await token.createWriteOperation("name")?.callContractMethod()["0"] as? String
+        let symbol = ZkSyncAddresses.isAddressEq(a: l1TokenAddress, b: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS) ?
+            "ETH" : try! await token.createWriteOperation("symbol")?.callContractMethod()["0"] as? String
+        let decimals = ZkSyncAddresses.isAddressEq(a: l1TokenAddress, b: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS) ?
+            BigUInt(18) : try! await token.createWriteOperation("decimals")?.callContractMethod()["0"] as? BigUInt
         
         let encodedName = ABIEncoder.encode(types: [ABI.Element.ParameterType.string], values: [name!])
         let encodedSymbol = ABIEncoder.encode(types: [ABI.Element.ParameterType.string], values: [symbol!])
         let encodedDecimals = ABIEncoder.encode(types: [ABI.Element.ParameterType.uint(bits: 256)], values: [decimals!])
-
+        
         return ABIEncoder.encode(types: [ABI.Element.ParameterType.dynamicBytes, ABI.Element.ParameterType.dynamicBytes, ABI.Element.ParameterType.dynamicBytes], values: [encodedName!, encodedSymbol!, encodedDecimals!])
     }
     
@@ -160,7 +175,8 @@ public extension Web3.Utils {
                                                  gasPerPubdataByte: BigUInt? = BigUInt(800),
                                                  l2Value: BigUInt? = nil) async throws -> BigUInt{
         let calldata = try Web3Utils.getERC20BridgeCalldata(provider: provider, l1TokenAddress: token, l1Sender: from, l2Receiver: to, amount: amount, bridgeData: bridgeData)
-        return try await provider.estimateL1ToL2Execute(l2BridgeAddress.address, from: Web3Utils.applyL1ToL2Alias(address: l1BridgeAddress.address), calldata: calldata, amount: BigUInt.zero, gasPerPubData: gasPerPubdataByte!)
+
+        return try await provider.estimateL1ToL2Execute(l2BridgeAddress.address, from: Web3Utils.applyL1ToL2Alias(address: l1BridgeAddress.address), calldata: calldata, amount: l2Value ?? BigUInt.zero, gasPerPubData: gasPerPubdataByte!)
     }
     
     static func getERC20BridgeCalldata(provider: ZkSyncClient ,l1TokenAddress: EthereumAddress, l1Sender: EthereumAddress, l2Receiver: EthereumAddress, amount: BigUInt, bridgeData: Data) throws -> Data {
@@ -169,12 +185,12 @@ public extension Web3.Utils {
     }
     
     static func estimateDefaultBridgeDepositL2Gas(providerL1: Web3, providerL2: ZkSyncClient, token: String, amount: BigUInt, to: String, from: String, gasPerPubDataByte: BigUInt = BigUInt(800)) async throws -> BigUInt{
-        if token == ZkSyncAddresses.EthAddress {
+        if try await providerL2.isBaseToken(tokenAddress: token) {
             return try await providerL2.estimateL1ToL2Execute(to, from: from, calldata: Data(hex: "0x"), amount: amount, gasPerPubData: gasPerPubDataByte)
         }
         let bridgeAddresses = try await providerL2.bridgeContracts()
         let bridgeData = await Web3.Utils.getERC20DefaultBridgeData(l1TokenAddress: token, provider: providerL1)
         
-        return try await Web3.Utils.estimateCustomBridgeDepositL2Gas(provider: providerL2, l1BridgeAddress: EthereumAddress(bridgeAddresses.l1Erc20DefaultBridge)!, l2BridgeAddress: EthereumAddress(bridgeAddresses.l2Erc20DefaultBridge)!, token: EthereumAddress(token)!, amount: amount, to: EthereumAddress(to)!, bridgeData: bridgeData!, from: EthereumAddress(from)!)
+        return try await Web3.Utils.estimateCustomBridgeDepositL2Gas(provider: providerL2, l1BridgeAddress: EthereumAddress(bridgeAddresses.l1SharedDefaultBridge)!, l2BridgeAddress: EthereumAddress(bridgeAddresses.l2SharedDefaultBridge)!, token: EthereumAddress(token)!, amount: amount, to: EthereumAddress(to)!, bridgeData: bridgeData!, from: EthereumAddress(from)!)
     }
 }

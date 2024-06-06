@@ -14,6 +14,7 @@ public struct RequestExecuteTransaction {
     var calldata: Data
     var from: Address?
     var l2Value: BigUInt?
+    var mintValue: BigUInt?
     var l2GasLimit: BigUInt?
     var operatorTip: BigUInt?
     var gasPerPubdataByte: BigUInt?
@@ -25,8 +26,10 @@ public struct RequestExecuteTransaction {
 public struct DepositTransaction {
     var token: Address
     var amount: BigUInt
+    var mintValue: BigUInt?
     var to: Address?
     var approveERC20: Bool?
+    var approveBaseERC20: Bool?
     var operatorTip: BigUInt?
     var bridgeAddress: Address?
     var l2GasLimit: BigUInt?

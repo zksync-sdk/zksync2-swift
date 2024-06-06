@@ -12,4 +12,8 @@ public struct BridgeAddresses: Decodable {
     let l1Erc20DefaultBridge: String
     
     let l2Erc20DefaultBridge: String
+    
+    let l1SharedDefaultBridge: String
+    
+    let l2SharedDefaultBridge: String
 }

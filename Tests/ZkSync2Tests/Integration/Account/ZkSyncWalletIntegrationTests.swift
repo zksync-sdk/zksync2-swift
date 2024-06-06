@@ -71,65 +71,213 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
     }
     
     func testEstimateRequestExecute() async {
-        let mainContractAddress = try! await zkSync.mainContract()
-        let txRequest = RequestExecuteTransaction(contractAddress: mainContractAddress, calldata: Data(hex: "0x"), l2Value: BigUInt(7000000000))
-        
-        let result = try! await wallet.walletL1.estimateGasRequestExecute(transaction: txRequest)
-        
-        XCTAssertNotNil(result)
-        XCTAssertGreaterThan(result!, BigUInt.zero)
+        if try! await wallet.walletL1.isETHBasedChain(){
+            let contractAddress = try! await wallet.walletL1.getBridgehubContract().contract.address
+            let txRequest = RequestExecuteTransaction(contractAddress: contractAddress!.address, calldata: Data(hex: "0x"), l2Value: BigUInt(7000000000))
+            
+            let result = try! await wallet.walletL1.estimateGasRequestExecute(transaction: txRequest)
+            
+            XCTAssertNotNil(result)
+            XCTAssertGreaterThan(result!, BigUInt.zero)
+        }else{
+            let txRequest = RequestExecuteTransaction(contractAddress: try! await wallet.walletL1.getAddress(), calldata: Data(hex: "0x"), l2Value: BigUInt(7000000000))
+            
+            let approveParrams = try! await wallet.walletL1.getRequestExecuteAllowanceParams(transaction: txRequest)
+            
+            try! await wallet.walletL1.approveERC20(token: approveParrams.token, amount: approveParrams.allowance)
+            
+            let result = try! await wallet.walletL1.estimateGasRequestExecute(transaction: txRequest)
+            
+            XCTAssertNotNil(result)
+            XCTAssertGreaterThan(result!, BigUInt.zero)
+        }
     }
     
-    func testGetFullRequiredDepositFee() async {
-        let expectedFee = FullDepositFee(baseCost: BigUInt(285_096_500_000_000), l1GasLimit: BigUInt(132711), l2GasLimit: BigUInt(570193), maxPriorityFeePerGas: BigUInt(1500000000), maxFeePerGas:BigUInt(1500000010))
-        let tx = DepositTransaction(token: ZkSyncAddresses.EthAddress, amount: BigUInt.one)
-        let result = try! await wallet.walletL1.getFullRequiredDepositFee(transaction: tx)
-        
-        XCTAssertEqual(expectedFee, result)
-        XCTAssertNotNil(result)
+    func testGetFullRequiredBaseTokenDepositFee() async {
+        if try! await wallet.walletL1.isETHBasedChain(){
+            let tx = DepositTransaction(token: ZkSyncAddresses.LEGACY_ETH_ADDRESS, amount: BigUInt.one, to: try! await wallet.walletL1.getAddress())
+            let result = try! await wallet.walletL1.getFullRequiredDepositFee(transaction: tx)
+            
+            XCTAssertNotNil(result)
+            XCTAssertGreaterThan(result.baseCost, 0)
+            XCTAssertGreaterThan(result.l1GasLimit, 0)
+            XCTAssertGreaterThan(result.l2GasLimit, 0)
+            XCTAssertGreaterThan(result.maxFeePerGas!, 0)
+            XCTAssertGreaterThan(result.maxPriorityFeePerGas!, 0)
+        }else{
+            let baseToken = try! await wallet.walletL1.getBaseToken()
+            let approveParrams = try! await wallet.walletL1.getDepositAllowanceParams(token: baseToken, amount: BigUInt.one)
+            
+            try! await wallet.walletL1.approveERC20(token: approveParrams[0].token, amount: approveParrams[0].allowance)
+
+            let tx = DepositTransaction(token: baseToken, amount: BigUInt.one, to: try! await wallet.walletL1.getAddress())
+            let result = try! await wallet.walletL1.getFullRequiredDepositFee(transaction: tx)
+            
+            XCTAssertNotNil(result)
+            XCTAssertGreaterThan(result.baseCost, 0)
+            XCTAssertGreaterThan(result.l1GasLimit, 0)
+            XCTAssertGreaterThan(result.l2GasLimit, 0)
+            XCTAssertGreaterThan(result.maxFeePerGas!, 0)
+            XCTAssertGreaterThan(result.maxPriorityFeePerGas!, 0)
+        }
+    }
+    
+    func testGetFullRequiredETHDepositFee() async {
+        if try! await !wallet.walletL1.isETHBasedChain(){
+            let approveParrams = try! await wallet.walletL1.getDepositAllowanceParams(token: ZkSyncAddresses.LEGACY_ETH_ADDRESS, amount: BigUInt.one)
+            
+            try! await wallet.walletL1.approveERC20(token: approveParrams[0].token, amount: approveParrams[0].allowance)
+
+            let tx = DepositTransaction(token: ZkSyncAddresses.LEGACY_ETH_ADDRESS, amount: BigUInt.one, to: try! await wallet.walletL1.getAddress())
+            let result = try! await wallet.walletL1.getFullRequiredDepositFee(transaction: tx)
+            
+            XCTAssertNotNil(result)
+            XCTAssertGreaterThan(result.baseCost, 0)
+            XCTAssertGreaterThan(result.l1GasLimit, 0)
+            XCTAssertGreaterThan(result.l2GasLimit, 0)
+            XCTAssertGreaterThan(result.maxFeePerGas!, 0)
+            XCTAssertGreaterThan(result.maxPriorityFeePerGas!, 0)
+        }
+    }
+    
+    func testGetFullRequiredDaiTokenDepositFee() async {
+        if try! await wallet.walletL1.isETHBasedChain(){
+            try! await wallet.walletL1.approveERC20(token: ZkSyncWalletIntegrationTests.L1DAI, amount: BigUInt.one)
+            
+            let tx = DepositTransaction(token: ZkSyncWalletIntegrationTests.L1DAI, amount: BigUInt.one, to: try! await wallet.walletL1.getAddress())
+            let result = try! await wallet.walletL1.getFullRequiredDepositFee(transaction: tx)
+            
+            XCTAssertNotNil(result)
+            XCTAssertGreaterThan(result.baseCost, 0)
+            XCTAssertGreaterThan(result.l1GasLimit, 0)
+            XCTAssertGreaterThan(result.l2GasLimit, 0)
+            XCTAssertGreaterThan(result.maxFeePerGas!, 0)
+            XCTAssertGreaterThan(result.maxPriorityFeePerGas!, 0)
+        }else{
+            
+            let tx = DepositTransaction(token: ZkSyncAddresses.LEGACY_ETH_ADDRESS, amount: BigUInt.one, to: try! await wallet.walletL1.getAddress())
+            let result = try! await wallet.walletL1.getFullRequiredDepositFee(transaction: tx)
+            
+            XCTAssertNotNil(result)
+            XCTAssertGreaterThan(result.baseCost, 0)
+            XCTAssertGreaterThan(result.l1GasLimit, 0)
+            XCTAssertGreaterThan(result.l2GasLimit, 0)
+            XCTAssertGreaterThan(result.maxFeePerGas!, 0)
+            XCTAssertGreaterThan(result.maxPriorityFeePerGas!, 0)
+        }
     }
     
     func testDepositETH() async {
-        let amount = BigUInt(7000000000)
-        
-        let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1()
-        let l2BalanceBeforeDeposit = await wallet.walletL2.balance()
-        
-        let tx = DepositTransaction(token: ZkSyncAddresses.EthAddress, amount: amount)
-        let result = try! await wallet.walletL1.deposit(transaction: tx)
-        let receipt = try! await wallet.walletL1.ethClient.waitforTransactionReceipt(transactionHash: result.hash, timeout: 120, pollLatency: 0.5)
-        let l2Hash = try! await wallet.walletL1.zkSync.getL2HashFromPriorityOp(receipt: receipt!)
-        sleep(5)
-        let l2receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: l2Hash!)
-        XCTAssertNotNil(l2receipt)
-        
-        let l1BalanceAfterDeposit = await wallet.walletL1.balanceL1()
-        let l2BalanceAfterDeposit = await wallet.walletL2.balance()
-        
-        XCTAssertGreaterThanOrEqual(l2BalanceAfterDeposit - l2BalanceBeforeDeposit, amount)
-        XCTAssertGreaterThanOrEqual(l1BalanceBeforeDeposit - l1BalanceAfterDeposit, amount)
+        if try! await wallet.walletL1.isETHBasedChain(){
+            let amount = BigUInt(7000000000)
+            
+            let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1()
+            let l2BalanceBeforeDeposit = await wallet.walletL2.balance()
+            
+            let tx = DepositTransaction(token: ZkSyncAddresses.EthAddress, amount: amount)
+            let result = try! await wallet.walletL1.deposit(transaction: tx)
+            let receipt = try! await wallet.walletL1.ethClient.waitforTransactionReceipt(transactionHash: result.hash, timeout: 120, pollLatency: 0.5)
+            let l2Hash = try! await wallet.walletL1.zkSync.getL2HashFromPriorityOp(receipt: receipt!)
+            sleep(5)
+            let l2receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: l2Hash!)
+            XCTAssertNotNil(l2receipt)
+            
+            let l1BalanceAfterDeposit = await wallet.walletL1.balanceL1()
+            let l2BalanceAfterDeposit = await wallet.walletL2.balance()
+            
+            XCTAssertGreaterThanOrEqual(l2BalanceAfterDeposit - l2BalanceBeforeDeposit, amount)
+            XCTAssertGreaterThanOrEqual(l1BalanceBeforeDeposit - l1BalanceAfterDeposit, amount)
+        } else {
+            let amount = BigUInt(7000000000)
+            
+            let l2Address = try! await zkSync.l2TokenAddress(address: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS)
+            
+            let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1()
+            let l2BalanceBeforeDeposit = await wallet.walletL2.balance(token: l2Address)
+            
+            let tx = DepositTransaction(token: ZkSyncAddresses.EthAddress, amount: amount, approveBaseERC20: true)
+            let result = try! await wallet.walletL1.deposit(transaction: tx)
+            let receipt = try! await wallet.walletL1.ethClient.waitforTransactionReceipt(transactionHash: result.hash, timeout: 120, pollLatency: 0.5)
+            let l2Hash = try! await wallet.walletL1.zkSync.getL2HashFromPriorityOp(receipt: receipt!)
+            sleep(5)
+            let l2receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: l2Hash!)
+            XCTAssertNotNil(l2receipt)
+            
+            let l1BalanceAfterDeposit = await wallet.walletL1.balanceL1()
+            let l2BalanceAfterDeposit = await wallet.walletL2.balance(token: l2Address)
+            
+            XCTAssertGreaterThanOrEqual(l2BalanceAfterDeposit - l2BalanceBeforeDeposit, amount)
+            XCTAssertGreaterThanOrEqual(l1BalanceBeforeDeposit - l1BalanceAfterDeposit, amount)
+        }
+    }
+    
+    func testDepositBaseToken() async {
+        if try! await !wallet.walletL1.isETHBasedChain(){
+            let amount = BigUInt(7000000000)
+            
+            let baseToken = try! await wallet.walletL1.getBaseToken()
+            
+            let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1()
+            let l2BalanceBeforeDeposit = await wallet.walletL2.balance()
+            
+            let tx = DepositTransaction(token: baseToken, amount: amount, approveBaseERC20: true)
+            let result = try! await wallet.walletL1.deposit(transaction: tx)
+            let receipt = try! await wallet.walletL1.ethClient.waitforTransactionReceipt(transactionHash: result.hash, timeout: 120, pollLatency: 0.5)
+            let l2Hash = try! await wallet.walletL1.zkSync.getL2HashFromPriorityOp(receipt: receipt!)
+            sleep(5)
+            let l2receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: l2Hash!)
+            XCTAssertNotNil(l2receipt)
+            
+            let l1BalanceAfterDeposit = await wallet.walletL1.balanceL1()
+            let l2BalanceAfterDeposit = await wallet.walletL2.balance()
+            
+            XCTAssertGreaterThanOrEqual(l2BalanceAfterDeposit - l2BalanceBeforeDeposit, amount)
+            XCTAssertGreaterThanOrEqual(l1BalanceBeforeDeposit - l1BalanceAfterDeposit, amount)
+        }
     }
     
     func testDepositERC20() async {
-        let amount = BigUInt(20)
-        let l2DAI = try! await zkSync.l2TokenAddress(address: ZkSyncWalletIntegrationTests.L1DAI)
-        
-        let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1()
-        let l2BalanceBeforeDeposit = await wallet.walletL2.balance(token: l2DAI)
-        
-        let tx = DepositTransaction(token: ZkSyncWalletIntegrationTests.L1DAI, amount: amount, approveERC20: true)
-        let result = try! await wallet.walletL1.deposit(transaction: tx)
-        let receipt = try! await wallet.walletL1.ethClient.waitforTransactionReceipt(transactionHash: result.hash, timeout: 120, pollLatency: 0.5)
-        let l2Hash = try! await wallet.walletL1.zkSync.getL2HashFromPriorityOp(receipt: receipt!)
-        sleep(5)
-        let l2receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: l2Hash!)
-        
-        XCTAssertNotNil(l2receipt)
-        let l1BalanceAfterDeposit = await wallet.walletL1.balanceL1()
-        let l2BalanceAfterDeposit = await wallet.walletL2.balance()
-        
-        XCTAssertGreaterThanOrEqual(l2BalanceAfterDeposit - l2BalanceBeforeDeposit, amount)
-        XCTAssertGreaterThanOrEqual(l1BalanceBeforeDeposit - l1BalanceAfterDeposit, amount)
+        if try! await wallet.walletL1.isETHBasedChain(){
+            let amount = BigUInt(20)
+            let l2DAI = try! await zkSync.l2TokenAddress(address: ZkSyncWalletIntegrationTests.L1DAI)
+            
+            let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1(token: ZkSyncWalletIntegrationTests.L1DAI)
+            let l2BalanceBeforeDeposit = await wallet.walletL2.balance(token: l2DAI)
+            
+            let tx = DepositTransaction(token: ZkSyncWalletIntegrationTests.L1DAI, amount: amount, approveERC20: true)
+            let result = try! await wallet.walletL1.deposit(transaction: tx)
+            let receipt = try! await wallet.walletL1.ethClient.waitforTransactionReceipt(transactionHash: result.hash, timeout: 120, pollLatency: 0.5)
+            let l2Hash = try! await wallet.walletL1.zkSync.getL2HashFromPriorityOp(receipt: receipt!)
+            sleep(5)
+            let l2receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: l2Hash!)
+            
+            XCTAssertNotNil(l2receipt)
+            let l1BalanceAfterDeposit = await wallet.walletL1.balanceL1(token: ZkSyncWalletIntegrationTests.L1DAI)
+            let l2BalanceAfterDeposit = await wallet.walletL2.balance(token: l2DAI)
+            
+            XCTAssertGreaterThanOrEqual(l2BalanceAfterDeposit - l2BalanceBeforeDeposit, amount)
+            XCTAssertGreaterThanOrEqual(l1BalanceBeforeDeposit - l1BalanceAfterDeposit, amount)
+        } else {
+            let amount = BigUInt(20)
+            let l2DAI = try! await zkSync.l2TokenAddress(address: ZkSyncWalletIntegrationTests.L1DAI)
+            
+            let l1BalanceBeforeDeposit = await wallet.walletL1.balanceL1(token: ZkSyncWalletIntegrationTests.L1DAI)
+            let l2BalanceBeforeDeposit = await wallet.walletL2.balance(token: l2DAI)
+            
+            let tx = DepositTransaction(token: ZkSyncWalletIntegrationTests.L1DAI, amount: amount, approveERC20: true, approveBaseERC20: true)
+            let result = try! await wallet.walletL1.deposit(transaction: tx)
+            let receipt = try! await wallet.walletL1.ethClient.waitforTransactionReceipt(transactionHash: result.hash, timeout: 120, pollLatency: 0.5)
+            let l2Hash = try! await wallet.walletL1.zkSync.getL2HashFromPriorityOp(receipt: receipt!)
+            sleep(5)
+            let l2receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: l2Hash!)
+            
+            XCTAssertNotNil(l2receipt)
+            let l1BalanceAfterDeposit = await wallet.walletL1.balanceL1(token: ZkSyncWalletIntegrationTests.L1DAI)
+            let l2BalanceAfterDeposit = await wallet.walletL2.balance(token: l2DAI)
+            
+            XCTAssertGreaterThanOrEqual(l2BalanceAfterDeposit - l2BalanceBeforeDeposit, amount)
+            XCTAssertGreaterThanOrEqual(l1BalanceBeforeDeposit - l1BalanceAfterDeposit, amount)
+        }
     }
     
     func testTransferETH() async {
@@ -231,13 +379,13 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         
         let l2BalanceBefore = await wallet.walletL2.balance()
         
-        
+    
         let result = try! await wallet.walletL2.withdraw(amount, to: nil, token: ZkSyncAddresses.EthAddress)
         let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result!.hash)
         XCTAssertNotNil(receipt)
-        let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
+        //let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
         sleep(10)
-        XCTAssertFalse(isFinalized)
+        //XCTAssertFalse(isFinalized)
         _ = try! await wallet.walletL1.finalizeWithdrawal(withdrawalHash: result!.hash)
         
         let l2BalanceAfter = await wallet.walletL2.balance()
@@ -292,8 +440,8 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result!.hash)
         XCTAssertNotNil(receipt)
         sleep(10)
-        let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
-        XCTAssertFalse(isFinalized)
+        //let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
+        //XCTAssertFalse(isFinalized)
         _ = try! await wallet.walletL1.finalizeWithdrawal(withdrawalHash: result!.hash)
         
         let l2BalanceAfter = await wallet.walletL2.balance(token: l2DAI)

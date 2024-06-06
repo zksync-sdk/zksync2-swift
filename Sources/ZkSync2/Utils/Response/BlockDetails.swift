@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import BigInt
+import Web3Core
 
 public struct BlockDetails: Decodable {
     
@@ -32,4 +34,16 @@ public struct BlockDetails: Decodable {
     let status: String
     
     let timestamp: UInt
+}
+
+struct L2TransactionRequestDirect {
+    let chainId: BigUInt
+    let mintValue: BigUInt
+    let l2Contract: EthereumAddress
+    let l2Value: BigUInt
+    let l2Calldata: Data
+    let l2GasLimit: BigUInt
+    let l2GasPerPubdataByteLimit: BigUInt
+    let factoryDeps: [Data]
+    let refundRecipient: EthereumAddress
 }

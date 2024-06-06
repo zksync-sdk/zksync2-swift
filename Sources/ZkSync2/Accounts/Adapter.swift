@@ -30,7 +30,7 @@ public protocol AdapterL1 {
     func getL1BridgeContracts() async throws -> BridgeAddresses
     // BalanceL1 returns the balance of the specified token on L1 that can be
     // either ETH or any ERC20 token.
-    func balanceL1() async -> BigUInt
+    func balanceL1(token: String, blockNumber: BlockNumber) async -> BigUInt
     // BaseCost returns base cost for L2 transaction.
     func baseCost(_ gasLimit: BigUInt, gasPerPubdataByte: BigUInt, gasPrice: BigUInt?) async throws -> [String: Any]
     // Deposit transfers the specified token from the associated account on the L1 network
@@ -42,7 +42,7 @@ public protocol AdapterL1 {
     // To check the amount of approved tokens for a specific bridge, use the AdapterL1.AllowanceL1 method.
     func deposit(transaction: DepositTransaction) async throws -> TransactionSendingResult
     func estimateGasDeposit(transaction: DepositTransaction) async throws -> BigUInt
-    func getDepositTransaction(transaction: DepositTransaction) async throws -> DepositTransaction
+    func getDepositTransaction(transaction: DepositTransaction) async throws -> Any
     // ClaimFailedDeposit withdraws funds from the initiated deposit, which failed when finalizing on L2.
     // If the deposit L2 transaction has failed, it sends an L1 transaction calling ClaimFailedDeposit method
     // of the L1 bridge, which results in returning L1 tokens back to the depositor, otherwise throws the error.

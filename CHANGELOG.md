@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/zksync-sdk/zksync2-swift/compare/v1.0.0...v1.1.0) (2024-06-08)
+
+
+### Features
+
+* provide support for Bridgehub ([21cb01f](https://github.com/zksync-sdk/zksync2-swift/commit/21cb01f1f48dd4fd33977c9b64f678e18457d83a))
+
 # 1.0.0 (2024-03-19)
 
 

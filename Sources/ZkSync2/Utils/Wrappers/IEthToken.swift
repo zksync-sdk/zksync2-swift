@@ -261,6 +261,5 @@ extension Web3.Utils {
     "type": "function"
   }
 ]
-
 """
 }

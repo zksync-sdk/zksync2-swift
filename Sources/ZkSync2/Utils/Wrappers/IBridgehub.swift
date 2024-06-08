@@ -182,7 +182,7 @@ public extension Web3.Utils {
         "type": "uint256"
       }
     ],
-    "name": "getStateTransition",
+    "name": "getHyperchain",
     "outputs": [
       {
         "internalType": "address",

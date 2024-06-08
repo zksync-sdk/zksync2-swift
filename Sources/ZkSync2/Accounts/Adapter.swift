@@ -67,7 +67,7 @@ public protocol AdapterL2 {
     
     // Balance returns the balance of the specified token that can be either ETH or any ERC20 token.
     // The block number can be nil, in which case the balance is taken from the latest known block.
-    func balance(token: String, blockNumber: BlockNumber) async throws -> BigUInt
+    func balance(token: String?, blockNumber: BlockNumber) async throws -> BigUInt
     // AllBalances returns all balances for confirmed tokens given by an associated
     // account.
     func allBalances(_ address: String) async throws -> Dictionary<String, String>

@@ -31,7 +31,7 @@
     }
 
     extension WalletL2 {
-        public func balance(token: String = ZkSyncAddresses.EthAddress, blockNumber: BlockNumber = .latest) async -> BigUInt {
+        public func balance(token: String? = nil, blockNumber: BlockNumber = .latest) async -> BigUInt {
             try! await zkSync.getBalance(address: signer.address, blockNumber: blockNumber, token: token)
         }
         
@@ -40,6 +40,10 @@
         }
         
         public func withdraw(_ amount: BigUInt, to: String?, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async throws -> TransactionSendingResult? {
+            return try await withdraw(amount, to: to, token: token, options: options, paymasterParams: paymasterParams, bridgeAddress: nil)
+        }
+        
+        public func withdraw(_ amount: BigUInt, to: String?, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil, bridgeAddress: String? = nil) async throws -> TransactionSendingResult? {
             var transaction = try await zkSync.getWithdrawTx(amount, from: signer.address, to: to, token: token, options: options, paymasterParams: paymasterParams)
             await populateTransaction(&transaction)
             let signed = signTransaction(transaction)

@@ -383,9 +383,9 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         let result = try! await wallet.walletL2.withdraw(amount, to: nil, token: ZkSyncAddresses.EthAddress)
         let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result!.hash)
         XCTAssertNotNil(receipt)
-        //let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
+        let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
         sleep(10)
-        //XCTAssertFalse(isFinalized)
+        XCTAssertFalse(isFinalized)
         _ = try! await wallet.walletL1.finalizeWithdrawal(withdrawalHash: result!.hash)
         
         let l2BalanceAfter = await wallet.walletL2.balance()
@@ -440,8 +440,8 @@ class ZkSyncWalletIntegrationTests: XCTestCase {
         let receipt = await ZkSyncTransactionReceiptProcessor(zkSync: zkSync).waitForTransactionReceipt(hash: result!.hash)
         XCTAssertNotNil(receipt)
         sleep(10)
-        //let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
-        //XCTAssertFalse(isFinalized)
+        let isFinalized = await wallet.walletL1.isWithdrawalFinalized(withdrawHash: result!.hash)
+        XCTAssertFalse(isFinalized)
         _ = try! await wallet.walletL1.finalizeWithdrawal(withdrawalHash: result!.hash)
         
         let l2BalanceAfter = await wallet.walletL2.balance(token: l2DAI)

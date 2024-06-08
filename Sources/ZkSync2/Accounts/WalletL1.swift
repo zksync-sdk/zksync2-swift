@@ -131,7 +131,7 @@ extension WalletL1 {
         let params = await _finalizeWithdrawalParams(withdrawHash: withdrawalHash, index: index)
         let transaction = CodableTransaction(type: .eip1559, to: EthereumAddress(signer.address)!)
         
-        let l1Bridge = ethClient.web3.contract(Web3Utils.IL1Bridge, at: EthereumAddress(try await getL1BridgeContracts().l1SharedDefaultBridge), transaction: transaction)
+        let l1Bridge = ethClient.web3.contract(Web3Utils.IL1SharedBridge, at: EthereumAddress(try await getL1BridgeContracts().l1SharedDefaultBridge), transaction: transaction)
         
         let writeOperation = l1Bridge!.createWriteOperation("finalizeWithdrawal", parameters: [params])
         if var tx = writeOperation?.transaction{
@@ -151,29 +151,31 @@ extension WalletL1 {
         let hexHash = withdrawHash
         let proof = try! await zkSync.logProof(txHash: hexHash, logIndex: l2ToL1LogIndex)
         let l2BlockNumber = receipt.l1BatchNumber
+        let chainId = try! await zkSync.chainID()
         
-        if sender.lowercased() == EthereumAddress.L2EthTokenAddress.address.lowercased() 
-            || sender.lowercased() == EthereumAddress.Default.address.lowercased() {
-            let mainContract = try! await mainContract()
-            return try! await mainContract.createReadOperation("isEthWithdrawalFinalized", parameters: [l2BlockNumber!, proof.id])?.callContractMethod()["0"] as! Bool
+        var l1Bridge: Web3.Contract
+        
+        if try! await zkSync.isBaseToken(tokenAddress: sender) {
+            l1Bridge = ethClient.web3.contract(Web3Utils.IL1SharedBridge, at: EthereumAddress(from: try! await zkSync.bridgeContracts().l1SharedDefaultBridge)!)!
+        }else{
+            let l2Bridge = zkSync.web3.contract(Web3Utils.IL2SharedBridge, at: EthereumAddress(sender)!)
+            let l1BridgeAddress = try! await l2Bridge?.createReadOperation("l1SharedBridge", parameters: [])?.callContractMethod()["0"] as! EthereumAddress
+            l1Bridge = ethClient.web3.contract(Web3Utils.IL1Bridge, at: l1BridgeAddress)!
+            
         }
         
-        let l2Bridge = zkSync.web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(sender)!)
-        let l1BridgeAddress = try! await l2Bridge?.createReadOperation("l1Bridge", parameters: [])?.callContractMethod()["0"] as! EthereumAddress
-        let l1Bridge = ethClient.web3.contract(Web3Utils.IL1Bridge, at: l1BridgeAddress)
-        
-        return try! await l1Bridge!.createReadOperation("isWithdrawalFinalized", parameters: [l2BlockNumber!, proof.id])?.callContractMethod()["0"] as! Bool
+        return try! await l1Bridge.createReadOperation("isWithdrawalFinalized", parameters: [chainId, l2BlockNumber!, proof.id])?.callContractMethod()["0"] as! Bool
     }
     
-    func _finalizeWithdrawalParams(withdrawHash: String, index: Int) async -> (BigUInt, Int, UInt, Data, String?, [String]) {
+    func _finalizeWithdrawalParams(withdrawHash: String, index: Int) async -> (BigUInt, BigUInt, Int, UInt, Data, String?, [String]) {
         let receipt = try! await zkSync.web3.eth.transactionReceipt(Data(hex: withdrawHash))
         let (log, _) = _getWithdrawalLog(receipt: receipt, index: UInt(index))!
         let (l2ToL1LogIndex, _) = _getWithdrawL2ToL1Log(txReceipt: receipt, index: index)!
         let sender = log.topics[1].suffix(from: 12).toHexString().addHexPrefix()
         let proof = try! await zkSync.logProof(txHash: withdrawHash, logIndex: l2ToL1LogIndex)
         let msg = ABIDecoder.decodeSingleType(type: ABI.Element.ParameterType.dynamicBytes, data: log.data).value as! Data
-        
-        return (receipt.l1BatchNumber!, proof.id, receipt.l1BatchTxIndex!, msg, sender, proof.proof)
+        let chainId = try! await zkSync.chainID()
+        return (chainId ,receipt.l1BatchNumber!, proof.id, receipt.l1BatchTxIndex!, msg, sender, proof.proof)
     }
     
     func _getWithdrawalLog(receipt: TransactionReceipt, index: UInt = 0) -> (EventLog, Int)?{
@@ -217,7 +219,7 @@ extension WalletL1 {
         let address = try await self.zkSync.mainContract()
         
         let zkSyncContract = self.web.contract(
-            Web3.Utils.IZkSync,
+            Web3.Utils.IZkSyncHyperchain,
             at: EthereumAddress(address),
             transaction: transaction
         )!

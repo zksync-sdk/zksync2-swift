@@ -50,7 +50,15 @@ public class BaseClient: ZkSyncClient {
     }
     
     public func getBalance(address: String, blockNumber: BlockNumber = .latest, token: String?) async throws -> BigUInt {
-        if token == nil || token == ZkSyncAddresses.EthAddress {
+        var token = token
+        if token == nil {
+            token = ZkSyncAddresses.L2_BASE_TOKEN_ADDRESS
+        }else if ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS) ||
+                    ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.LEGACY_ETH_ADDRESS){
+            token = try! await l2TokenAddress(address: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS)
+        }
+        
+        if token == ZkSyncAddresses.L2_BASE_TOKEN_ADDRESS {
             return try await web3.eth.getBalance(for: EthereumAddress(address)!, onBlock: blockNumber)
         }
         
@@ -69,10 +77,17 @@ public class BaseClient: ZkSyncClient {
     }
     
     public func l2TokenAddress(address: String) async throws -> String {
-        if address == ZkSyncAddresses.EthAddress {
-            return address
+        var address = address
+        if address == ZkSyncAddresses.LEGACY_ETH_ADDRESS {
+            address = ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS
         }
-        let bridgeAddress = try await bridgeContracts().l2Erc20DefaultBridge
+        
+        let baseToken = try await getBaseTokenContractAddress()
+        if ZkSyncAddresses.isAddressEq(a: baseToken, b: address){
+            return ZkSyncAddresses.L2_BASE_TOKEN_ADDRESS
+        }
+        
+        let bridgeAddress = try await bridgeContracts().l2SharedDefaultBridge
         let bridge = web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(bridgeAddress)!)
         let result = try await bridge?.createReadOperation("l2TokenAddress", parameters: [address])?.callContractMethod()["0"] as! EthereumAddress
         return result.address
@@ -273,15 +288,16 @@ public class BaseClient: ZkSyncClient {
     }
     
     public func getWithdrawTx(_ amount: BigUInt, from: String, to: String?, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async throws -> CodableTransaction{
-        let isEthChain = try! await isEthBasedChain()
-        var token = token != nil && ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.LEGACY_ETH_ADDRESS) ? ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS : token
-        let isBaseToken = token != nil ? try! await isBaseToken(tokenAddress: token!) : true
-        
-        if token != nil &&
-            ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.LEGACY_ETH_ADDRESS) && !isEthChain {
-            token = try! await l2TokenAddress(address: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS)
-        } else if token == nil || (isBaseToken){
+        return try await getWithdrawTx(amount, from: from, to: to, token: token, options: options, paymasterParams: paymasterParams, bridgeAddress: nil)
+    }
+    
+    public func getWithdrawTx(_ amount: BigUInt, from: String, to: String?, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil, bridgeAddress: String? = nil) async throws -> CodableTransaction{
+        var token = token
+        if token == nil {
             token = ZkSyncAddresses.L2_BASE_TOKEN_ADDRESS
+        }else if ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS) || 
+                    ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.LEGACY_ETH_ADDRESS){
+            token = try await l2TokenAddress(address: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS)
         }
         
         let to = to ?? from
@@ -293,7 +309,7 @@ public class BaseClient: ZkSyncClient {
             nonce = try await web3.eth.getTransactionCount(for: EthereumAddress(from)!)
         }
         let prepared = CodableTransaction.createEtherTransaction(from: EthereumAddress(from)!, to: EthereumAddress(to)!, value: amount, nonce: nonce, paymasterParams: paymasterParams)
-        if isBaseToken {
+        if ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.L2_BASE_TOKEN_ADDRESS) {
             if options?.value == nil {
                 options?.value = amount
             }
@@ -303,8 +319,12 @@ public class BaseClient: ZkSyncClient {
             transaction.chainID = try await chainID()
             return transaction
         }
+        var bridgeAddress = bridgeAddress
+        if bridgeAddress == nil{
+            bridgeAddress = try await bridgeContracts().l2SharedDefaultBridge
+        }
         let bridgeAddresses = try await bridgeContracts()
-        let bridge = web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(bridgeAddresses.l2Erc20DefaultBridge), transaction: prepared)
+        let bridge = web3.contract(Web3Utils.IL2Bridge, at: EthereumAddress(bridgeAddress!), transaction: prepared)
         var transaction = (bridge?.createWriteOperation("withdraw", parameters: [to, token!, amount])!.transaction)!
         transaction.chainID = try await chainID()
         transaction.value = BigUInt.zero
@@ -318,22 +338,18 @@ public class BaseClient: ZkSyncClient {
     }
     
     public func getTransferTx(_ to: String, amount: BigUInt, from:String, token: String? = nil, options: TransactionOption? = nil, paymasterParams: PaymasterParams? = nil) async -> CodableTransaction {
-        let isEthChain = try! await isEthBasedChain()
         var token = token
-        let isBaseToken = token != nil ? try! await isBaseToken(tokenAddress: token!) : true
-        
-        if token != nil &&
-            ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.LEGACY_ETH_ADDRESS) &&
-            !isEthChain {
-            token = try! await l2TokenAddress(address: token!)
-        } else if token == nil || (isBaseToken){
+        if token == nil {
             token = ZkSyncAddresses.L2_BASE_TOKEN_ADDRESS
+        }else if ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS) ||
+                    ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.LEGACY_ETH_ADDRESS){
+            token = try! await l2TokenAddress(address: ZkSyncAddresses.ETH_ADDRESS_IN_CONTRACTS)
         }
         
         let nonce = try! await web3.eth.getTransactionCount(for: EthereumAddress(from)!)
         let prepared = CodableTransaction.createEtherTransaction(from: EthereumAddress(from)!, to: EthereumAddress(to)!, value: amount, nonce: nonce, paymasterParams: paymasterParams)
         
-        if isBaseToken{
+        if ZkSyncAddresses.isAddressEq(a: token!, b: ZkSyncAddresses.L2_BASE_TOKEN_ADDRESS){
             return prepared
         }
         let tokenContract = web3.contract(Web3Utils.IERC20, at: EthereumAddress(token!)!, transaction: prepared)

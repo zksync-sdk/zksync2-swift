@@ -12,7 +12,7 @@ like account abstraction, requires providing additional fields to those that Eth
 The library is made in such a way that after replacing `web3swift` with `zksync2-swift` most client apps will work out of
 box.
 
-🔗 For a detailed walkthrough, refer to the [official documentation](https://docs.zksync.io/build/sdks/swift/getting-started.html).
+🔗 For a detailed walkthrough, refer to the [official documentation](https://docs.zksync.io/sdk/swift/getting-started).
 
 ## 📌 Overview
 

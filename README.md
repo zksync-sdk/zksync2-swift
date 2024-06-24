@@ -1,12 +1,18 @@
 # 🚀 zksync2-swift Swift SDK 🚀
 
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE-MIT)
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-orange)](LICENSE-APACHE)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](https://www.contributor-covenant.org/)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-orange)](.github/CONTRIBUTING.md)
+[![X (formerly Twitter) Follow](https://badgen.net/badge/twitter/@zksyncDevs/1DA1F2?icon&label)](https://x.com/zksyncDevs)
+
 ![Era Logo](https://github.com/matter-labs/era-contracts/raw/main/eraLogo.svg)
 
-In order to provide easy access to all the features of zkSync Era, the `zksync2-swift` Swift SDK was created,
+In order to provide easy access to all the features of ZKsync Era, the `zksync2-swift` Swift SDK was created,
 which is made in a way that has an interface very similar to those of [web3swift](https://github.com/web3swift-team/web3swift). In
 fact, `web3swift` is a peer dependency of our library is inherited from the corresponding `web3swift`.
 
-While most of the existing SDKs should work out of the box, deploying smart contracts or using unique zkSync features,
+While most of the existing SDKs should work out of the box, deploying smart contracts or using unique ZKsync Era features,
 like account abstraction, requires providing additional fields to those that Ethereum transactions have by default.
 
 The library is made in such a way that after replacing `web3swift` with `zksync2-swift` most client apps will work out of
@@ -18,7 +24,7 @@ box.
 
 To begin, it is useful to have a basic understanding of the types of objects available and what they are responsible for, at a high level:
 
--   `ZkSyncClient` provides connection to the zkSync Era blockchain, which allows querying the blockchain state, such as account, block or transaction details,
+-   `ZkSyncClient` provides connection to the ZKsync Era blockchain, which allows querying the blockchain state, such as account, block or transaction details,
     querying event logs or evaluating read-only code using call. Additionally, the client facilitates writing to the blockchain by sending
     transactions.
 -   `Wallet` wraps all operations that interact with an account. An account generally has a private key, which can be used to sign a variety of
@@ -33,7 +39,7 @@ To begin, it is useful to have a basic understanding of the types of objects ava
 
 ### CocoaPods Integration
 
-To install zkSync via CocoaPods, add zkSync2 pod to the Podfile:
+To install ZKsync via CocoaPods, add `zksync2-swift` pod to the Podfile:
 
 ```
  pod 'zkSync2-swift'
@@ -41,15 +47,15 @@ To install zkSync via CocoaPods, add zkSync2 pod to the Podfile:
 
 ### Swift Package Manager Integration
 
-To install zkSync via Swift Package Manager, add zkSync2 to the Package Dependencies:
+To install ZKsync via Swift Package Manager, add `zksync2-swift` to the Package Dependencies:
 
 ```
  'github.com/zksync-sdk/zksync2-swift'
 ```
 
-### Connect to the zkSync Era network:
+### Connect to the ZKsync Era network:
 
-Once you have integrated zkSync2 dependencies, connect to zkSync using the endpoint of the operator node.
+Once you have integrated `zksync2-swift` dependencies, connect to ZKsync using the endpoint of the operator node.
 
 ```swift
 var zkSync: ZkSyncClient= BaseClient(URL(string: "https://sepolia.era.zksync.dev"))

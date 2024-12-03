@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/zksync-sdk/zksync2-swift/compare/v1.1.0...v1.1.1) (2024-12-03)
+
+
+### Bug Fixes
+
+* fix dependency unstable issue ([f0ed43d](https://github.com/zksync-sdk/zksync2-swift/commit/f0ed43d0eaf850339b23118d60aa66eeffd93ea5))
+
 # [1.1.0](https://github.com/zksync-sdk/zksync2-swift/compare/v1.0.0...v1.1.0) (2024-06-08)
 
 

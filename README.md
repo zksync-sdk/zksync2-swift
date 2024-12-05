@@ -8,6 +8,9 @@
 
 [![ZKsync Era Logo](logo.svg)](https://zksync.io/)
 
+> [!WARNING]  
+> Development of this SDK has been put on the community support. There is no active development of the repository, but the pull requests will be reviewed and merged.
+
 In order to provide easy access to all the features of ZKsync Era, the `zksync2-swift` Swift SDK was created,
 which is made in a way that has an interface very similar to those of [web3swift](https://github.com/web3swift-team/web3swift). In
 fact, `web3swift` is a peer dependency of our library is inherited from the corresponding `web3swift`.
